@@ -49,15 +49,19 @@ button:focus-visible, .row:focus-visible { outline: 2px solid var(--focus); outl
 
 .boost-meter { position: absolute; right: calc(18px + env(safe-area-inset-right, 0px)); bottom: calc(14px + env(safe-area-inset-bottom, 0px)); width: 150px; height: 150px; }
 .boost-meter svg { width: 100%; height: 100%; overflow: visible; }
-.boost-meter .track { fill: rgba(5, 9, 20, 0.72); stroke: rgba(255,255,255,0.08); stroke-width: 2; }
+.boost-meter .track { fill: rgba(5, 9, 20, 0.55); stroke: rgba(255,255,255,0.1); stroke-width: 2; }
+.boost-meter .disc { fill: url(#boostDisc); stroke: rgba(255,255,255,0.55); stroke-width: 2; }
 .boost-meter .ticks { fill: none; stroke: rgba(255,255,255,0.22); stroke-width: 10; stroke-dasharray: 2 14.8; }
 .boost-meter #boost-arc { fill: none; stroke: url(#boostGrad); stroke-width: 12; stroke-linecap: butt; transition: stroke-dashoffset 60ms linear; filter: drop-shadow(0 0 6px rgba(255,160,40,0.7)); }
-.boost-meter .num { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--display); font-style: italic; font-weight: 900; font-size: 50px; line-height: 1; text-shadow: 0 2px 10px rgba(0,0,0,0.6); }
-.boost-meter .label { position: absolute; left: 0; right: 0; bottom: 34px; text-align: center; font-family: var(--display); font-weight: 700; font-size: 11px; letter-spacing: 0.3em; color: var(--boost); }
+.boost-meter .num { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--display); font-style: italic; font-weight: 900; font-size: 42px; line-height: 1; color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,0.45); }
+.boost-meter .label { display: none; }
 #hud.boost-full .num { color: #fff3c4; }
 
 .readout { position: absolute; left: calc(14px + env(safe-area-inset-left, 0px)); font-family: var(--display); font-weight: 700; font-size: 13px; letter-spacing: 0.06em; color: var(--ink); background: rgba(5,9,20,0.6); padding: 4px 8px; border-radius: 3px; font-variant-numeric: tabular-nums; }
 #fps { top: calc(10px + env(safe-area-inset-top, 0px)); }
+#tools { position: absolute; top: calc(10px + env(safe-area-inset-top, 0px)); right: calc(66px + env(safe-area-inset-right, 0px)); display: grid; gap: 2px; padding: 6px 8px; border-radius: 4px; background: rgba(5,9,20,0.55); font-size: 12px; font-weight: 600; text-align: right; }
+#tools div { display: flex; justify-content: flex-end; gap: 8px; align-items: center; }
+#tools b { min-width: 66px; padding: 1px 5px; border-radius: 3px; background: rgba(255,255,255,0.14); font-weight: 600; font-size: 11px; text-align: center; }
 #speed { top: calc(40px + env(safe-area-inset-top, 0px)); }
 
 .goal-banner { position: absolute; top: 34%; left: 0; right: 0; text-align: center; font-family: var(--display); font-style: italic; pointer-events: none; }
@@ -173,6 +177,7 @@ button:focus-visible, .row:focus-visible { outline: 2px solid var(--focus); outl
   </div>
   <div class="readout" id="fps" hidden></div>
   <div class="readout" id="speed" hidden></div>
+  <div id="tools"></div>
   <div class="boost-meter" aria-label="Boost">
     <svg viewBox="0 0 150 150" aria-hidden="true">
       <defs>
@@ -180,8 +185,14 @@ button:focus-visible, .row:focus-visible { outline: 2px solid var(--focus); outl
           <stop offset="0" stop-color="#ff6a00"/>
           <stop offset="1" stop-color="#ffd84a"/>
         </linearGradient>
+        <radialGradient id="boostDisc" cx="0.45" cy="0.35" r="0.75">
+          <stop offset="0" stop-color="#3f86ff"/>
+          <stop offset="0.7" stop-color="#1b4fc4"/>
+          <stop offset="1" stop-color="#0d2c7a"/>
+        </radialGradient>
       </defs>
       <circle class="track" cx="75" cy="75" r="70"/>
+      <circle class="disc" cx="75" cy="75" r="47"/>
       <circle class="ticks" cx="75" cy="75" r="58" transform="rotate(135 75 75)"/>
       <path id="boost-arc" d="M 33.99 116.01 A 58 58 0 1 1 116.01 116.01"/>
     </svg>
@@ -222,9 +233,11 @@ button:focus-visible, .row:focus-visible { outline: 2px solid var(--focus); outl
       <span><b>✕</b> Jump</span>
       <span><b>○</b> Boost</span>
       <span><b>□</b> Powerslide / Air roll</span>
+      <span><b>L1 / R1</b> Air roll left / right</span>
       <span><b>△</b> Ball cam</span>
       <span><b>R stick</b> Look around</span>
       <span><b>Create</b> Reset shot</span>
+      <span><b>D-pad</b> Training tools</span>
       <span><b>Options</b> Pause</span>
     </div>
   </div>

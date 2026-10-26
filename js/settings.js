@@ -1,5 +1,5 @@
 // User settings with Rocket League's default values. Saved per device.
-const KEY = 'boost-arena-settings-v1';
+const KEY = 'boost-arena-settings-v2';
 
 export const DEFAULT_BINDINGS = {
   throttle: { type: 'button', index: 7 },
@@ -8,12 +8,19 @@ export const DEFAULT_BINDINGS = {
   boost: { type: 'button', index: 1 },
   powerslide: { type: 'button', index: 2 },
   airRoll: { type: 'button', index: 2 },
-  airRollLeft: null,
-  airRollRight: null,
+  airRollLeft: { type: 'button', index: 4 },
+  airRollRight: { type: 'button', index: 5 },
   ballCam: { type: 'button', index: 3 },
   reset: { type: 'button', index: 8 },
+  takePossession: { type: 'button', index: 13 },
+  startDribble: { type: 'button', index: 12 },
+  passBall: { type: 'button', index: 14 },
+  launchBall: { type: 'button', index: 15 },
+  defendShot: { type: 'button', index: 11 },
   menu: { type: 'button', index: 9 },
 };
+
+export const TRAINING_ACTIONS = ['reset', 'takePossession', 'startDribble', 'passBall', 'launchBall', 'defendShot'];
 
 export const BINDING_LABELS = {
   throttle: 'Throttle',
@@ -26,6 +33,11 @@ export const BINDING_LABELS = {
   airRollRight: 'Air Roll Right',
   ballCam: 'Ball Cam',
   reset: 'Reset Shot',
+  takePossession: 'Take Possession',
+  startDribble: 'Start Dribble',
+  passBall: 'Pass Ball',
+  launchBall: 'Launch Ball',
+  defendShot: 'Defend Shot',
   menu: 'Pause Menu',
 };
 
@@ -64,10 +76,14 @@ export const DEFAULTS = {
     engine: 0.55,
     effects: 0.8,
   },
+  models: {
+    carYaw: 0,
+  },
   training: {
     unlimitedBoost: false,
     gameSpeed: 1,
     showSpeed: false,
+    showTools: true,
     spawn: 0,
   },
 };

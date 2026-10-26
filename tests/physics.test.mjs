@@ -84,5 +84,25 @@ check('behind back wall', dist(2000, 5300, 300), -1e9, 0);
   }
   check('ball never escapes', escaped ? 0 : 1, 1, 1); }
 
+// Directional air roll: holding air roll right rolls the car clockwise (positive about forward).
+{ const w = new World(); w.ball.pos.set(3000, 0, 93);
+  w.car.reset({ pos: [0, 0, 800], yaw: Math.PI / 2 }); w.car.onGround = false; w.car.relandLock = 1;
+  run(w, 30, { ...blank(), airRollRight: true });
+  const rollRate = w.car.ang.dot(w.car.fwd);
+  check('air roll right rate (rad/s)', rollRate, 4, 5.6);
+  w.car.ang.set(0, 0, 0);
+  run(w, 30, { ...blank(), airRollLeft: true });
+  check('air roll left rate (rad/s)', -w.car.ang.dot(w.car.fwd), 4, 5.6); }
+
+// Training tools keep the ball inside the arena.
+{ const w = new World(); let ok = true;
+  for (const a of ['takePossession', 'startDribble', 'passBall', 'launchBall', 'defendShot']) {
+    for (const spawn of [[0, -4608], [3000, 4000], [-3800, -100]]) {
+      w.car.reset({ pos: [...spawn, 17], yaw: 1 }); w.training(a);
+      if (dist(w.ball.pos.x, w.ball.pos.y, w.ball.pos.z) < 80) { ok = false; console.log('  outside:', a, spawn); }
+    }
+  }
+  check('training spawns stay inside', ok ? 1 : 0, 1, 1); }
+
 console.log(failures ? `\n${failures} check(s) failed` : '\nall checks passed');
 process.exit(failures ? 1 : 0);

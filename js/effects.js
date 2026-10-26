@@ -19,11 +19,16 @@ void main() {
   float d = length(c) * 2.0;
   float a = clamp(1.0 - d, 0.0, 1.0);
   a = a * a;
+#ifdef SMOKE
+  a = smoothstep(0.0, 0.6, a);
+  gl_FragColor = vec4(vTint.rgb, vTint.a * a);
+#else
   gl_FragColor = vec4(vTint.rgb * a, vTint.a * a);
+#endif
 }`;
 
 export class Particles {
-  constructor(max = 2500) {
+  constructor(max = 2500, smoke = false) {
     this.max = max;
     this.count = 0;
     this.pos = new Float32Array(max * 3);
@@ -50,11 +55,12 @@ export class Particles {
     this.material = new THREE.ShaderMaterial({
       uniforms: { scale: { value: 600 } },
       vertexShader: VERT, fragmentShader: FRAG,
-      transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+      transparent: true, depthWrite: false, blending: smoke ? THREE.NormalBlending : THREE.AdditiveBlending,
+      defines: smoke ? { SMOKE: '' } : {},
     });
     this.points = new THREE.Points(geo, this.material);
     this.points.frustumCulled = false;
-    this.points.renderOrder = 10;
+    this.points.renderOrder = smoke ? 9 : 10;
     this.quality = 1;
   }
 

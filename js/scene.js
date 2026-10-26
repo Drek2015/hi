@@ -7,6 +7,7 @@ import { INSET, EDGES, onFlatFloor } from './arena.js';
 import * as T from './textures.js';
 import { buildCar } from './carModel.js';
 import { Particles } from './effects.js';
+import { buildEnvironment } from './environment.js';
 
 const { W, L, H, R } = ARENA;
 const BLUE = new THREE.Color(0x2a7bff);
@@ -88,6 +89,7 @@ function buildShell(outline, rings, { skip, uScale = 400, vScale = 400 } = {}) {
   geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
   geo.setAttribute('color', new THREE.BufferAttribute(col, 4));
   geo.setIndex(idx);
+  geo.computeVertexNormals();
   geo.computeBoundingSphere();
   return geo;
 }
@@ -96,19 +98,16 @@ export class GameScene {
   constructor(canvas) {
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance', stencil: false });
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.05;
+    this.renderer.toneMappingExposure = 1.0;
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x060a16);
-    this.camera = new THREE.PerspectiveCamera(70, 1, 10, 90000);
+        this.camera = new THREE.PerspectiveCamera(70, 1, 10, 90000);
     this.world = new THREE.Group();
     this.world.rotation.x = -Math.PI / 2;
     this.world.updateMatrixWorld();
     this.scene.add(this.world);
 
-    this.env = this.buildEnv();
+    this.env = buildEnvironment(this.scene, this.world, this.renderer).envMap;
     this.buildLights();
-    this.buildSky();
-    this.buildStadium();
     this.buildArena();
     this.buildGoals();
     this.buildPads();
@@ -116,144 +115,102 @@ export class GameScene {
     this.buildCar();
 
     this.particles = new Particles(3000);
-    this.world.add(this.particles.points);
+    this.smoke = new Particles(900, true);
+    this.world.add(this.smoke.points, this.particles.points);
 
     this.shake = 0;
     this.time = 0;
-  }
-
-  buildEnv() {
-    const envScene = new THREE.Scene();
-    const sky = new THREE.Mesh(new THREE.SphereGeometry(100, 32, 16), new THREE.MeshBasicMaterial({ side: THREE.BackSide, vertexColors: true }));
-    const g = sky.geometry, c = [];
-    const p = g.attributes.position;
-    for (let i = 0; i < p.count; i++) {
-      const y = p.getY(i) / 100;
-      const col = new THREE.Color(0x1a2240).lerp(new THREE.Color(0x8fa6d8), Math.max(0, y) * 0.9);
-      if (y < 0) col.lerp(new THREE.Color(0x203a22), -y);
-      c.push(col.r, col.g, col.b);
-    }
-    g.setAttribute('color', new THREE.Float32BufferAttribute(c, 3));
-    envScene.add(sky);
-    const lamp = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    for (let i = 0; i < 6; i++) {
-      const m = new THREE.Mesh(new THREE.BoxGeometry(30, 4, 8), lamp);
-      const a = i / 6 * Math.PI * 2;
-      m.position.set(Math.cos(a) * 60, 45, Math.sin(a) * 60);
-      m.lookAt(0, 0, 0);
-      envScene.add(m);
-    }
-    const pm = new THREE.PMREMGenerator(this.renderer);
-    const tex = pm.fromScene(envScene, 0.02).texture;
-    pm.dispose();
-    return tex;
+    this.tmpColor = new THREE.Color();
   }
 
   buildLights() {
-    this.scene.add(new THREE.HemisphereLight(0xfff8f0, 0x3a4a34, 1.0));
-    const sun = new THREE.DirectionalLight(0xffffff, 1.9);
-    sun.position.set(0.25, 1, 0.35);
+    this.scene.add(new THREE.HemisphereLight(0xcfe3ff, 0x6b7a4a, 1.25));
+    const sun = new THREE.DirectionalLight(0xfff1dc, 2.4);
+    sun.position.set(0.45, 1, 0.3);
     this.scene.add(sun);
-    const fill = new THREE.DirectionalLight(0x9fb8ff, 0.6);
-    fill.position.set(-0.4, 0.5, -0.8);
+    const fill = new THREE.DirectionalLight(0xb8d0ff, 0.5);
+    fill.position.set(-0.5, 0.4, -0.7);
     this.scene.add(fill);
-  }
-
-  buildSky() {
-    const geo = new THREE.SphereGeometry(60000, 32, 16);
-    const p = geo.attributes.position, c = [];
-    for (let i = 0; i < p.count; i++) {
-      const y = p.getY(i) / 60000;
-      const col = new THREE.Color(0x2a2f58).lerp(new THREE.Color(0x05070f), Math.min(1, Math.max(0, y) * 1.6));
-      c.push(col.r, col.g, col.b);
-    }
-    geo.setAttribute('color', new THREE.Float32BufferAttribute(c, 3));
-    const sky = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ side: THREE.BackSide, vertexColors: true, depthWrite: false, fog: false }));
-    sky.renderOrder = -10;
-    this.scene.add(sky);
-  }
-
-  buildStadium() {
-    const outline = buildOutline();
-    const tint = new THREE.Color();
-    const crowd = T.crowdTexture();
-    const dark = (x, y, out) => out.setRGB(0.05, 0.06, 0.09);
-    const white = new THREE.Color(1, 1, 1);
-    const seat = (x, y, out) => out.copy(teamMix(y, tint)).lerp(white, 0.35).multiplyScalar(0.55);
-    const stands = buildShell(outline, [
-      { d: R + 120, z: 650, color: dark, alpha: 1 },
-      { d: R + 260, z: 900, color: seat, alpha: 1 },
-      { d: R + 3400, z: 3700, color: seat, alpha: 1 },
-      { d: R + 3500, z: 4400, color: dark, alpha: 1 },
-    ], { uScale: 700, vScale: 520 });
-    const standMat = new THREE.MeshBasicMaterial({ map: crowd, vertexColors: true, side: THREE.DoubleSide });
-    this.world.add(new THREE.Mesh(stands, standMat));
-
-    // Base below the stands and the roof ring.
-    const base = buildShell(outline, [
-      { d: R + 40, z: -40, color: dark, alpha: 1 },
-      { d: R + 120, z: 650, color: dark, alpha: 1 },
-    ]);
-    this.world.add(new THREE.Mesh(base, new THREE.MeshBasicMaterial({ color: 0x0b0e16, side: THREE.DoubleSide })));
-    const roofCol = (x, y, out) => teamMix(y, out).multiplyScalar(0.12);
-    const roof = buildShell(outline, [
-      { d: R + 3500, z: 4400, color: roofCol, alpha: 1 },
-      { d: R + 900, z: 4700, color: roofCol, alpha: 1 },
-    ]);
-    this.world.add(new THREE.Mesh(roof, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide })));
-
-    // Light rigs along the roof edge.
-    const rigGeo = new THREE.BoxGeometry(420, 60, 50);
-    const rigMat = new THREE.MeshBasicMaterial({ color: 0xeaf1ff });
-    const rigs = new THREE.InstancedMesh(rigGeo, rigMat, 40);
-    const m = new THREE.Matrix4(), q = new THREE.Quaternion(), s = new THREE.Vector3(1, 1, 1), v = new THREE.Vector3();
-    let n = 0;
-    const step = Math.floor(outline.length / 40);
-    for (let i = 0; i < outline.length - 1 && n < 40; i += step) {
-      const o = outline[i];
-      v.set(o.x + o.nx * (R + 1000), o.y + o.ny * (R + 1000), 4620);
-      q.setFromAxisAngle(new THREE.Vector3(0, 0, 1), Math.atan2(o.ny, o.nx) + Math.PI / 2);
-      m.compose(v, q, s);
-      rigs.setMatrixAt(n++, m);
-    }
-    rigs.count = n;
-    this.world.add(rigs);
-    // Floor outside the arena (under the walls).
-    const ground = new THREE.Mesh(new THREE.PlaneGeometry(30000, 30000), new THREE.MeshBasicMaterial({ color: 0x070a10 }));
-    ground.position.z = -45;
-    this.world.add(ground);
   }
 
   buildArena() {
     const outline = buildOutline();
     const tint = new THREE.Color();
-    const base = new THREE.Color(0x0a1020);
-    const ringColor = (strength, glow = 0) => (x, y, out) => out.copy(base).lerp(teamMix(y, tint), strength).addScalar(glow);
-    const rings = [];
+    const skip = (a, b, r0, r1) => a.back && b.back && Math.abs(a.x) <= GOAL.W + 0.5 && Math.abs(b.x) <= GOAL.W + 0.5 && r1.z <= GOAL.H + 0.5;
     const NB = 10;
+
+    // Turf ramp: the field curves up into the walls.
+    const turf = (x, y, out) => out.setRGB(1, 1, 1);
+    const ramp = [];
     for (let k = 0; k <= NB; k++) {
       const phi = k / NB * Math.PI / 2;
-      rings.push({ d: R * Math.sin(phi), z: R * (1 - Math.cos(phi)), color: ringColor(0.18 + 0.12 * k / NB), alpha: 0.96 });
+      ramp.push({ d: R * Math.sin(phi), z: R * (1 - Math.cos(phi)), color: turf, alpha: 1 });
     }
-    rings.push({ d: R, z: R + 10, color: ringColor(1.0, 0.25), alpha: 1 });
-    rings.push({ d: R, z: R + 34, color: ringColor(1.0, 0.25), alpha: 1 });
-    rings.push({ d: R, z: R + 46, color: ringColor(0.3), alpha: 0.9 });
-    rings.push({ d: R, z: GOAL.H, color: ringColor(0.32), alpha: 0.82 });
-    rings.push({ d: R, z: GOAL.H + 120, color: ringColor(0.34), alpha: 0.55 });
-    for (const z of [1000, 1350, 1700]) rings.push({ d: R, z, color: ringColor(0.38), alpha: 0.3 });
-    rings.push({ d: R, z: H - R, color: ringColor(0.5), alpha: 0.32 });
+    const rampTex = T.grassTexture();
+    rampTex.repeat.set(1, 1);
+    const rampMat = new THREE.MeshLambertMaterial({ color: 0x7fb85c, map: rampTex, vertexColors: true, side: THREE.DoubleSide });
+    this.world.add(new THREE.Mesh(buildShell(outline, ramp, { skip, uScale: 180, vScale: 180 }), rampMat));
+
+    // Side boards with team trim.
+    const BOARD = 210;
+    const board = [
+      { d: R, z: R, color: (x, y, out) => out.copy(teamMix(y, tint)).multiplyScalar(1.4), alpha: 1 },
+      { d: R, z: R + BOARD, color: (x, y, out) => out.copy(teamMix(y, tint)).lerp(new THREE.Color(1, 1, 1), 0.85), alpha: 1 },
+    ];
+    const boardTex = T.boardTexture();
+    boardTex.repeat.x = -1;
+    const boardMat = new THREE.MeshBasicMaterial({ map: boardTex, vertexColors: true, side: THREE.DoubleSide });
+    this.world.add(new THREE.Mesh(buildShell(outline, board, { skip, uScale: 1400, vScale: BOARD }), boardMat));
+    const trim = [
+      { d: R - 2, z: R + BOARD, color: (x, y, out) => out.copy(teamMix(y, tint)).multiplyScalar(1.6), alpha: 1 },
+      { d: R - 2, z: R + BOARD + 18, color: (x, y, out) => out.copy(teamMix(y, tint)).multiplyScalar(1.6), alpha: 1 },
+    ];
+    this.world.add(new THREE.Mesh(buildShell(outline, trim, { skip }), new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide })));
+
+    // Glass above the boards, faintly tinted per team, then the ceiling curve.
+    const glassCol = (k) => (x, y, out) => out.copy(teamMix(y, tint)).lerp(new THREE.Color(0.85, 0.92, 1), k);
+    const glass = [
+      { d: R, z: R + BOARD + 18, color: glassCol(0.5), alpha: 0.22 },
+      { d: R, z: GOAL.H + 140, color: glassCol(0.75), alpha: 0.1 },
+      { d: R, z: H - R, color: glassCol(0.85), alpha: 0.06 },
+    ];
     for (let k = 1; k <= NB; k++) {
       const phi = Math.PI / 2 + k / NB * Math.PI / 2;
-      rings.push({ d: R * Math.sin(phi), z: H - R - R * Math.cos(phi), color: ringColor(0.45), alpha: 0.28 });
+      glass.push({ d: R * Math.sin(phi), z: H - R - R * Math.cos(phi), color: glassCol(0.85), alpha: 0.06 });
     }
-    const skip = (a, b, r0, r1) => a.back && b.back && Math.abs(a.x) <= GOAL.W + 0.5 && Math.abs(b.x) <= GOAL.W + 0.5 && r1.z <= GOAL.H + 0.5;
-    const geo = buildShell(outline, rings, { skip, uScale: 300, vScale: 300 });
     const mat = new THREE.MeshBasicMaterial({
       map: T.hexTexture(), vertexColors: true, transparent: true, depthWrite: false, side: THREE.DoubleSide,
     });
-    const shell = new THREE.Mesh(geo, mat);
+    const shell = new THREE.Mesh(buildShell(outline, glass, { skip, uScale: 260, vScale: 260 }), mat);
     shell.renderOrder = 2;
     this.world.add(shell);
+
+    // Steel frame: posts around the wall and a rail along the top.
+    const posts = [];
+    for (let i = 0; i < outline.length - 1; i += 4) {
+      const o = outline[i];
+      if (o.back && Math.abs(o.x) < GOAL.W + 60) continue;
+      posts.push(o);
+    }
+    const postGeo = new THREE.BoxGeometry(46, 46, H - R + 40);
+    postGeo.translate(0, 0, (H - R + 40) / 2 + R);
+    const postMesh = new THREE.InstancedMesh(postGeo, new THREE.MeshLambertMaterial({ color: 0x8d939d }), posts.length);
+    const pm = new THREE.Matrix4(), pq = new THREE.Quaternion(), ps = new THREE.Vector3(1, 1, 1), pv = new THREE.Vector3();
+    posts.forEach((o, i) => {
+      pv.set(o.x + o.nx * (R + 28), o.y + o.ny * (R + 28), 0);
+      pq.setFromAxisAngle(new THREE.Vector3(0, 0, 1), Math.atan2(o.ny, o.nx));
+      pm.compose(pv, pq, ps);
+      postMesh.setMatrixAt(i, pm);
+    });
+    this.world.add(postMesh);
+    const railCol = (x, y, out) => out.setRGB(0.62, 0.65, 0.7);
+    const rail = buildShell(outline, [
+      { d: R + 10, z: H - R + 20, color: railCol, alpha: 1 },
+      { d: R + 60, z: H - R + 20, color: railCol, alpha: 1 },
+      { d: R + 60, z: H - R + 80, color: railCol, alpha: 1 },
+      { d: R + 10, z: H - R + 80, color: railCol, alpha: 1 },
+    ]);
+    this.world.add(new THREE.Mesh(rail, new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide })));
 
     // Ceiling cap.
     const ceilShape = new THREE.Shape(INSET.map(([x, y]) => new THREE.Vector2(x, y)));
@@ -261,7 +218,7 @@ export class GameScene {
     const cuv = ceilGeo.attributes.uv;
     for (let i = 0; i < cuv.count; i++) cuv.setXY(i, cuv.getX(i) / 380, cuv.getY(i) / 380);
     const ceil = new THREE.Mesh(ceilGeo, new THREE.MeshBasicMaterial({
-      map: mat.map, color: 0x2a3456, transparent: true, opacity: 0.4, depthWrite: false, side: THREE.DoubleSide,
+      map: mat.map, color: 0xdfe9ff, transparent: true, opacity: 0.08, depthWrite: false, side: THREE.DoubleSide,
     }));
     ceil.position.z = H;
     ceil.renderOrder = 1;
@@ -284,7 +241,7 @@ export class GameScene {
     this.world.add(floor);
 
     // Ground beneath the ramps so the transparent shell never shows the void.
-    const under = new THREE.Mesh(new THREE.PlaneGeometry(2 * W + 200, 2 * L + 200), new THREE.MeshBasicMaterial({ color: 0x0d1a12 }));
+    const under = new THREE.Mesh(new THREE.PlaneGeometry(2 * W + 200, 2 * L + 200), new THREE.MeshBasicMaterial({ color: 0x3d6b30 }));
     under.position.z = -2;
     this.world.add(under);
   }
@@ -364,17 +321,16 @@ export class GameScene {
       this.world.add(g);
       this.padMeshes.push({ big: true, orb, glow, ringMat });
     }
-    for (const [x, y] of SMALL_PADS) {
-      const g = new THREE.Group();
-      g.position.set(x, y, 0);
-      g.add(new THREE.Mesh(smallBaseGeo, baseMat));
-      const discMat = new THREE.MeshBasicMaterial({ color: 0xffb13a });
-      const disc = new THREE.Mesh(discGeo, discMat);
-      disc.position.z = 1.5;
-      g.add(disc);
-      this.world.add(g);
-      this.padMeshes.push({ big: false, discMat });
-    }
+    const smallBases = new THREE.InstancedMesh(smallBaseGeo, baseMat, SMALL_PADS.length);
+    this.smallDiscs = new THREE.InstancedMesh(discGeo, new THREE.MeshBasicMaterial({ color: 0xffffff }), SMALL_PADS.length);
+    const m = new THREE.Matrix4();
+    SMALL_PADS.forEach(([x, y], i) => {
+      smallBases.setMatrixAt(i, m.makeTranslation(x, y, 0));
+      this.smallDiscs.setMatrixAt(i, m.makeTranslation(x, y, 1.5));
+      this.smallDiscs.setColorAt(i, new THREE.Color(0xffb13a));
+      this.padMeshes.push({ big: false, index: i, active: true });
+    });
+    this.world.add(smallBases, this.smallDiscs);
   }
 
   buildBall() {
@@ -403,8 +359,23 @@ export class GameScene {
     this.world.add(this.carShadow);
   }
 
+  // Swap in a player-supplied model (already fitted), or null for the built-in one.
+  setCustomCar(obj) {
+    if (this.customCar) this.car.remove(this.customCar);
+    this.customCar = obj;
+    for (const c of this.car.children) if (c !== this.carParts.flame) c.visible = !obj;
+    if (obj) { obj.traverse(o => { if (o.isMesh) o.frustumCulled = false; }); this.car.add(obj); }
+  }
+
+  setCustomBall(obj) {
+    if (this.customBall) this.ball.remove(this.customBall);
+    this.customBall = obj;
+    this.ball.material.visible = !obj;
+    if (obj) this.ball.add(obj);
+  }
+
   setQuality(q) {
-    this.particles.quality = q === 'low' ? 0.4 : 1;
+    this.particles.quality = this.smoke.quality = q === 'low' ? 0.4 : 1;
   }
 
   resize(w, h, pixelRatio) {
@@ -412,7 +383,7 @@ export class GameScene {
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
-    this.particles.material.uniforms.scale.value = h * pixelRatio * 0.5 / Math.tan(THREE.MathUtils.degToRad(this.camera.fov) / 2);
+    this.particles.material.uniforms.scale.value = this.smoke.material.uniforms.scale.value = h * pixelRatio * 0.5 / Math.tan(THREE.MathUtils.degToRad(this.camera.fov) / 2);
   }
 
   setCamera(pos, look, up, vfov) {
@@ -424,7 +395,7 @@ export class GameScene {
       c.fov = vfov;
       c.updateProjectionMatrix();
       const h = this.renderer.domElement.height;
-      this.particles.material.uniforms.scale.value = h * 0.5 / Math.tan(THREE.MathUtils.degToRad(vfov) / 2);
+      this.particles.material.uniforms.scale.value = this.smoke.material.uniforms.scale.value = h * 0.5 / Math.tan(THREE.MathUtils.degToRad(vfov) / 2);
     }
     if (this.shake > 0.01) {
       c.position.x += (Math.random() - 0.5) * this.shake * 30;
@@ -485,10 +456,15 @@ export class GameScene {
         m.orb.visible = m.glow.visible = active;
         m.orb.position.z = m.glow.position.z = 100 + Math.sin(this.time * 2.4 + i) * 8;
         m.ringMat.color.setHex(active ? 0xffa630 : 0x3a3326);
-      } else m.discMat.color.setHex(active ? 0xffb13a : 0x5a5850);
+      } else if (m.active !== active) {
+        m.active = active;
+        this.smallDiscs.setColorAt(m.index, this.tmpColor.setHex(active ? 0xffb13a : 0x5a5850));
+        this.smallDiscs.instanceColor.needsUpdate = true;
+      }
     }
 
     this.particles.update(dt);
+    this.smoke.update(dt);
   }
 
   render() {

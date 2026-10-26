@@ -1,6 +1,6 @@
 // HUD, pause menu and settings screens. Fully navigable with a controller:
 // D-pad / left stick to move, ✕ to select, ○ to go back, L1/R1 to switch tabs.
-import { saveSettings, resetSection, BINDING_LABELS, DEFAULT_BINDINGS } from './settings.js';
+import { saveSettings, resetSection, BINDING_LABELS, DEFAULT_BINDINGS, TRAINING_ACTIONS } from './settings.js';
 import { describeBinding } from './input.js';
 import { SPAWNS } from './constants.js';
 
@@ -43,6 +43,15 @@ const TABS = [
   },
   { id: 'bindings', label: 'Bindings', items: 'bindings' },
   {
+    id: 'models', label: 'Models', items: [
+      [null, 'file:car', 'Car Model (.glb)', 'file'],
+      ['models', 'carYaw', 'Car Model Facing', 'choice', { values: [0, 90, 180, 270], labels: ['0°', '90°', '180°', '270°'] }],
+      [null, 'clear:car', 'Use Built-in Car', 'action'],
+      [null, 'file:ball', 'Ball Model (.glb)', 'file'],
+      [null, 'clear:ball', 'Use Built-in Ball', 'action'],
+    ],
+  },
+  {
     id: 'video', label: 'Video', items: [
       ['video', 'renderScale', 'Render Quality', 'choice', {
         values: ['auto', 0.75, 1, 1.5, 2, 'native'], labels: ['Auto (holds FPS)', 'Performance', 'Balanced', 'High', 'Very High', 'Native'],
@@ -64,6 +73,7 @@ const TABS = [
       ['training', 'unlimitedBoost', 'Unlimited Boost', 'toggle'],
       ['training', 'gameSpeed', 'Game Speed', 'range', { min: 0.25, max: 1, step: 0.05 }],
       ['training', 'showSpeed', 'Show Car Speed', 'toggle'],
+      ['training', 'showTools', 'Show Training Tools', 'toggle'],
       ['training', 'spawn', 'Spawn Location', 'choice', {
         values: SPAWNS.map((_, i) => i), labels: ['Goal (back)', 'Kickoff left', 'Kickoff right', 'Back left', 'Back right'],
       }],
@@ -244,6 +254,27 @@ export class UI {
         row.activate = () => this.startCapture(action);
         btn.addEventListener('click', () => row.activate());
         ctl.append(btn, clear);
+      } else if (type === 'file') {
+        const kind = key.slice(5);
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.glb,.gltf,model/gltf-binary';
+        input.hidden = true;
+        input.id = `file-${kind}`;
+        const btn = document.createElement('button');
+        btn.className = 'action';
+        btn.textContent = 'Choose file';
+        input.addEventListener('change', () => { if (input.files[0]) this.hooks.loadModel(kind, input.files[0]); input.value = ''; });
+        row.activate = () => input.click();
+        btn.addEventListener('click', () => input.click());
+        ctl.append(input, btn);
+      } else if (type === 'action' && key.startsWith('clear:')) {
+        const btn = document.createElement('button');
+        btn.className = 'action';
+        btn.textContent = 'Use built-in';
+        row.activate = () => this.hooks.clearModel(key.slice(6));
+        btn.addEventListener('click', () => row.activate());
+        ctl.appendChild(btn);
       } else if (type === 'action') {
         const btn = document.createElement('button');
         btn.className = 'action';
@@ -284,6 +315,7 @@ export class UI {
       if (b) {
         this.s.controls.bindings[action] = b;
         saveSettings(this.s);
+        this.renderTools();
         this.toast(`${BINDING_LABELS[action]}: ${describeBinding(b)}`);
       }
       this.renderPanel();
@@ -367,6 +399,22 @@ export class UI {
     };
     draw(55, 'RAW', raw[0], raw[1], this.s.controls.deadzone);
     draw(165, 'IN GAME', processed[0], processed[1], 0);
+  }
+
+  renderTools() {
+    const el = document.getElementById('tools');
+    if (!el) return;
+    el.hidden = !this.s.training.showTools;
+    el.innerHTML = '';
+    for (const a of TRAINING_ACTIONS) {
+      const row = document.createElement('div');
+      const name = document.createElement('span');
+      name.textContent = BINDING_LABELS[a];
+      const key = document.createElement('b');
+      key.textContent = describeBinding(this.s.controls.bindings[a]);
+      row.append(name, key);
+      el.appendChild(row);
+    }
   }
 
   // ---------- HUD ----------

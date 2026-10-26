@@ -58,6 +58,29 @@ export function fieldTexture() {
   half(0, -FIELD_YM, 'rgba(40,110,255,A)');
   half(0, FIELD_YM, 'rgba(255,120,30,A)');
 
+  // Team chevrons painted across each end of the field, pointing at midfield.
+  for (const s of [-1, 1]) {
+    const col = s > 0 ? 'rgba(255,96,24,0.5)' : 'rgba(40,110,255,0.3)';
+    g.save();
+    g.beginPath();
+    g.rect(0, Math.min(py(s * 3100), py(s * ARENA.L)), W, Math.abs(py(s * ARENA.L) - py(s * 3100)));
+    g.clip();
+    g.fillStyle = col;
+    const band = 150, gap = 380, slope = 0.42;
+    for (let y0 = 3100 - 3000; y0 < ARENA.L + 200; y0 += gap) {
+      g.beginPath();
+      g.moveTo(px(-ARENA.W), py(s * (y0 + ARENA.W * slope)));
+      g.lineTo(px(0), py(s * y0));
+      g.lineTo(px(ARENA.W), py(s * (y0 + ARENA.W * slope)));
+      g.lineTo(px(ARENA.W), py(s * (y0 + ARENA.W * slope + band)));
+      g.lineTo(px(0), py(s * (y0 + band)));
+      g.lineTo(px(-ARENA.W), py(s * (y0 + ARENA.W * slope + band)));
+      g.closePath();
+      g.fill();
+    }
+    g.restore();
+  }
+
   const lw = 34 * sx;
   g.lineWidth = lw;
   g.lineJoin = 'round';
@@ -244,5 +267,207 @@ export function radialTexture(inner = 'rgba(0,0,0,0.65)', outer = 'rgba(0,0,0,0)
   grad.addColorStop(1, outer);
   g.fillStyle = grad;
   g.fillRect(0, 0, 128, 128);
+  return tex(c);
+}
+
+// ---------- Daytime stadium scenery ----------
+function prng(seed) {
+  let s = seed;
+  return () => ((s = (s * 16807) % 2147483647) / 2147483647);
+}
+
+export function skyTexture() {
+  const W = 2048, H = 1024;
+  const c = canvas(W, H);
+  const g = c.getContext('2d');
+  const grad = g.createLinearGradient(0, 0, 0, H / 2);
+  grad.addColorStop(0, '#2f6fd6');
+  grad.addColorStop(0.6, '#79aee9');
+  grad.addColorStop(1, '#d8e8f5');
+  g.fillStyle = grad;
+  g.fillRect(0, 0, W, H / 2);
+  g.fillStyle = '#c9d7c0';
+  g.fillRect(0, H / 2, W, H / 2);
+  // Soft cumulus clouds.
+  const rnd = prng(4242);
+  for (let i = 0; i < 70; i++) {
+    const cx = rnd() * W, cy = 120 + rnd() * 300, s = 30 + rnd() * 70;
+    for (let k = 0; k < 9; k++) {
+      const x = cx + (rnd() - 0.5) * s * 3, y = cy + (rnd() - 0.5) * s * 0.7, r = s * (0.5 + rnd() * 0.7);
+      const cg = g.createRadialGradient(x, y, 0, x, y, r);
+      cg.addColorStop(0, 'rgba(255,255,255,0.55)');
+      cg.addColorStop(1, 'rgba(255,255,255,0)');
+      g.fillStyle = cg;
+      g.fillRect(x - r, y - r, 2 * r, 2 * r);
+    }
+  }
+  const t = tex(c);
+  t.mapping = THREE.EquirectangularReflectionMapping;
+  return t;
+}
+
+export function mountainTexture() {
+  const W = 2048, H = 512;
+  const c = canvas(W, H);
+  const g = c.getContext('2d');
+  const rnd = prng(77);
+  const ridge = (base, amp, rough, color, snow) => {
+    const pts = [];
+    let y = base;
+    for (let x = 0; x <= W; x += 8) {
+      const peak = Math.sin(x / W * Math.PI * 2 * 3) * amp * 0.5 + Math.sin(x / W * Math.PI * 2 * 7 + 1) * amp * 0.3;
+      y += (rnd() - 0.5) * rough;
+      y = y * 0.92 + base * 0.08;
+      pts.push([x, base - amp * 0.5 - peak + (y - base)]);
+    }
+    g.beginPath();
+    g.moveTo(0, H);
+    for (const [x, yy] of pts) g.lineTo(x, yy);
+    g.lineTo(W, H);
+    g.closePath();
+    g.fillStyle = color;
+    g.fill();
+    if (snow) {
+      g.save();
+      g.clip();
+      const sg = g.createLinearGradient(0, base - amp * 1.2, 0, base - amp * 0.35);
+      sg.addColorStop(0, 'rgba(250,252,255,0.95)');
+      sg.addColorStop(1, 'rgba(250,252,255,0)');
+      g.fillStyle = sg;
+      g.fillRect(0, 0, W, H);
+      g.restore();
+    }
+  };
+  ridge(300, 260, 26, '#8ea3bd', true);
+  ridge(380, 120, 14, '#6f8a74', false);
+  ridge(440, 50, 8, '#5d7a4c', false);
+  const t = tex(c);
+  t.wrapS = THREE.RepeatWrapping;
+  return t;
+}
+
+export function cityTexture() {
+  const W = 2048, H = 512;
+  const c = canvas(W, H);
+  const g = c.getContext('2d');
+  const rnd = prng(9001);
+  let x = 0;
+  while (x < W) {
+    const w = 30 + rnd() * 70;
+    const h = 80 + Math.pow(rnd(), 2.2) * 400;
+    const tone = 150 + rnd() * 60;
+    g.fillStyle = `rgb(${tone * 0.78},${tone * 0.86},${tone})`;
+    g.fillRect(x, H - h, w, h);
+    g.fillStyle = 'rgba(255,255,255,0.18)';
+    for (let wy = H - h + 8; wy < H - 6; wy += 10) for (let wx = x + 4; wx < x + w - 4; wx += 8) if (rnd() > 0.35) g.fillRect(wx, wy, 4, 5);
+    if (h > 330) { g.fillStyle = `rgb(${tone * 0.7},${tone * 0.78},${tone * 0.9})`; g.fillRect(x + w / 2 - 3, H - h - 60, 6, 60); }
+    x += w + rnd() * 18;
+  }
+  const t = tex(c);
+  t.wrapS = THREE.RepeatWrapping;
+  return t;
+}
+
+export function treeTexture() {
+  const W = 128, H = 320;
+  const c = canvas(W, H);
+  const g = c.getContext('2d');
+  g.fillStyle = '#5b4632';
+  g.fillRect(W / 2 - 4, H - 50, 8, 50);
+  const rnd = prng(5);
+  for (let i = 0; i < 420; i++) {
+    const t = rnd();
+    const y = 18 + t * (H - 70);
+    const half = Math.sin(Math.min(1, t * 1.15) * Math.PI) * 44 + 6;
+    const x = W / 2 + (rnd() - 0.5) * 2 * half;
+    const hue = 55 + rnd() * 45, l = 32 + rnd() * 22;
+    g.fillStyle = `hsl(${hue}, 60%, ${l}%)`;
+    g.beginPath();
+    g.ellipse(x, y, 7 + rnd() * 6, 10 + rnd() * 8, 0, 0, Math.PI * 2);
+    g.fill();
+  }
+  return tex(c);
+}
+
+export function grassTexture() {
+  const c = canvas(256, 256);
+  const g = c.getContext('2d');
+  g.fillStyle = '#6f8a3c';
+  g.fillRect(0, 0, 256, 256);
+  const rnd = prng(31);
+  for (let i = 0; i < 5000; i++) {
+    g.fillStyle = `hsl(${70 + rnd() * 30}, 45%, ${28 + rnd() * 20}%)`;
+    g.fillRect(rnd() * 256, rnd() * 256, 2, 3);
+  }
+  const t = tex(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  return t;
+}
+
+export function boardTexture() {
+  const W = 1024, H = 128;
+  const c = canvas(W, H);
+  const g = c.getContext('2d');
+  g.fillStyle = '#1b1f27';
+  g.fillRect(0, 0, W, H);
+  g.fillStyle = '#2a303b';
+  g.fillRect(0, 14, W, H - 28);
+  g.fillStyle = '#ffffff';
+  g.fillRect(0, 10, W, 4);
+  g.fillRect(0, H - 14, W, 4);
+  g.font = 'italic 900 64px "Exo 2", Arial, sans-serif';
+  g.textBaseline = 'middle';
+  g.fillStyle = '#e9edf5';
+  g.fillText('BOOST ARENA', 40, H / 2 + 2);
+  g.fillStyle = 'rgba(255,255,255,0.12)';
+  for (let x = 520; x < W; x += 40) g.fillRect(x, 24, 22, H - 48);
+  const t = tex(c);
+  t.wrapS = THREE.RepeatWrapping;
+  return t;
+}
+
+export function lightPanelTexture() {
+  const c = canvas(256, 128);
+  const g = c.getContext('2d');
+  g.fillStyle = '#3a3f48';
+  g.fillRect(0, 0, 256, 128);
+  for (let y = 0; y < 3; y++) for (let x = 0; x < 6; x++) {
+    const cx = 22 + x * 42, cy = 24 + y * 40;
+    const rg = g.createRadialGradient(cx, cy, 0, cx, cy, 18);
+    rg.addColorStop(0, '#ffffff');
+    rg.addColorStop(0.6, '#fff6dc');
+    rg.addColorStop(1, '#8a8f99');
+    g.fillStyle = rg;
+    g.beginPath(); g.arc(cx, cy, 16, 0, Math.PI * 2); g.fill();
+  }
+  return tex(c);
+}
+
+export function bannerTexture(team) {
+  const c = canvas(128, 512);
+  const g = c.getContext('2d');
+  const base = team === 'blue' ? ['#2b6dff', '#1747b8'] : ['#ff6a1a', '#c2410c'];
+  const grad = g.createLinearGradient(0, 0, 0, 512);
+  grad.addColorStop(0, base[0]); grad.addColorStop(1, base[1]);
+  g.fillStyle = grad;
+  g.fillRect(0, 0, 128, 512);
+  g.strokeStyle = 'rgba(255,255,255,0.9)';
+  g.lineWidth = 6;
+  g.strokeRect(10, 10, 108, 492);
+  g.fillStyle = '#ffffff';
+  g.beginPath();
+  g.moveTo(64, 70); g.lineTo(104, 110); g.lineTo(64, 190); g.lineTo(24, 110); g.closePath();
+  g.fill();
+  g.fillStyle = base[1];
+  g.beginPath(); g.arc(64, 118, 22, 0, Math.PI * 2); g.fill();
+  g.save();
+  g.translate(64, 340);
+  g.rotate(-Math.PI / 2);
+  g.font = 'italic 900 34px "Exo 2", Arial, sans-serif';
+  g.textAlign = 'center';
+  g.textBaseline = 'middle';
+  g.fillStyle = '#ffffff';
+  g.fillText('BOOST ARENA', 0, 0);
+  g.restore();
   return tex(c);
 }

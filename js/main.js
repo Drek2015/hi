@@ -7,7 +7,8 @@ import { Input, TouchControls } from './input.js';
 import { Sound } from './audio.js';
 import { UI } from './ui.js';
 import { loadSettings, saveSettings } from './settings.js';
-import { SPAWNS } from './constants.js';
+import { SPAWNS, BALL } from './constants.js';
+import { parseGlb, fitCar, fitBall, saveModel, loadSavedModel } from './models.js';
 
 const settings = loadSettings();
 const canvas = document.getElementById('game');
@@ -44,7 +45,35 @@ const ui = new UI(settings, input, {
   resetAll: () => { world.resetAll(); world.score.blue = world.score.orange = 0; clock = 0; snapshot(); rig.snap(); },
   settingsChanged: applySettings,
   fullscreen: goFullscreen,
+  loadModel: async (kind, file) => {
+    try {
+      const buf = await file.arrayBuffer();
+      await applyModel(kind, buf);
+      await saveModel(kind, buf);
+      ui.toast(`${kind === 'car' ? 'Car' : 'Ball'} model loaded`);
+    } catch (e) {
+      ui.toast('That file could not be loaded. Use a .glb model.');
+    }
+  },
+  clearModel: async kind => {
+    models[kind] = null;
+    if (kind === 'car') gfx.setCustomCar(null); else gfx.setCustomBall(null);
+    await saveModel(kind, null);
+    ui.toast(`Using the built-in ${kind}`);
+  },
 });
+
+// Player-supplied models.
+const models = { car: null, ball: null, carYaw: 0 };
+async function applyModel(kind, buf) {
+  const obj = await parseGlb(buf.slice(0));
+  models[kind] = buf;
+  if (kind === 'car') { models.carYaw = settings.models.carYaw; gfx.setCustomCar(fitCar(obj, settings.models.carYaw)); }
+  else gfx.setCustomBall(fitBall(obj, BALL.R));
+}
+for (const kind of ['car', 'ball']) {
+  loadSavedModel(kind).then(buf => { if (buf) applyModel(kind, buf).catch(() => {}); });
+}
 input.onPad = (on, id) => { ui.setPadStatus(on, id); updateTouchVisibility(); };
 ui.setPadStatus(false, '');
 
@@ -56,6 +85,8 @@ function applySettings() {
   sound.applyVolume();
   resolution.reset();
   resize();
+  ui.renderTools();
+  if (models.car && models.carYaw !== settings.models.carYaw) applyModel('car', models.car).catch(() => {});
 }
 
 function updateTouchVisibility() {
@@ -201,6 +232,15 @@ function emitTrails(dt) {
         -car.fwd.z * s + car.vel.z * 0.85 + (Math.random() - 0.5) * 60,
         0.22 + Math.random() * 0.12, 70, 26, [1, 0.55, 0.16, 0.85], [0.6, 0.12, 0.04, 0], 5, 60);
     }
+    // Smoke puffs left hanging in the air behind the car.
+    const S = gfx.smoke;
+    const puffs = Math.max(1, Math.round(dt * 70));
+    for (let i = 0; i < puffs; i++) {
+      tmpV.set(-80 - Math.random() * 40, (Math.random() - 0.5) * 14, 11 + (Math.random() - 0.5) * 10).applyQuaternion(view.car.quat).add(view.car.pos);
+      S.emit(tmpV.x, tmpV.y, tmpV.z,
+        car.vel.x * 0.12 + (Math.random() - 0.5) * 70, car.vel.y * 0.12 + (Math.random() - 0.5) * 70, car.vel.z * 0.12 + 40 + Math.random() * 40,
+        0.75 + Math.random() * 0.35, 60, 170, [0.93, 0.9, 0.86, 0.5], [0.78, 0.78, 0.8, 0], 1.5, 0);
+    }
   }
   if (car.supersonic) {
     for (const side of [-1, 1]) {
@@ -239,7 +279,12 @@ function frame(now) {
     else if (ui.screen === 'settings') ui.back();
     else togglePause();
   } else if (ui.menuOpen) ui.handleNav(nav);
-  if (!ui.menuOpen && input.takeEdge('reset')) { world.resetAll(); snapshot(); rig.snap(); }
+  if (!ui.menuOpen && playing) {
+    if (input.takeEdge('reset')) { world.resetAll(); snapshot(); rig.snap(); }
+    for (const a of ['takePossession', 'startDribble', 'passBall', 'launchBall', 'defendShot']) {
+      if (input.takeEdge(a)) { world.training(a); snapshot(); }
+    }
+  }
   input.clearEdges();
 
   if (ui.screen === 'settings') {

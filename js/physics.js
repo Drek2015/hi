@@ -477,6 +477,63 @@ export class World {
 
   resetBall() { this.ball.reset(); }
 
+  // Keep a spawn point inside the playable space.
+  clampInside(p, margin) {
+    for (let i = 0; i < 4; i++) {
+      const d = dist(p.x, p.y, p.z);
+      if (d >= margin) return p;
+      normal(p.x, p.y, p.z, tN);
+      p.addScaledVector(tN, margin - d);
+    }
+    return p;
+  }
+
+  // Free play training tools (like the community training plugins).
+  training(action) {
+    const car = this.car, ball = this.ball;
+    ball.reset();
+    const f = tA.set(car.fwd.x, car.fwd.y, 0);
+    if (f.lengthSq() < 1e-4) f.set(0, 1, 0);
+    f.normalize();
+    switch (action) {
+      case 'takePossession':
+        ball.pos.copy(car.pos).addScaledVector(car.up, BALL.R + 54).addScaledVector(car.fwd, 8);
+        ball.vel.copy(car.vel);
+        break;
+      case 'startDribble':
+        ball.pos.copy(car.pos).addScaledVector(f, 260).setZ(BALL.R + 2);
+        this.clampInside(ball.pos, BALL.R + 2);
+        ball.vel.copy(f).multiplyScalar(Math.max(500, car.vel.dot(f) + 150));
+        break;
+      case 'passBall': {
+        const side = Math.random() < 0.5 ? -1 : 1;
+        const from = tB.copy(car.pos).addScaledVector(f, 2000).add(tC.set(f.y, -f.x, 0).multiplyScalar(side * 1400));
+        from.z = BALL.R + 10;
+        this.clampInside(from, BALL.R + 50);
+        const target = tC.copy(car.pos).addScaledVector(car.vel, 1.1).addScaledVector(f, 400);
+        ball.pos.copy(from);
+        ball.vel.copy(target).sub(from).setZ(0).normalize().multiplyScalar(1500);
+        ball.vel.z = 250;
+        break;
+      }
+      case 'launchBall':
+        ball.pos.copy(car.pos).addScaledVector(f, 1500).setZ(200);
+        this.clampInside(ball.pos, BALL.R + 300);
+        ball.vel.set(0, 0, 1550).addScaledVector(f, -120);
+        break;
+      case 'defendShot': {
+        const x = (Math.random() - 0.5) * 3000;
+        ball.pos.set(x, -400, 300);
+        const tx = (Math.random() - 0.5) * (GOAL.W * 1.6);
+        ball.vel.set(tx - x, -ARENA.L - 400, 0).normalize().multiplyScalar(2600);
+        ball.vel.z = 450 + Math.random() * 500;
+        break;
+      }
+      default: break;
+    }
+    this.events.push({ type: 'ballspawn' });
+  }
+
   step(inp) {
     const events = this.events;
     this.tick++;

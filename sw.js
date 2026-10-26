@@ -1,9 +1,9 @@
 // Cache-first offline support for the game shell.
-const CACHE = 'boost-arena-v1';
+const CACHE = 'boost-arena-v2';
 const ASSETS = [
-  './', 'index.html', 'manifest.webmanifest', 'icon.svg', 'vendor/three.module.min.js',
+  './', 'index.html', 'manifest.webmanifest', 'icon.svg', 'vendor/three.module.min.js', 'vendor/GLTFLoader.js', 'vendor/BufferGeometryUtils.js',
   'js/main.js', 'js/constants.js', 'js/arena.js', 'js/physics.js', 'js/scene.js', 'js/carModel.js',
-  'js/textures.js', 'js/effects.js', 'js/camera.js', 'js/input.js', 'js/audio.js', 'js/ui.js', 'js/settings.js',
+  'js/textures.js', 'js/effects.js', 'js/camera.js', 'js/input.js', 'js/audio.js', 'js/ui.js', 'js/settings.js', 'js/environment.js', 'js/models.js',
 ];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));

@@ -21,9 +21,13 @@ For 120 fps, set **Settings → Display → Motion smoothness** to *Adaptive* an
 | Jump, double jump, dodge | ✕ |
 | Boost | ○ |
 | Powerslide / Air roll | □ |
+| Air roll left / right (directional) | L1 / R1 |
 | Ball cam (toggle) | △ |
 | Look around | Right stick |
 | Reset shot | Create |
+| Take Possession / Start Dribble | D-pad ↓ / ↑ |
+| Pass Ball / Launch Ball | D-pad ← / → |
+| Defend Shot | R3 |
 | Pause | Options |
 
 You can rebind everything under **Settings → Bindings**, including Air Roll Left/Right. Menus work with the controller: D-pad or left stick to move, ✕ to select, ○ to go back, L1/R1 to switch tabs.
@@ -33,7 +37,8 @@ You can rebind everything under **Settings → Bindings**, including Air Roll Le
 - **Camera:** FOV, distance, height, angle, stiffness, swivel speed, transition speed, ball cam toggle or hold, invert swivel, camera shake. The defaults match Rocket League's (110 / 270 / 100 / −4 / 0.45 / 5 / 1.2).
 - **Controller:** deadzone shape (cross or circle), controller deadzone, dodge deadzone, steering sensitivity, aerial sensitivity, vibration, and a live stick preview that shows raw versus in-game input.
 - **Video:** render quality, including an *Auto* mode that lowers resolution to hold the frame rate; frame rate limit; particle detail; FPS counter.
-- **Free Play:** unlimited boost, game speed (slow motion), speedometer, spawn location.
+- **Free Play:** unlimited boost, game speed (slow motion), speedometer, training tools list, spawn location.
+- **Models:** load your own car or ball as a `.glb` file (one you have the rights to use). It is scaled to the Octane hitbox or the ball size automatically and saved on the device. *Car Model Facing* rotates it if it loads sideways.
 
 ## Development
 
@@ -56,6 +61,7 @@ node tests/physics.test.mjs
 | `js/physics.js` | Car, ball and boost pads, stepped at 120 Hz |
 | `js/camera.js` | Chase camera, ball cam, swivel |
 | `js/input.js` | Gamepad, keyboard and touch input, deadzones, rebinding |
-| `js/scene.js`, `js/carModel.js`, `js/textures.js`, `js/effects.js` | Rendering |
+| `js/scene.js`, `js/carModel.js`, `js/textures.js`, `js/effects.js`, `js/environment.js` | Rendering: arena, Octane-style car, daytime stadium, boost and smoke |
+| `js/models.js` | Custom `.glb` car and ball models |
 | `js/ui.js`, `js/settings.js` | HUD, menus, saved settings |
 | `js/audio.js` | Synthesized sound |

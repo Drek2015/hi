@@ -62,6 +62,8 @@ export class Input {
         if (navMap[e.code]) this.nav.events.push(navMap[e.code]);
         if (e.code === 'Escape') this.edges.add('menu');
         if (e.code === 'KeyR') this.edges.add('reset');
+        const tools = { Digit1: 'takePossession', Digit2: 'startDribble', Digit3: 'passBall', Digit4: 'launchBall', Digit5: 'defendShot' };
+        if (tools[e.code]) this.edges.add(tools[e.code]);
       }
     });
     addEventListener('keyup', e => this.keys.delete(e.code));
