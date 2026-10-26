@@ -467,6 +467,45 @@ export class World {
     this.events = [];
     this.opt = { unlimitedBoost: false, dodgeDeadzone: 0.5 };
     this.spawnIndex = 0;
+    this.prevCarPos = new Vector3(); this.prevCarQuat = new Quaternion(); this.prevBallPos = new Vector3();
+    this._cp = new Vector3(); this._cq = new Quaternion(); this._bp = new Vector3();
+    this._endPos = new Vector3(); this._endQuat = new Quaternion();
+  }
+
+  // Distance from the ball centre to the car hitbox for a given car pose (0 when inside).
+  hitboxDistance(carPos, carQuat, ballPos) {
+    tQ2.copy(carQuat).invert();
+    const l = tD.copy(ballPos).sub(carPos).applyQuaternion(tQ2).sub(HB_OFF);
+    const dx = Math.max(Math.abs(l.x) - HB_HALF.x, 0), dy = Math.max(Math.abs(l.y) - HB_HALF.y, 0), dz = Math.max(Math.abs(l.z) - HB_HALF.z, 0);
+    return Math.hypot(dx, dy, dz);
+  }
+
+  // Continuous car-ball collision: sub-sample the tick so fast relative motion
+  // (flips, 6000 uu/s shots) can never carry the ball through the hitbox.
+  sweepCarBall(events) {
+    const car = this.car, ball = this.ball;
+    const rel = this._bp.copy(ball.pos).sub(this.prevBallPos).sub(this._cp.copy(car.pos).sub(this.prevCarPos)).length();
+    const spin = car.ang.length() * 75 * TICK;
+    const n = Math.min(16, Math.max(1, Math.ceil((rel + spin) / 20)));
+    if (n > 1) {
+      for (let i = 1; i < n; i++) {
+        const f = i / n;
+        const cp = this._cp.copy(this.prevCarPos).lerp(car.pos, f);
+        const cq = this._cq.copy(this.prevCarQuat).slerp(car.quat, f);
+        const bp = this._bp.copy(this.prevBallPos).lerp(ball.pos, f);
+        if (this.hitboxDistance(cp, cq, bp) < BALL.R) {
+          // Resolve at the moment of contact, then let the ball finish the tick.
+          const endPos = this._endPos.copy(car.pos), endQuat = this._endQuat.copy(car.quat);
+          car.pos.copy(cp); car.quat.copy(cq); car.updateAxes();
+          ball.pos.copy(bp);
+          this.collideCarBall(events);
+          car.pos.copy(endPos); car.quat.copy(endQuat); car.updateAxes();
+          ball.pos.addScaledVector(ball.vel, (1 - f) * TICK);
+          break;
+        }
+      }
+    }
+    this.collideCarBall(events);
   }
 
   resetAll() {
@@ -537,9 +576,11 @@ export class World {
   step(inp) {
     const events = this.events;
     this.tick++;
-    this.car.step(inp, this.opt, events);
-    this.ball.step(events);
-    if (!this.ball.exploded) this.collideCarBall(events);
+    const car = this.car, ball = this.ball;
+    this.prevCarPos.copy(car.pos); this.prevCarQuat.copy(car.quat); this.prevBallPos.copy(ball.pos);
+    car.step(inp, this.opt, events);
+    ball.step(events);
+    if (!ball.exploded) this.sweepCarBall(events);
     this.updatePads(events);
     this.checkGoal(events);
   }

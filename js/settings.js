@@ -1,12 +1,12 @@
 // User settings with Rocket League's default values. Saved per device.
-const KEY = 'boost-arena-settings-v2';
+const KEY = 'boost-arena-settings-v3';
 
 export const DEFAULT_BINDINGS = {
   throttle: { type: 'button', index: 7 },
   reverse: { type: 'button', index: 6 },
   jump: { type: 'button', index: 0 },
   boost: { type: 'button', index: 1 },
-  powerslide: { type: 'button', index: 2 },
+  powerslide: { type: 'button', index: 4 },
   airRoll: { type: 'button', index: 2 },
   airRollLeft: { type: 'button', index: 4 },
   airRollRight: { type: 'button', index: 5 },
@@ -84,6 +84,7 @@ export const DEFAULTS = {
     gameSpeed: 1,
     showSpeed: false,
     showTools: true,
+    showHitbox: false,
     spawn: 0,
   },
 };

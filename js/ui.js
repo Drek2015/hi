@@ -38,6 +38,7 @@ const TABS = [
       ['controls', 'vibration', 'Controller Vibration', 'toggle'],
       ['controls', 'touchAutoThrottle', 'Touch Auto-Throttle', 'toggle'],
       [null, 'deadzoneViz', 'Stick Preview', 'viz'],
+      [null, 'padTest', 'Controller Test', 'padtest'],
       [null, 'reset:controls', 'Reset Controller Defaults', 'action'],
     ],
   },
@@ -74,6 +75,7 @@ const TABS = [
       ['training', 'gameSpeed', 'Game Speed', 'range', { min: 0.25, max: 1, step: 0.05 }],
       ['training', 'showSpeed', 'Show Car Speed', 'toggle'],
       ['training', 'showTools', 'Show Training Tools', 'toggle'],
+      ['training', 'showHitbox', 'Show Car Hitbox', 'toggle'],
       ['training', 'spawn', 'Spawn Location', 'choice', {
         values: SPAWNS.map((_, i) => i), labels: ['Goal (back)', 'Kickoff left', 'Kickoff right', 'Back left', 'Back right'],
       }],
@@ -290,6 +292,13 @@ export class UI {
         };
         btn.addEventListener('click', () => row.activate());
         ctl.appendChild(btn);
+      } else if (type === 'padtest') {
+        const box = document.createElement('div');
+        box.className = 'padtest';
+        box.textContent = 'Press any button on your controller';
+        this.padTestEl = box;
+        ctl.appendChild(box);
+        row.classList.add('viz-row');
       } else if (type === 'viz') {
         const c = document.createElement('canvas');
         c.width = 220; c.height = 110;
@@ -373,6 +382,18 @@ export class UI {
     this.tab = (this.tab + d + TABS.length) % TABS.length;
     this.focus = 0;
     this.renderPanel();
+  }
+
+  // Live readout of what the controller reports, to verify the PS5 layout on this device.
+  drawPadTest(pad) {
+    const el = this.padTestEl;
+    if (!el || !el.isConnected) return;
+    if (!pad) { el.textContent = 'No controller detected'; return; }
+    const names = ['✕', '○', '□', '△', 'L1', 'R1', 'L2', 'R2', 'Create', 'Options', 'L3', 'R3', '↑', '↓', '←', '→', 'PS', 'Touchpad'];
+    const down = pad.buttons.map((b, i) => (b.pressed || b.value > 0.1) ? `${names[i] ?? 'B' + i}${b.value > 0 && b.value < 1 ? ' ' + b.value.toFixed(2) : ''}` : null).filter(Boolean);
+    const axes = pad.axes.map((a, i) => `A${i} ${a >= 0 ? ' ' : ''}${a.toFixed(2)}`).join('  ');
+    const warn = pad.mapping === 'standard' ? 'Standard layout ✓' : 'Non-standard layout: rebind under Bindings';
+    el.innerHTML = `<b>${pad.id.split('(')[0].trim()}</b> · ${warn}<br>Pressed: ${down.join(', ') || '—'}<br><span class="axes">${axes}</span>`;
   }
 
   drawStickViz(raw, processed) {

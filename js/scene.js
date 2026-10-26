@@ -363,7 +363,7 @@ export class GameScene {
   setCustomCar(obj) {
     if (this.customCar) this.car.remove(this.customCar);
     this.customCar = obj;
-    for (const c of this.car.children) if (c !== this.carParts.flame) c.visible = !obj;
+    for (const c of this.car.children) if (c !== this.carParts.flame && c !== this.carParts.hitbox) c.visible = !obj;
     if (obj) { obj.traverse(o => { if (o.isMesh) o.frustumCulled = false; }); this.car.add(obj); }
   }
 

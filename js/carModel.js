@@ -4,6 +4,11 @@
 // origin at the physics pivot (17 uu above the ground).
 import * as THREE from '../vendor/three.module.min.js';
 import { mergeGeometries } from '../vendor/BufferGeometryUtils.js';
+import { CAR } from './constants.js';
+
+const HB_HALF = CAR.HB_HALF, HB_OFF = CAR.HB_OFFSET;
+// The painted body is a little narrower than the hitbox; the fenders and tyres fill the rest.
+const BODY_HALF_W = 34;
 
 // stations: [x, zBottom, zTop, halfWidth, exponent]; colorFn(x, y, z, top) -> THREE.Color
 function loft(stations, segs, colorFn) {
@@ -55,6 +60,7 @@ export function buildCar(envMap, team = 'blue', glowTexture = null) {
   const black = new THREE.Color(0x121418);
   const glass = new THREE.Color(0x0d1626);
   const group = new THREE.Group();
+  const shell = new THREE.Group();
 
   const paintMat = new THREE.MeshStandardMaterial({ vertexColors: true, metalness: 0.35, roughness: 0.3, envMap, envMapIntensity: 0.75 });
   const darkMat = new THREE.MeshStandardMaterial({ color: 0x16181d, metalness: 0.3, roughness: 0.6, envMap, envMapIntensity: 0.4 });
@@ -82,7 +88,7 @@ export function buildCar(envMap, team = 'blue', glowTexture = null) {
     else if (z > 6 && z < 9.5 && Math.abs(y) > 25) c.copy(accent);  // side stripe
     else c.copy(paint);
   });
-  group.add(new THREE.Mesh(body, paintMat));
+  shell.add(new THREE.Mesh(body, paintMat));
 
   // Cabin: tall glasshouse with painted roof and pillars.
   const cabin = loft([
@@ -99,45 +105,45 @@ export function buildCar(envMap, team = 'blue', glowTexture = null) {
     else if (x < -42 || z < 27) c.copy(paint);    // rear pillar and sill
     else c.copy(glass);
   });
-  group.add(new THREE.Mesh(cabin, paintMat));
+  shell.add(new THREE.Mesh(cabin, paintMat));
 
   // Roof spoiler with side fins.
   const spoiler = new THREE.Mesh(new THREE.BoxGeometry(16, 56, 3), bodyMat);
   spoiler.position.set(-45, 0, 46);
   spoiler.rotation.y = -0.28;
-  group.add(spoiler);
+  shell.add(spoiler);
   for (const s of [-1, 1]) {
     const fin = new THREE.Mesh(new THREE.BoxGeometry(16, 3, 9), darkMat);
     fin.position.set(-42, s * 27, 42);
-    group.add(fin);
+    shell.add(fin);
     const head = new THREE.Mesh(new THREE.BoxGeometry(3, 12, 4), lightMat);
     head.position.set(66.3, s * 13, 7.5);
     head.rotation.z = s * 0.25;
-    group.add(head);
+    shell.add(head);
     const tail = new THREE.Mesh(new THREE.BoxGeometry(2.5, 10, 7), tailMat);
     tail.position.set(-61.2, s * 21, 15);
-    group.add(tail);
+    shell.add(tail);
     const vent = new THREE.Mesh(new THREE.BoxGeometry(18, 2, 6), darkMat);
     vent.position.set(10, s * 33.6, 16);
-    group.add(vent);
+    shell.add(vent);
   }
 
   // Front grille, bumper and rear diffuser.
   const grille = new THREE.Mesh(new THREE.BoxGeometry(6, 40, 7), darkMat);
   grille.position.set(66, 0, 2.5);
-  group.add(grille);
+  shell.add(grille);
   const diffuser = new THREE.Mesh(new THREE.BoxGeometry(8, 48, 10), darkMat);
   diffuser.position.set(-59, 0, 3);
-  group.add(diffuser);
+  shell.add(diffuser);
 
   // Exhaust and boost flame.
   const exhaust = new THREE.Mesh(new THREE.CylinderGeometry(6.5, 7.5, 10, 16, 1, true), darkMat);
   exhaust.rotation.z = Math.PI / 2;
   exhaust.position.set(-62, 0, 11);
-  group.add(exhaust);
+  shell.add(exhaust);
 
   const flame = new THREE.Group();
-  flame.position.set(-66, 0, 11);
+  flame.position.set(HB_OFF[0] - HB_HALF[0] - 2, 0, 12);
   const coneGeo = (r, h) => {
     const g = new THREE.ConeGeometry(r, h, 16, 1, true);
     g.translate(0, h / 2, 0);
@@ -162,6 +168,17 @@ export function buildCar(envMap, team = 'blue', glowTexture = null) {
   flame.visible = false;
   group.add(flame);
 
+  // Fit the body exactly to the Octane hitbox: nothing the ball can see sticks out
+  // past the box it actually collides with.
+  group.add(shell);
+  shell.updateMatrixWorld(true);
+  const raw = new THREE.Box3().setFromObject(shell);
+  const hbMin = new THREE.Vector3(HB_OFF[0] - HB_HALF[0], -BODY_HALF_W, HB_OFF[2] - HB_HALF[2]);
+  const hbMax = new THREE.Vector3(HB_OFF[0] + HB_HALF[0], BODY_HALF_W, HB_OFF[2] + HB_HALF[2]);
+  const rs = raw.getSize(new THREE.Vector3()), ts = hbMax.clone().sub(hbMin);
+  shell.scale.set(ts.x / rs.x, ts.y / rs.y, ts.z / rs.z);
+  shell.position.set(hbMin.x - raw.min.x * shell.scale.x, hbMin.y - raw.min.y * shell.scale.y, hbMin.z - raw.min.z * shell.scale.z);
+
   // Wheels with flared fender arches.
   const wheels = [];
   // Each wheel is three merged meshes (tyre, rim, spokes) to keep draw calls low.
@@ -182,10 +199,11 @@ export function buildCar(envMap, team = 'blue', glowTexture = null) {
     return g;
   };
   const wheelDefs = [
-    { x: 51, y: 38, z: -2.5, r: 14.5, w: 14, front: true },
-    { x: 51, y: -38, z: -2.5, r: 14.5, w: 14, front: true },
-    { x: -34, y: 39.5, z: -0.5, r: 16.5, w: 17, front: false },
-    { x: -34, y: -39.5, z: -0.5, r: 16.5, w: 17, front: false },
+    // Octane wheel stations and radii (front 12.5, rear 15); outer tyre faces flush with the hitbox side.
+    { x: 51.25, y: 34.6, z: 12.5 - 17, r: 12.5, w: 15, front: true },
+    { x: 51.25, y: -34.6, z: 12.5 - 17, r: 12.5, w: 15, front: true },
+    { x: -33.75, y: 33.6, z: 15 - 17, r: 15, w: 17, front: false },
+    { x: -33.75, y: -33.6, z: 15 - 17, r: 15, w: 17, front: false },
   ];
   for (const d of wheelDefs) {
     const steer = new THREE.Group();
@@ -195,15 +213,27 @@ export function buildCar(envMap, team = 'blue', glowTexture = null) {
     group.add(steer);
     wheels.push({ steer, spin, front: d.front, baseZ: d.z });
     // Fender: open arch shell plus a thick lip.
-    const arch = new THREE.Mesh(new THREE.CylinderGeometry(d.r + 5, d.r + 5, d.w + 6, 20, 1, true, -Math.PI / 2 - 0.35, Math.PI + 0.7), bodyMat);
-    arch.position.set(d.x, d.y > 0 ? d.y - 1 : d.y + 1, d.z);
+    // Arch spans from the body side to the hitbox edge, so it stays inside the hitbox.
+    const archW = 42.1 - (d.y > 0 ? d.y : -d.y) + d.w / 2 - 1;
+    const arch = new THREE.Mesh(new THREE.CylinderGeometry(d.r + 4.5, d.r + 4.5, archW, 20, 1, true, -Math.PI / 2 - 0.35, Math.PI + 0.7), bodyMat);
+    arch.position.set(d.x, Math.sign(d.y) * (42.1 - archW / 2), d.z);
     group.add(arch);
-    const lip = new THREE.Mesh(new THREE.TorusGeometry(d.r + 5, 2.4, 6, 20, Math.PI + 0.7), darkMat);
+    const lip = new THREE.Mesh(new THREE.TorusGeometry(d.r + 4.5, 1.8, 6, 20, Math.PI + 0.7), darkMat);
     lip.rotation.set(Math.PI / 2, 0, -0.35);
-    lip.position.set(d.x, d.y > 0 ? d.y + d.w / 2 + 2 : d.y - d.w / 2 - 2, d.z);
+    lip.position.set(d.x, Math.sign(d.y) * 40.3, d.z);
     group.add(lip);
   }
 
+  // Hitbox overlay (toggle in settings).
+  const hitbox = new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.BoxGeometry(HB_HALF[0] * 2, HB_HALF[1] * 2, HB_HALF[2] * 2)),
+    new THREE.LineBasicMaterial({ color: 0x39ff88, depthTest: false, transparent: true }),
+  );
+  hitbox.position.set(...HB_OFF);
+  hitbox.renderOrder = 20;
+  hitbox.visible = false;
+  group.add(hitbox);
+
   group.traverse(o => { if (o.isMesh) o.frustumCulled = false; });
-  return { group, wheels, flame, outerFlame, innerFlame, bodyMat };
+  return { group, wheels, flame, outerFlame, innerFlame, bodyMat, hitbox };
 }

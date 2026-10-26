@@ -82,6 +82,7 @@ function applySettings() {
   world.opt.dodgeDeadzone = settings.controls.dodgeDeadzone;
   if (world.spawnIndex !== settings.training.spawn) world.spawnIndex = settings.training.spawn;
   gfx.setQuality(settings.video.particles);
+  gfx.carParts.hitbox.visible = settings.training.showHitbox;
   sound.applyVolume();
   resolution.reset();
   resize();
@@ -304,6 +305,7 @@ function frame(now) {
       px = f(px); py = f(py);
     }
     ui.drawStickViz(vizRaw, [px, py]);
+    ui.drawPadTest(input.getPad());
   }
 
   if (!paused && playing) {

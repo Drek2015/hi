@@ -20,7 +20,8 @@ For 120 fps, set **Settings → Display → Motion smoothness** to *Adaptive* an
 | Throttle / Reverse | R2 / L2 |
 | Jump, double jump, dodge | ✕ |
 | Boost | ○ |
-| Powerslide / Air roll | □ |
+| Powerslide | L1 |
+| Air roll (free) | □ |
 | Air roll left / right (directional) | L1 / R1 |
 | Ball cam (toggle) | △ |
 | Look around | Right stick |
@@ -52,6 +53,7 @@ Run the physics checks against the reference numbers (top speeds, jump heights, 
 
 ```sh
 node tests/physics.test.mjs
+node tests/collision.test.mjs   # 4,000 random shots: the ball never enters or passes through the Octane hitbox
 ```
 
 | File | What it does |

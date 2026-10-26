@@ -111,6 +111,13 @@ export class Input {
     let lx = 0, ly = 0, rx = 0, ry = 0, throttle = 0;
 
     if (this.capture && this.capture.kind === 'pad' && pad) this.pollCapture(pad);
+    // After a binding is captured, ignore the pad until every button and trigger is released.
+    if (this.swallow && pad) {
+      const busy = pad.buttons.some(b => b.pressed || b.value > 0.2) || (this.captureRest && pad.axes.some((a, i) => Math.abs(a - this.captureRest[i]) > 0.4));
+      if (busy) { this.nav.events.length = 0; return this.state; }
+      this.swallow = false;
+      for (const k of Object.keys(this.prevHeld)) this.prevHeld[k] = false;
+    }
 
     if (pad) {
       const ax = c.stickAxes;
@@ -226,6 +233,7 @@ export class Input {
   beginCapture(cb) {
     const pad = this.getPad();
     this.capture = { kind: pad ? 'pad' : 'key', cb, rest: pad ? [...pad.axes] : [], armed: false, t: performance.now() };
+    this.captureRest = pad ? [...pad.axes] : null;
   }
 
   cancelCapture() { this.capture = null; }
@@ -237,8 +245,10 @@ export class Input {
     if (!cap.armed) { if (!anyDown) cap.armed = true; return; }
     for (let i = 0; i < pad.buttons.length; i++) {
       if (pad.buttons[i].pressed) {
+        // The press that sets a binding must not also count as "select" in the menu
+        // (that re-opened the binding prompt, so ✕ could never be bound).
         this.capture = null;
-        this.prevHeld = {};
+        this.swallow = true;
         cap.cb({ type: 'button', index: i });
         return;
       }
@@ -249,6 +259,7 @@ export class Input {
         const dir = Math.sign(d);
         const full = Math.abs((cap.rest[i] ?? 0) + dir) < 0.2; // trigger resting at -1
         this.capture = null;
+        this.swallow = true;
         cap.cb({ type: 'axis', index: i, dir, full });
         return;
       }
