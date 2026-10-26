@@ -1,0 +1,14 @@
+{
+  "name": "Boost Arena",
+  "short_name": "Boost Arena",
+  "description": "Car soccer free play with 120 Hz physics and controller support.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#060a16",
+  "theme_color": "#060a16",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
