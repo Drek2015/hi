@@ -4,6 +4,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.WindowManager;
+import androidx.activity.OnBackPressedCallback;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
@@ -19,6 +20,15 @@ public class MainActivity extends BridgeActivity {
         }
         requestHighestRefreshRate();
         hideSystemBars();
+        // The game handles Back itself (pause in a fight, previous screen in menus).
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (bridge != null && bridge.getWebView() != null) {
+                    bridge.getWebView().evaluateJavascript("window.dispatchEvent(new Event('androidback'))", null);
+                }
+            }
+        });
     }
 
     @Override

@@ -38,6 +38,11 @@ class App {
     addEventListener('gamepadconnected', () => { this.audio.unlock(); this.applySettings(); if (this.mode === 'menu' && this.menus.current === 'title') this.menus.refresh(); });
     addEventListener('gamepaddisconnected', () => this.applySettings());
     addEventListener('resize', () => this.resize());
+    addEventListener('androidback', () => {
+      if (this.mode === 'fight' || this.mode === 'paused') this.togglePause();
+      else if (this.mode === 'results') { this.toMenu(); this.menus.show('title'); }
+      else this.menus.back();
+    });
     document.addEventListener('visibilitychange', () => { if (document.hidden && this.mode === 'fight') this.pause(); });
     this.resize();
     this.applySettings();
