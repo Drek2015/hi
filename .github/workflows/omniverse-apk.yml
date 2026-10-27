@@ -1,0 +1,69 @@
+name: Omniverse Clash APK
+
+on:
+  push:
+    branches: [claude/s25-ultra-game-modding-0yjz6g]
+    paths: ['omniverse/**', '.github/workflows/omniverse-apk.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: omniverse-apk
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: omniverse
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: omniverse/package-lock.json
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - run: npm ci
+
+      - name: Simulation tests
+        run: npm test
+
+      - name: Copy the game into the Android project
+        run: |
+          npx cap sync android
+          rm -rf android/app/src/main/assets/public/dev
+
+      - name: Build APK
+        working-directory: omniverse/android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon --stacktrace
+          cp app/build/outputs/apk/release/app-release.apk ../omniverse-clash.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: omniverse-clash-apk
+          path: omniverse/omniverse-clash.apk
+
+      - name: Publish to the "omniverse-latest" release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: omniverse-latest
+          name: Omniverse Clash (latest build)
+          target_commitish: ${{ github.sha }}
+          prerelease: true
+          body: |
+            Latest Android build of Omniverse Clash (build ${{ github.run_number }}, commit ${{ github.sha }}).
+            On your phone: download omniverse-clash.apk below, open it, and allow installing from your browser if asked.
+          files: omniverse/omniverse-clash.apk

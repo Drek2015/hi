@@ -1,0 +1,10 @@
+{
+  "appId": "com.omniverse.clash",
+  "appName": "Omniverse Clash",
+  "webDir": "web",
+  "android": {
+    "backgroundColor": "#0c0814",
+    "allowMixedContent": false,
+    "webContentsDebuggingEnabled": false
+  }
+}
