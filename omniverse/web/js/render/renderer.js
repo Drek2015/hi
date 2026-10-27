@@ -5,7 +5,7 @@ import { arenaArt, buildStage, drawBackdrop } from './arenas.js';
 import { drawEntity, fxInfo, ParticleSystem } from './fx.js';
 import { glowSprite, rgba } from './colors.js';
 import { UNIT } from './pixel.js';
-import { drawSpriteFighter } from './spriteset.js';
+import { drawSpriteFighter, spriteFor } from './spriteset.js';
 
 const TARGET_ART_H = 400;   // art pixels tall; screens scale up by a whole number when they can
 
@@ -211,7 +211,6 @@ export class Renderer {
     this.particles.draw(fx);
     fx.restore();
     for (const f of w.fighters) if (f.shield) pixelRing(fx, Math.round(ox + f.x / UNIT), Math.round(oy + f.y / UNIT - 56), 64, fxInfo(f.shield.fx).color);
-    if (w.flash && w.flash.t < 0.9) drawCutIn(fx, W, H, w.flash);
     if (this.screenFlash > 0) {
       fx.globalCompositeOperation = 'lighter';
       fx.fillStyle = rgba(this.screenFlashColor, Math.min(0.6, this.screenFlash));
@@ -222,6 +221,7 @@ export class Renderer {
     if (!this.vignette) this.vignette = makeVignette(W, H);
     fx.drawImage(this.vignette, 0, 0);
     out.drawImage(this.fxLow, 0, 0, this.canvas.width, this.canvas.height);
+    if (w.flash && w.flash.t < 0.9) drawCutIn(out, this.canvas.width, this.canvas.height, w.flash);
   }
 }
 
@@ -250,6 +250,7 @@ function groundBelow(w, f) {
   return g === Infinity ? 0 : g;
 }
 
+// Ultimate cut-in at full resolution: a slanted band with the fighter's own art and the move name.
 function drawCutIn(ctx, W, H, fl) {
   const u = fl.t / 0.9;
   const inK = Math.min(1, fl.t / 0.12), outK = u > 0.8 ? (1 - u) / 0.2 : 1;
@@ -257,24 +258,38 @@ function drawCutIn(ctx, W, H, fl) {
   ctx.save();
   ctx.fillStyle = rgba('#000000', 0.45 * k);
   ctx.fillRect(0, 0, W, H);
-  const bandH = H * 0.2, y = H * 0.38;
+  const bandH = H * 0.24, y = H * 0.4;
   ctx.translate((1 - inK) * -W, 0);
-  ctx.fillStyle = rgba(fl.color, 0.85 * k);
+  ctx.fillStyle = rgba('#120a1a', 0.9 * k);
+  ctx.beginPath(); ctx.moveTo(0, y - 8); ctx.lineTo(W, y - bandH * 0.25 - 8); ctx.lineTo(W, y + bandH * 0.75 + 8); ctx.lineTo(0, y + bandH + 8); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = rgba(fl.color, 0.9 * k);
   ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y - bandH * 0.25); ctx.lineTo(W, y + bandH * 0.75); ctx.lineTo(0, y + bandH); ctx.closePath(); ctx.fill();
   // Speed lines
-  ctx.strokeStyle = rgba('#ffffff', 0.5 * k); ctx.lineWidth = 2;
-  for (let i = 0; i < 18; i++) {
-    const ly = y + ((i * 37) % bandH), lx = ((i * 211 + fl.t * 3000) % (W + 400)) - 200;
-    ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(lx + 220, ly - 20); ctx.stroke();
+  ctx.strokeStyle = rgba('#ffffff', 0.5 * k); ctx.lineWidth = Math.max(2, H / 360);
+  for (let i = 0; i < 22; i++) {
+    const ly = y + ((i * 37) % bandH), lx = ((i * 211 + fl.t * 4000) % (W + 400)) - 200;
+    ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(lx + W * 0.12, ly - bandH * 0.08); ctx.stroke();
   }
   ctx.globalAlpha = k;
-  ctx.font = `${Math.max(8, Math.round(bandH * 0.3 / 8) * 8)}px "Press Start 2P", monospace`;
+  // The fighter, large, breaking out of the band.
+  const a = spriteFor(fl.f);
+  if (a) {
+    const s = (H * 0.5) / a.h;
+    ctx.imageSmoothingEnabled = false;
+    const sx = W * 0.2 + (1 - u) * W * 0.05;
+    ctx.drawImage(a.img, sx - a.ax * s, y + bandH * 1.05 - a.ay * s, a.img.width * s, a.img.height * s);
+  }
+  const name = fl.name.toUpperCase();
+  let size = Math.round(bandH * 0.22);
+  ctx.font = `${size}px "Press Start 2P", monospace`;
+  const fit = (W * 0.56) / ctx.measureText(name).width;
+  if (fit < 1) { size = Math.floor(size * fit); ctx.font = `${size}px "Press Start 2P", monospace`; }
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.lineWidth = 4; ctx.strokeStyle = '#120a1a';
-  const tx = W / 2 + (u - 0.5) * 60;
-  ctx.strokeText(fl.name.toUpperCase(), tx, y + bandH * 0.42);
+  ctx.lineWidth = Math.max(4, size * 0.22); ctx.strokeStyle = '#120a1a'; ctx.lineJoin = 'round';
+  const tx = W * 0.64 + (u - 0.5) * W * 0.03;
+  ctx.strokeText(name, tx, y + bandH * 0.4);
   ctx.fillStyle = '#ffffff';
-  ctx.fillText(fl.name.toUpperCase(), tx, y + bandH * 0.42);
+  ctx.fillText(name, tx, y + bandH * 0.4);
   ctx.restore();
 }
 

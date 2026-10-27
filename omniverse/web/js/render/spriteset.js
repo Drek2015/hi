@@ -57,6 +57,9 @@ const BEAM_ANIMS = new Set(['kamehameha', 'shoot', 'bow', 'ultimate']);
 
 // Which slot to show, and how far into the action we are.
 function slotFor(f) {
+  // Round and match winners strike their victory pose.
+  const w = f.world;
+  if (w && !f.isClone && f.alive && (w.phase === 'matchEnd' ? w.matchWinner === f.side : (w.phase === 'ko' || w.phase === 'timeup') && w.roundWinner === f.side && w.phaseT > 0.6)) return 'victory';
   switch (f.state) {
     case 'guard': case 'charge': case 'getup': return 'crouch';
     case 'air': return f.stateT < 0.07 && f.vy < 0 ? 'crouch' : 'stand';   // take-off squat
