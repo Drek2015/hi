@@ -2,6 +2,7 @@
 import { World } from './sim/world.js';
 import { AIController } from './sim/ai.js';
 import { DT, DIFFICULTY } from './sim/constants.js';
+import { emptyInput } from './sim/fighter.js';
 import { ROSTER } from './data/roster.js';
 import { ARENAS } from './data/arenas.js';
 import { Renderer } from './render/renderer.js';
@@ -115,7 +116,7 @@ class App {
       this.acc += dt * w.slowScale;
       let steps = 0;
       while (this.acc >= DT && steps < 24) {
-        const p1 = this.mode === 'fight' ? this.input.poll() : this.ais[0].input();
+        const p1 = this.mode === 'fight' ? this.input.poll() : this.ais[0] ? this.ais[0].input() : emptyInput();
         w.step([p1, this.ais[1].input()]);
         this.acc -= DT; worldDt += DT; steps++;
       }

@@ -48,13 +48,16 @@ export const SPRITE_ART = {
 export const CHAR_SPRITES = {
   naruto: {
     base: { stand: 'naruto_stand', crouch: 'naruto_crouch', sign: 'naruto_sign', strike: 'naruto_punch', rush: 'naruto_punch', beam: 'naruto_punch', victory: 'naruto_sign' },
+    fx: [[/smoke|clone/i, 'naruto_sign']],
     forms: { kcm: { all: 'naruto_kcm' }, klm: { all: 'naruto_kcm' }, sixpaths: { all: 'naruto_kcm' }, baryon: { all: 'naruto_kcm' } },
   },
   kakashi: {
     base: { stand: 'kakashi_stand', crouch: 'kakashi_sign', sign: 'kakashi_sign', strike: 'kakashi_claw', rush: 'kakashi_raikiri', beam: 'kakashi_chidori', victory: 'kakashi_stand' },
+    fx: [[/raikiri|chidori|lightning|kirin|bolt/i, 'kakashi_chidori'], [/kamui/i, 'kakashi_sign']],
   },
   minato: {
     base: { stand: 'minato_flash', crouch: 'minato_blue', sign: 'minato_blue', strike: 'minato_kunai', rush: 'minato_flash', beam: 'minato_rasengan', victory: 'minato_flash' },
+    fx: [[/rasengan|planetary/i, 'minato_rasengan'], [/kunai|raijin|slash/i, 'minato_kunai']],
   },
   madara: {
     base: { stand: 'madara_stand', crouch: 'madara_stand', sign: 'madara_gunbai', strike: 'madara_gunbai', beam: 'madara_gunbai', victory: 'madara_stand' },
@@ -63,9 +66,11 @@ export const CHAR_SPRITES = {
   momoshiki: {
     base: { stand: 'momoshiki_stand' },
     forms: { fruit: { all: 'momoshiki_big' }, karma: { all: 'momoshiki_form' } },
+    skins: { chakraFruit: { all: 'momoshiki_big' }, karmaEcho: { all: 'momoshiki_form' } },
   },
   goku: {
     base: { stand: 'goku_kame', crouch: 'goku_kame', strike: 'goku_ssj3', beam: 'goku_kame', rush: 'goku_ssj3' },
+    fx: [[/spiritBomb/i, 'goku_ui_up']],
     forms: { ssj: { all: 'goku_ssj_kame' }, ssj2: { all: 'goku_ssj_kame' }, ssj3: { all: 'goku_ssj3' }, ssb: { all: 'goku_ssj_kame' }, ssg: { all: 'goku_ssj_kame' } },
     skins: { ultra: { stand: 'goku_ui_bomb', beam: 'goku_ui_bomb', sign: 'goku_ui_up', strike: 'goku_ui_bomb', victory: 'goku_ui_up' } },
   },

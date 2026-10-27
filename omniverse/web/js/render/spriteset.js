@@ -59,6 +59,7 @@ const BEAM_ANIMS = new Set(['kamehameha', 'shoot', 'bow', 'ultimate']);
 function slotFor(f) {
   switch (f.state) {
     case 'guard': case 'charge': case 'getup': return 'crouch';
+    case 'air': return f.stateT < 0.07 && f.vy < 0 ? 'crouch' : 'stand';   // take-off squat
     case 'dash': return 'rush';
     case 'victory': return 'victory';
     case 'attack': {
@@ -84,7 +85,14 @@ export function spriteFor(f) {
   const set = setFor(f);
   if (!set) return null;
   const slot = slotFor(f);
-  const name = set.all || set[slot] || set.stand;
+  let name = set.all || set[slot] || set.stand;
+  // Some abilities have their own picture (Minato's Rasengan, Kakashi's Chidori...).
+  const fxMap = !set.all && CHAR_SPRITES[f.char.id].fx;
+  if (fxMap && f.state === 'cast' && f.cast && slot !== 'crouch') {
+    const key = f.cast.def.fx || f.cast.def.id;
+    const hit = fxMap.find(([re]) => re.test(key) || re.test(f.cast.def.id));
+    if (hit) name = hit[1];
+  }
   return art.get(name) || art.get(set.stand) || null;
 }
 
