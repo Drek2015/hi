@@ -220,7 +220,7 @@ export class Fighter {
 
     // Gravity
     if (!this.onGround) {
-      let g = PHYS.GRAVITY;
+      let g = PHYS.GRAVITY * (w.gravityScale ?? 1);
       if (this.state === 'cast' && this.cast?.def.hover) g *= 0.05;
       if (control && inp.y > 0.6 && this.vy > -200) g += PHYS.FAST_FALL;
       if (this.state === 'dash') g *= 0.15;

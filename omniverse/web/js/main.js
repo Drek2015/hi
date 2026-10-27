@@ -44,6 +44,14 @@ class App {
       else if (this.mode === 'results') { this.toMenu(); this.menus.show('title'); }
       else this.menus.back();
     });
+    // If something fails while drawing, show a small note instead of a broken screen.
+    addEventListener('gameerror', e => {
+      let el = document.getElementById('errnote');
+      if (!el) { el = document.createElement('div'); el.id = 'errnote'; el.style.cssText = 'position:fixed;left:8px;bottom:8px;max-width:60vw;z-index:20;font:10px monospace;color:#ffd84a;background:rgba(0,0,0,0.7);padding:6px;white-space:pre-wrap;pointer-events:none'; document.body.append(el); }
+      el.textContent = 'Glitch caught (screenshot this for Claude): ' + e.detail;
+      setTimeout(() => el.remove(), 8000);
+    });
+    addEventListener('error', e => window.dispatchEvent(new CustomEvent('gameerror', { detail: String(e.message) + ' @' + (e.filename || '').split('/').pop() + ':' + e.lineno })));
     document.addEventListener('visibilitychange', () => { if (document.hidden && this.mode === 'fight') this.pause(); });
     this.resize();
     this.applySettings();
@@ -77,7 +85,7 @@ class App {
     const pick = () => list[Math.floor(Math.random() * list.length)];
     const a = pick(); let b = pick(); if (b === a) b = list[(list.indexOf(a) + 1) % list.length];
     const arena = ARENAS[Math.floor(Math.random() * ARENAS.length)];
-    this.world = new World({ arena, players: [cpuSetup(a, a.skins[0], 'hard'), cpuSetup(b, b.skins[0], 'hard')], roundsToWin: 99 });
+    this.world = new World({ arena, players: [cpuSetup(a, a.skins[0], 'hard'), cpuSetup(b, b.skins[0], 'hard')], roundsToWin: 99, hazards: true });
     this.ais = [new AIController(this.world, this.world.fighters[0], 'hard'), new AIController(this.world, this.world.fighters[1], 'hard')];
     this.renderer.bind(this.world);
   }
@@ -106,7 +114,7 @@ class App {
     const arena = ARENAS.find(x => x.id === s.arena) || ARENAS[0];
     const p2 = cpuSetup(c2, k2, s.difficulty);
     p2.dmgFactor = DIFFICULTY[s.difficulty].damage;
-    this.world = new World({ arena, players: [sv.playerSetup(c1, k1), p2] });
+    this.world = new World({ arena, players: [sv.playerSetup(c1, k1), p2], hazards: sv.settings.hazards !== false });
     this.ais = [null, new AIController(this.world, this.world.fighters[1], s.difficulty)];
     this.renderer.bind(this.world);
     this.hud = new Hud();
@@ -125,6 +133,10 @@ class App {
 
   frame(now) {
     requestAnimationFrame(t => this.frame(t));
+    try { this.frameInner(now); } catch (err) { this.renderer.reportError(err); }
+  }
+
+  frameInner(now) {
     const dt = Math.min(0.1, (now - this.last) / 1000);
     this.last = now;
     this.frames++; this.fpsT += dt;

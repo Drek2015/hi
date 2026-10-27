@@ -276,6 +276,7 @@ export class Menus {
         toggle('Touch controls', 'touch', [['auto', 'AUTO'], ['on', 'ALWAYS'], ['off', 'OFF']]),
         toggle('Every ability unlocked', 'unlockAll', [[true, 'ON'], [false, 'OFF']]),
         toggle('Damage numbers', 'damageNumbers', [[false, 'OFF'], [true, 'ON']]),
+        toggle('Stage hazards & weather', 'hazards', [[true, 'ON'], [false, 'OFF']]),
         toggle('Show FPS', 'showFps', [[false, 'OFF'], [true, 'ON']]),
         h('div', { class: 'crow' }, h('span', {}, 'Reset all skill progress'), btn('RESET', () => { if (confirm('Reset all skill points and unlocks?')) { this.save.reset(); a.audio.play('back'); } }, 'small'))),
       btn('BACK', () => this.back(), 'small', { autofocus: true }),

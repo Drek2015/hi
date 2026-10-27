@@ -1,7 +1,8 @@
 // Composites a World onto a canvas: camera, backdrop, fighters, entities, particles, screen effects.
 // Everything is drawn at art resolution (one art pixel = UNIT world units, fighters ~100 px tall)
 // into a low-res canvas, then scaled up with hard pixels.
-import { arenaArt, buildStage, drawBackdrop } from './arenas.js';
+import { arenaArt, buildStage, drawBackdrop, moonAt } from './arenas.js';
+import { drawHazards, drawSkyWeather, drawAirWeather, HAZARD_CALLS } from './hazards.js';
 import { drawEntity, fxInfo, ParticleSystem } from './fx.js';
 import { glowSprite, rgba } from './colors.js';
 import { HitFx } from './hitfx.js';
@@ -122,10 +123,23 @@ export class Renderer {
         case 'pull': P.add({ x: e.f.x, y: e.f.y - 100, kind: 'ring', size: 20, size1: 80, life: 0.2, color: '#ffffff' }); break;
         case 'cast': if (e.def.kind !== 'ultimate' && e.f && !e.f.isClone) say(e.f.x, e.f.y - 250, e.def.name.toUpperCase(), e.def.color || fxInfo(e.def.fx).color || '#ffffff'); break;
         case 'ultimate': this.flashScreen(e.def.color || '#ffffff', 0.5); this.shake = Math.max(this.shake, 10); break;
+        case 'hazard': { const [str, col] = HAZARD_CALLS[e.type2] || []; if (str) P.text(this.callX(), this.callY(), str, col, true); break; }
+        case 'gravity': if (e.on) { P.text(this.callX(), this.callY(), 'LOW GRAVITY!', '#c89ae8', true); this.flashScreen('#c89ae8', 0.3); } break;
+        case 'hzImpact': {
+          P.burst(e.x, e.y, e.big ? 26 : 14, e.color, { speed: e.big ? 1100 : 800, size: e.big ? 24 : 16, life: 0.5 });
+          P.burst(e.x, e.y, 14, '#5a4a40', { kind: 'smoke', speed: 420, size: 30, size1: 80, life: 0.9, g: -100 });
+          P.add({ x: e.x, y: e.y, kind: 'ring', size: e.r * 0.3, size1: e.r * 1.4, life: 0.35, color: e.color });
+          this.shake = Math.max(this.shake, e.big ? 24 : 12);
+          break;
+        }
         case 'ko': this.shake = Math.max(this.shake, 30); this.impact = 0.12; break;
       }
     }
   }
+
+  // Where stage call-outs appear: above the fighters, inside the zoomed view.
+  callX() { const [a, b] = this.world.fighters; return (a.x + b.x) / 2; }
+  callY() { const [a, b] = this.world.fighters; return Math.min(a.y, b.y) - 330; }
 
   flashScreen(color, a) { this.screenFlashColor = color; this.screenFlash = Math.max(this.screenFlash, a); }
 
@@ -146,7 +160,32 @@ export class Renderer {
   }
 
   // dt is real (unscaled) frame time; worldDt is the sim time that elapsed.
+  // Draw a frame. Any canvas state left behind by a failed draw (an additive blend mode, a
+  // transform) is reset first, so one bad effect can never wash the screen out.
   render(dt, worldDt) {
+    for (const g of [this.ctx, this.lctx, this.fctx]) {
+      g.setTransform(1, 0, 0, 1, 0, 0);
+      g.globalCompositeOperation = 'source-over';
+      g.globalAlpha = 1;
+      g.filter && g.filter !== 'none' && (g.filter = 'none');
+    }
+    try { this.renderFrame(dt, worldDt); }
+    catch (err) {
+      this.reportError(err);
+      // Unwind any save() left open by the failed draw (restore on an empty stack does nothing).
+      for (const g of [this.ctx, this.lctx, this.fctx]) { for (let i = 0; i < 24; i++) g.restore(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1; }
+    }
+  }
+
+  reportError(err) {
+    this.errors = (this.errors || 0) + 1;
+    if (this.errors > 3) return;
+    const msg = String(err && (err.stack || err.message) || err).slice(0, 300);
+    console.error('render error', msg);
+    window.dispatchEvent(new CustomEvent('gameerror', { detail: msg }));
+  }
+
+  renderFrame(dt, worldDt) {
     const w = this.world;
     this.resizeLow();
     const ctx = this.lctx, W = this.low.width, H = this.low.height;
@@ -180,7 +219,11 @@ export class Renderer {
 
     ctx.imageSmoothingEnabled = false;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
-    drawBackdrop(ctx, this.art, { x: cam.x - sx * UNIT * 0.6, y: cam.y - sy * UNIT * 0.6 }, W, H, t);
+    const bcam = { x: cam.x - sx * UNIT * 0.6, y: cam.y - sy * UNIT * 0.6 };
+    drawBackdrop(ctx, this.art, bcam, W, H, t);
+    const ev = w.stageEvents;
+    const moon = moonAt(w.arena.theme, bcam, W, H);
+    ctx.save(); ctx.translate(cx, cy); drawSkyWeather(ctx, ev, cw, ch, t, moon && { ...moon, x: moon.x - cx, y: moon.y - cy }); ctx.restore();
     ctx.drawImage(this.stage.img, ox + Math.round(this.stage.x0 / UNIT), oy + Math.round(this.stage.y0 / UNIT));
 
     ctx.save();
@@ -228,8 +271,9 @@ export class Renderer {
     // High-detail effects are drawn at full resolution in world units.
     const toWorld = g => { g.save(); g.translate((ox - cx) * K, (oy - cy) * K); g.scale(K / UNIT, K / UNIT); };
     toWorld(out);
-    // Ground effects and transformation auras behind the fighters.
+    // Ground effects, stage hazards and transformation auras behind the fighters.
     for (const e of back) drawVfx(out, e, t);
+    drawHazards(out, w, t, false);
     for (const f of [...w.clones, ...w.fighters]) {
       const seen = new Set();
       for (const b of f.buffs || []) {
@@ -258,6 +302,7 @@ export class Renderer {
     }
     this.vfxDrawn = new Set();
     for (const e of front) if (drawVfx(out, e, t)) this.vfxDrawn.add(e);
+    drawHazards(out, w, t, true);
     out.restore();
 
     // Impact frame: an instant of stark black with white silhouettes, as in anime fight cuts.
@@ -286,6 +331,7 @@ export class Renderer {
     this.particles.draw(fx);
     this.hitfx.draw(fx);
     fx.restore();
+    fx.save(); fx.translate(cx, cy); drawAirWeather(fx, ev, cw, ch, t); fx.restore();
     for (const f of w.fighters) if (f.shield && !specFor(f.shield.sig, f.shield.fx)) pixelRing(fx, Math.round(ox + f.x / UNIT), Math.round(oy + f.y / UNIT - 56), 64, fxInfo(f.shield.fx).color);
     if (this.screenFlash > 0) {
       fx.globalCompositeOperation = 'lighter';

@@ -14,7 +14,7 @@ export function specFor(sig, fx) {
 }
 
 function glow(g, x, y, r, color, a = 1) {
-  if (r <= 0) return;
+  if (!(r > 0) || !Number.isFinite(x + y + r)) return;
   const gr = g.createRadialGradient(x, y, 0, x, y, r);
   gr.addColorStop(0, color); gr.addColorStop(1, 'rgba(0,0,0,0)');
   g.globalAlpha = a; g.fillStyle = gr;
@@ -783,6 +783,11 @@ R.warp = (g, e, s, t) => {
 
 // Flaming aura behind a fighter for transformations and power-ups.
 export function drawAura(g, f, s, t) {
+  g.save();
+  try { drawAuraInner(g, f, s, t); } catch (err) { console.error('drawAura', err); } finally { g.restore(); }
+}
+
+function drawAuraInner(g, f, s, t) {
   const x = f.x, y = f.y;
   const H = 210 * (s.size || 1);
   g.save();
@@ -818,6 +823,11 @@ export function drawAura(g, f, s, t) {
 }
 
 export function drawShield(g, f, s, t) {
+  g.save();
+  try { drawShieldInner(g, f, s, t); } catch (err) { console.error('drawShield', err); } finally { g.restore(); }
+}
+
+function drawShieldInner(g, f, s, t) {
   const x = f.x, y = f.y - 100, dir = f.facing;
   const k = f.shield ? Math.max(0.3, f.shield.hp / f.shield.max) : 1;
   g.save();
@@ -862,6 +872,11 @@ export function drawShield(g, f, s, t) {
 
 // Charge-up at the hand during a wind-up (the Tailed Beast Bomb gathering and growing, etc.).
 export function drawChargeVfx(g, f, s, t) {
+  g.save();
+  try { drawChargeVfxInner(g, f, s, t); } catch (err) { console.error('drawChargeVfx', err); } finally { g.restore(); }
+}
+
+function drawChargeVfxInner(g, f, s, t) {
   const c = f.cast, w = c.def.windup ?? 0.12;
   const k = Math.min(1, c.t / Math.max(0.05, w));
   const at = [f.x + f.facing * 70, f.y - 125];
@@ -886,6 +901,11 @@ export function drawChargeVfx(g, f, s, t) {
 
 // Main entry: draw an entity if it has a high-detail spec. Returns true when handled.
 export function drawVfx(g, e, t) {
+  g.save();
+  try { return drawVfxInner(g, e, t); } catch (err) { console.error('vfx', e.fx, err); return true; } finally { g.restore(); }
+}
+
+function drawVfxInner(g, e, t) {
   let s = specFor(e.sig, e.fx);
   if (!s) return false;
   if (e.delay > 0 && e.kind !== 'strike') return true;

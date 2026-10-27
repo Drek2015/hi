@@ -2,9 +2,10 @@
 import { DT, MATCH } from './constants.js';
 import { Fighter, emptyInput } from './fighter.js';
 import { Burst, Visual } from './abilities.js';
+import { StageEvents } from './hazards.js';
 
 export class World {
-  constructor({ arena, players, roundsToWin = MATCH.ROUNDS_TO_WIN }) {
+  constructor({ arena, players, roundsToWin = MATCH.ROUNDS_TO_WIN, hazards = false }) {
     this.arena = arena;
     this.left = arena.left; this.right = arena.right; this.ceiling = arena.ceiling;
     this.platforms = arena.platforms;
@@ -16,6 +17,9 @@ export class World {
     this.slowmo = 0; this.slowScale = 1;
     this.flash = null;
     this.roundsToWin = roundsToWin;
+    this.hazards = [];
+    this.gravityScale = 1;
+    this.stageEvents = hazards ? new StageEvents(this) : null;
     this.wins = [0, 0];
     this.round = 0;
     this.fighters = players.map((p, i) => {
@@ -28,7 +32,7 @@ export class World {
 
   startRound() {
     this.round++;
-    this.entities = []; this.clones = [];
+    this.entities = []; this.clones = []; this.hazards = []; this.gravityScale = 1;
     this.fighters.forEach((f, i) => f.reset(i ? 380 : -380));
     this.phase = 'intro'; this.phaseT = 0;
     this.timer = MATCH.ROUND_TIME;
@@ -106,6 +110,7 @@ export class World {
   // Advance one tick. inputs: [input0, input1].
   step(inputs) {
     this.time += DT;
+    this.stageEvents?.update();
     if (this.flash) { this.flash.t += DT; if (this.flash.t > 1.2) this.flash = null; }
     if (this.phase === 'intro') {
       this.phaseT += DT;
@@ -150,6 +155,7 @@ export class World {
     });
 
     for (const e of this.entities) e.update(this);
+    this.stageEvents?.step();
     this.clashProjectiles();
     this.entities = this.entities.filter(e => !e.dead);
 

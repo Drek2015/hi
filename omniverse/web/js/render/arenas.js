@@ -105,7 +105,29 @@ function buildValley() {
       }
       g.globalAlpha = 0.45;
       for (let i = 0; i < 10; i++) g.drawImage(glowSprite('#ffffff', 128), -800 + i * 170 + Math.sin(t + i) * 30, -120, 260, 220);
+      // Spray drifting up off the plunge pool.
+      g.globalAlpha = 0.7; g.fillStyle = '#ffffff';
+      for (let i = 0; i < 30; i++) { const k = (t * 0.6 + i * 0.137) % 1; g.fillRect(-760 + ((i * 211) % 1520) + Math.sin(t * 2 + i) * 20, -20 - k * 260, 8, 8); }
       g.restore();
+      // A flock of birds crossing the gorge, wings flapping.
+      const bk = (t * 0.03) % 1;
+      if (bk < 0.6) {
+        g.fillStyle = '#2a2a3a';
+        for (let i = 0; i < 7; i++) {
+          const bx = -2300 + bk / 0.6 * 4600 - (i % 3) * 70 - i * 30, by = -1150 + Math.floor(i / 2) * 40 + Math.sin(t * 3 + i) * 10;
+          const up = Math.sin(t * 14 + i) > 0 ? -1 : 1;
+          g.fillRect(bx - 18, by + up * 8, 14, 5); g.fillRect(bx - 6, by, 12, 6); g.fillRect(bx + 4, by + up * 8, 14, 5);
+        }
+      }
+      // Leaves blowing across from the forest.
+      for (let i = 0; i < 18; i++) {
+        const lx = -2400 + ((t * (80 + i * 7) + i * 431) % 4800), ly = -900 + ((i * 173 + t * 40) % 900) + Math.sin(t * 2 + i) * 30;
+        g.fillStyle = i % 3 ? '#4f7a3a' : '#c8903a';
+        g.save(); g.translate(lx, ly); g.rotate(t * 3 + i); g.fillRect(-8, -4, 16, 8); g.restore();
+      }
+      // The statues' eyes catch the light now and then.
+      const eye = Math.max(0, Math.sin(t * 0.5)) ** 8;
+      if (eye > 0.02) for (const x of [-1000, 1000]) { g.globalAlpha = eye; g.drawImage(glowSprite('#fff1c8', 64), x - 40, 60 - 1290 * 0.68 - 40, 80, 60); g.globalAlpha = 1; }
     },
     floor(g, left, right) {
       // River surface the fighters stand on.
@@ -198,6 +220,19 @@ function buildTower() {
         g.fillStyle = grad; g.beginPath(); g.moveTo(-20, 0); g.lineTo(-180, -1800); g.lineTo(180, -1800); g.lineTo(20, 0); g.fill();
         g.restore();
       }
+      // Red aircraft warning lights blinking on the rooftops.
+      for (let i = 0; i < 9; i++) if (Math.sin(t * 3 + i * 1.7) > 0.4) { g.fillStyle = '#ff3a3a'; const x = -2100 + i * 520, y = -700 - (i * 271) % 500; g.fillRect(x, y, 10, 10); g.drawImage(glowSprite('#ff3a3a', 32), x - 25, y - 25, 60, 60); }
+      // A helicopter hovering with its spotlight swinging over the city.
+      const hx = Math.sin(t * 0.13) * 1700, hy = -1350 + Math.sin(t * 0.7) * 30;
+      g.fillStyle = '#0b0d18';
+      g.fillRect(hx - 50, hy - 18, 100, 36); g.fillRect(hx + 40, hy - 8, 90, 10); g.fillRect(hx + 120, hy - 26, 10, 26);
+      g.fillRect(hx - 90 + Math.sin(t * 60) * 20, hy - 26, 180 - Math.sin(t * 60) * 40, 5);
+      g.fillStyle = '#ff3a3a'; if (Math.sin(t * 8) > 0) g.fillRect(hx + 122, hy - 30, 6, 6);
+      const ha = Math.sin(t * 0.9) * 0.4;
+      g.save(); g.translate(hx - 20, hy + 18); g.rotate(ha);
+      const hg = g.createLinearGradient(0, 0, 0, 900); hg.addColorStop(0, rgba('#fff8e0', 0.3)); hg.addColorStop(1, rgba('#fff8e0', 0));
+      g.fillStyle = hg; g.beginPath(); g.moveTo(-8, 0); g.lineTo(-130, 900); g.lineTo(130, 900); g.lineTo(8, 0); g.fill();
+      g.restore();
       // A jet crossing the sky now and then.
       const k = (t * 0.05) % 1;
       if (k < 0.5) {
@@ -280,6 +315,21 @@ function buildKara() {
         g.fillStyle = i % 3 ? 'rgba(232,192,255,0.8)' : 'rgba(255,240,200,0.9)';
         g.fillRect(x + Math.sin(t + i) * 20, y, 8, 8);
       }
+      // Shooting stars across the void.
+      for (let i = 0; i < 2; i++) {
+        const k = (t * 0.18 + i * 0.5) % 1;
+        if (k < 0.18) {
+          const u = k / 0.18, sx = -2000 + i * 1800 + u * 1400, sy = -1500 + u * 500;
+          const sg = g.createLinearGradient(sx, sy, sx - 300, sy - 107);
+          sg.addColorStop(0, 'rgba(255,240,255,0.9)'); sg.addColorStop(1, 'rgba(255,240,255,0)');
+          g.strokeStyle = sg; g.lineWidth = 6; g.beginPath(); g.moveTo(sx, sy); g.lineTo(sx - 300, sy - 107); g.stroke();
+        }
+      }
+      // The chakra fruit on the God Tree pulsing with stolen power.
+      const pulse = 0.6 + 0.4 * Math.sin(t * 1.6);
+      g.globalAlpha = pulse; g.drawImage(glowSprite('#ff5a8a', 64), -1430, -1190, 260, 260); g.globalAlpha = 1;
+      g.fillStyle = '#ff7aa8'; g.beginPath(); g.arc(-1300, -1060, 30 + pulse * 6, 0, Math.PI * 2); g.fill();
+      g.fillStyle = '#ffe0ec'; g.fillRect(-1310, -1076, 10, 10);
       for (const [x, y, s] of rocks) {
         const yy = y + Math.sin(t * 0.8 + x) * 20;
         g.fillStyle = '#4a2f5a'; g.strokeStyle = '#2a1a33'; g.lineWidth = 4;
@@ -323,6 +373,12 @@ export function buildStage(art, arena) {
     for (const p of arena.platforms) if (p.thin) art.platform(g, p);
   });
   return { img: ditherCanvas(c, 24), x0, y0 };
+}
+
+// Where the Otsutsuki moon sits on screen (art pixels), for the eclipse.
+export function moonAt(theme, cam, W, H) {
+  if (theme !== 'kara') return null;
+  return { x: W / 2 + (700 - cam.x * 0.02) / UNIT, y: H / 2 + (-760 - cam.y * 0.02) / UNIT, r: 300 / UNIT };
 }
 
 // Draw the backdrop in art pixels for a camera at (cam.x, cam.y), screen W x H art pixels.

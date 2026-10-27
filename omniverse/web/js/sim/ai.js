@@ -1,5 +1,6 @@
 // AI opponent. It "presses buttons" through the same input structure a player uses,
 // so it can only do what a human could. Difficulty controls reaction time and decision quality.
+import { hazardThreat } from './hazards.js';
 import { DT, DIFFICULTY } from './constants.js';
 import { emptyInput } from './fighter.js';
 
@@ -47,6 +48,15 @@ export class AIController {
     this.held = emptyInput();
     const hold = this.held;
     if (['hurt', 'tumble', 'down', 'guardbreak'].includes(f.state)) return inp;
+
+    // Stage hazards: jump the waves and shockwaves, step out from under falling things.
+    for (const h of w.hazards || []) {
+      const way = hazardThreat(h, f);
+      if (!way || Math.random() > d.dodge * 2 + 0.1) continue;
+      if (way === 'jump') { if (f.onGround) { inp.jumpP = inp.jump = true; hold.jump = true; } }
+      else { hold.x = way; inp.x = way; if (Math.random() < 0.5) inp.dash = true; this.think = Math.min(this.think, 0.15); }
+      return inp;
+    }
 
     // Threats: incoming projectiles or an enemy swing in range.
     const threat = w.entities.find(en => en.owner.owner.side !== f.side && en.vx !== undefined && Math.sign(f.x - en.x) === Math.sign(en.vx) && Math.abs(f.x - en.x) < 420 && Math.abs(f.y - 90 - en.y) < 160);
