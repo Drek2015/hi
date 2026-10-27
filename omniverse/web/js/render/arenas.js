@@ -168,6 +168,13 @@ function buildTower() {
     g.fillStyle = '#2a3150'; g.fillRect(-180, -1100, 360, 18); g.fillRect(-150, -1300, 300, 14);
     g.fillStyle = '#9ad8ff';
     for (let y = -1200; y < 300; y += 40) g.fillRect(-150, y, 300, 4);
+    // Glass mullions and the glowing "A" crest on the tower face.
+    g.fillStyle = '#141a2c';
+    for (let x = -150; x <= 150; x += 50) g.fillRect(x - 3, -1200, 6, 1500);
+    g.strokeStyle = '#ffffff'; g.lineWidth = 22; g.lineJoin = 'miter';
+    g.beginPath(); g.moveTo(-70, -1000); g.lineTo(0, -1180); g.lineTo(70, -1000); g.moveTo(-40, -1070); g.lineTo(40, -1070); g.stroke();
+    g.strokeStyle = '#7fd0ff'; g.lineWidth = 8;
+    g.beginPath(); g.arc(0, -1080, 115, 0, Math.PI * 2); g.stroke();
     g.drawImage(glowSprite('#7fd0ff', 256), -160, -1460, 320, 220);
     g.strokeStyle = '#7fd0ff'; g.lineWidth = 10;
     g.beginPath(); g.arc(0, -1320, 60, 0, Math.PI * 2); g.stroke();
@@ -175,6 +182,12 @@ function buildTower() {
   return {
     layers: [{ img: sky, p: 0.02 }, { img: far, p: 0.12 }, { img: mid, p: 0.3 }],
     animate(g, t) {
+      // Windows switching on and off across the city.
+      g.fillStyle = '#ffd98a';
+      for (let i = 0; i < 14; i++) {
+        if (Math.sin(t * 0.7 + i * 12.9) < 0.3) continue;
+        g.fillRect(-2200 + ((i * 677) % 4400), -900 + ((i * 391) % 900), 10, 12);
+      }
       // Searchlights
       g.save(); g.globalCompositeOperation = 'lighter';
       for (const [x, ph] of [[-900, 0], [900, 2]]) {
@@ -261,6 +274,12 @@ function buildKara() {
   return {
     layers: [{ img: sky, p: 0.02 }, { img: far, p: 0.12 }, { img: mid, p: 0.4 }],
     animate(g, t) {
+      // Chakra motes drifting up through the dimension.
+      for (let i = 0; i < 40; i++) {
+        const x = -2300 + ((i * 523) % 4600), y = 300 - ((t * (40 + i % 5 * 15) + i * 137) % 1700);
+        g.fillStyle = i % 3 ? 'rgba(232,192,255,0.8)' : 'rgba(255,240,200,0.9)';
+        g.fillRect(x + Math.sin(t + i) * 20, y, 8, 8);
+      }
       for (const [x, y, s] of rocks) {
         const yy = y + Math.sin(t * 0.8 + x) * 20;
         g.fillStyle = '#4a2f5a'; g.strokeStyle = '#2a1a33'; g.lineWidth = 4;
