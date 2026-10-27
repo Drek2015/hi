@@ -2,7 +2,7 @@ import { A, S, U, prim as p } from '../build.js';
 
 export default {
   id: 'goku', name: 'Son Goku', short: 'Goku', universe: 'Dragon Ball Super', title: 'Saiyan Raised on Earth', energyName: 'Ki',
-  stats: { power: 1.08, defense: 1.02, speed: 1.04, hp: 1.04, energy: 1.0 },
+  stats: { power: 1.21, defense: 1.02, speed: 1.04, hp: 1.11, energy: 1.0 },
   color: '#ff9a1f',
   branches: ['Ki Blasts', 'Martial Arts', 'Super Saiyan'],
   skins: [

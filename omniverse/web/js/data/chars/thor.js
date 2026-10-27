@@ -2,7 +2,7 @@ import { A, S, U, prim as p } from '../build.js';
 
 export default {
   id: 'thor', name: 'Thor', universe: 'Marvel', title: 'God of Thunder', energyName: 'Lightning',
-  stats: { power: 1.12, defense: 1.08, speed: 0.98, hp: 1.12, energy: 1.0 },
+  stats: { power: 1.00, defense: 1.08, speed: 0.98, hp: 1.05, energy: 1.0 },
   color: '#9fe3ff',
   branches: ['Mjolnir', 'Lightning', 'God of Thunder'],
   skins: [

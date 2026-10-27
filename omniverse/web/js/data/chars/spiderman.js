@@ -4,7 +4,7 @@ const WEBBED = { type: 'root', time: 1.0 };
 
 export default {
   id: 'spiderman', name: 'Spider-Man', universe: 'Marvel', title: 'Your Friendly Neighborhood', energyName: 'Web Fluid',
-  stats: { power: 0.96, defense: 0.98, speed: 1.14, hp: 0.98, energy: 1.0 },
+  stats: { power: 1.25, defense: 0.98, speed: 1.14, hp: 1.14, energy: 1.0 },
   color: '#e2232e',
   branches: ['Web Arsenal', 'Spider Combat', 'Spider-Sense & Suits'],
   skins: [

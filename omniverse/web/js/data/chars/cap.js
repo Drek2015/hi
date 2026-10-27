@@ -2,7 +2,7 @@ import { A, S, U, prim as p } from '../build.js';
 
 export default {
   id: 'cap', name: 'Captain America', short: 'Cap', universe: 'Marvel', title: 'First Avenger', energyName: 'Stamina',
-  stats: { power: 1.02, defense: 1.12, speed: 1.02, hp: 1.1, energy: 1.0 },
+  stats: { power: 0.96, defense: 1.12, speed: 1.02, hp: 1.07, energy: 1.0 },
   color: '#2a5ad8',
   branches: ['Vibranium Shield', 'Super Soldier', 'Leadership'],
   skins: [

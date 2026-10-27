@@ -2,7 +2,7 @@ import { A, S, U, prim as p } from '../build.js';
 
 export default {
   id: 'madara', name: 'Madara Uchiha', universe: 'Naruto', title: 'Ghost of the Uchiha', energyName: 'Chakra',
-  stats: { power: 1.12, defense: 1.06, speed: 0.96, hp: 1.1, energy: 1.0 },
+  stats: { power: 1.17, defense: 1.06, speed: 0.96, hp: 1.13, energy: 1.0 },
   color: '#c8282f',
   branches: ['Uchiha Fire', 'Susanoo', 'Wood & Rinnegan'],
   skins: [

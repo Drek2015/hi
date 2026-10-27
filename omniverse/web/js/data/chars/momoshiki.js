@@ -2,7 +2,7 @@ import { A, S, U, prim as p } from '../build.js';
 
 export default {
   id: 'momoshiki', name: 'Momoshiki Otsutsuki', universe: 'Boruto', title: 'Celestial Being', energyName: 'Chakra',
-  stats: { power: 1.1, defense: 1.02, speed: 0.95, hp: 1.05, energy: 1.1 },
+  stats: { power: 1.17, defense: 1.02, speed: 0.95, hp: 1.09, energy: 1.1 },
   color: '#c9a6ff',
   branches: ['Rinnegan Palms', 'Daikokuten', 'Otsutsuki Power'],
   skins: [

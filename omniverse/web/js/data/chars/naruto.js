@@ -2,7 +2,7 @@ import { A, S, U, prim as p } from '../build.js';
 
 export default {
   id: 'naruto', name: 'Naruto Uzumaki', universe: 'Naruto', title: 'Seventh Hokage', energyName: 'Chakra',
-  stats: { power: 1.03, defense: 1.0, speed: 1.05, hp: 1.06, energy: 1.15 },
+  stats: { power: 0.65, defense: 1.0, speed: 1.05, hp: 0.82, energy: 1.15 },
   color: '#ff8a1f',
   branches: ['Rasengan Arts', 'Shadow Clones & Sage', 'Kurama'],
   skins: [

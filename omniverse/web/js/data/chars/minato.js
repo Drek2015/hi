@@ -2,7 +2,7 @@ import { A, S, U, prim as p } from '../build.js';
 
 export default {
   id: 'minato', name: 'Minato Namikaze', universe: 'Naruto', title: 'The Yellow Flash', energyName: 'Chakra',
-  stats: { power: 1.0, defense: 0.96, speed: 1.14, hp: 1.0, energy: 1.12 },
+  stats: { power: 0.83, defense: 0.96, speed: 1.14, hp: 0.90, energy: 1.12 },
   color: '#ffd84a',
   branches: ['Flying Raijin', 'Rasengan', 'Sage & Kurama'],
   skins: [

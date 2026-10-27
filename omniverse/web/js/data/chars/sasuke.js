@@ -4,7 +4,7 @@ const PARALYZE = { type: 'paralyze', time: 0.6 };
 
 export default {
   id: 'sasuke', name: 'Sasuke Uchiha', universe: 'Naruto', title: 'The Last Uchiha', energyName: 'Chakra',
-  stats: { power: 1.08, defense: 0.96, speed: 1.06, hp: 1.0, energy: 1.0 },
+  stats: { power: 0.91, defense: 0.96, speed: 1.06, hp: 0.91, energy: 1.0 },
   color: '#7b5cff',
   branches: ['Chidori Arts', 'Fire Release', 'Sharingan & Susanoo'],
   skins: [

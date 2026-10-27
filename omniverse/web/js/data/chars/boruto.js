@@ -2,7 +2,7 @@ import { A, S, U, prim as p } from '../build.js';
 
 export default {
   id: 'boruto', name: 'Boruto Uzumaki', universe: 'Boruto', title: 'Blue Vortex', energyName: 'Chakra',
-  stats: { power: 1.0, defense: 0.98, speed: 1.1, hp: 0.98, energy: 1.05 },
+  stats: { power: 1.17, defense: 0.98, speed: 1.1, hp: 1.07, energy: 1.05 },
   color: '#4fb6ff',
   branches: ['Rasengan & Vanishing', 'Jougan & Karma', 'Swordsmanship'],
   skins: [

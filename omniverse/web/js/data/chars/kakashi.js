@@ -4,7 +4,7 @@ const SHOCK = { type: 'paralyze', time: 0.55 };
 
 export default {
   id: 'kakashi', name: 'Kakashi Hatake', universe: 'Naruto', title: 'Copy Ninja', energyName: 'Chakra',
-  stats: { power: 1.0, defense: 1.02, speed: 1.04, hp: 1.0, energy: 0.95 },
+  stats: { power: 1.19, defense: 1.02, speed: 1.04, hp: 1.10, energy: 0.95 },
   color: '#9fd8ff',
   branches: ['Lightning Release', 'Ninja Tools & Hounds', 'Sharingan & Kamui'],
   skins: [

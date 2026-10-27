@@ -2,7 +2,7 @@ import { A, S, U, prim as p } from '../build.js';
 
 export default {
   id: 'obito', name: 'Obito Uchiha', universe: 'Naruto', title: 'The Masked Man', energyName: 'Chakra',
-  stats: { power: 1.02, defense: 1.05, speed: 0.98, hp: 1.04, energy: 1.05 },
+  stats: { power: 1.08, defense: 1.05, speed: 0.98, hp: 1.07, energy: 1.05 },
   color: '#ff8a3d',
   branches: ['Kamui', 'Fire & Wood Release', 'Ten-Tails'],
   skins: [
