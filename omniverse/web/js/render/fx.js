@@ -131,7 +131,7 @@ export class ParticleSystem {
   }
 
   text(x, y, str, color, big = false) {
-    this.texts.push({ x, y, str, color, t: 0, life: 0.9, big });
+    this.texts.push({ x, y, str, color, t: 0, life: 0.6, big });
   }
 
   update(dt) {

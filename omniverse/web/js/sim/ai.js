@@ -85,7 +85,14 @@ export class AIController {
         hold.x = Math.sign(dx);
         if (Math.random() < 0.2 * d.speed) { inp.dash = true; inp.x = Math.sign(dx); }
         if (dy < -150 && f.onGround && Math.random() < 0.6) { inp.jumpP = true; hold.jump = true; }
-      } else if (Math.random() < 0.3) { hold.guard = true; }
+      } else {
+        // Footsies: step in and out, feint, or hop instead of standing frozen.
+        const r = Math.random();
+        if (r < 0.3) hold.guard = true;
+        else if (r < 0.65) hold.x = Math.sign(dx) * (Math.random() < 0.5 ? 1 : -1);
+        else if (r < 0.8 && f.onGround) { inp.jumpP = true; hold.jump = true; hold.x = Math.sign(dx); }
+        else hold.x = -Math.sign(dx);
+      }
       inp.x = hold.x; inp.jump = hold.jump; inp.guard = hold.guard;
       return inp;
     }
