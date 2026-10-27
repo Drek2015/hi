@@ -2,7 +2,8 @@
 import sys, json, numpy as np
 from PIL import Image
 from collections import deque
-U='/root/.claude/uploads/2f91f90a-3efa-545a-9c83-ac75e68c5150/'
+import os
+U=os.environ.get('REF_DIR', 'refs/')   # folder holding the original reference images
 OUT='ref/'
 
 def prof(a, axis):
