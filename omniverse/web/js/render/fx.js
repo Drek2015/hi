@@ -161,7 +161,7 @@ export class ParticleSystem {
       const u = s.t / s.life;
       ctx.globalAlpha = u < 0.7 ? 1 : 1 - (u - 0.7) / 0.3;
       const sc = s.big ? 1.4 : 1;
-      ctx.font = `900 ${Math.round(34 * sc * (u < 0.1 ? 1 + (0.1 - u) * 5 : 1))}px "Bangers", "Impact", sans-serif`;
+      ctx.font = `${Math.round(22 * sc * (u < 0.1 ? 1 + (0.1 - u) * 5 : 1))}px "Press Start 2P", monospace`;
       ctx.textAlign = 'center';
       ctx.lineWidth = 6; ctx.strokeStyle = '#120a1a';
       ctx.strokeText(s.str, s.x, s.y);
