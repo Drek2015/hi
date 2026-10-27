@@ -1,6 +1,7 @@
 // Draws fighters from the supplied sprite art: picks the picture for the current action, and adds
 // the motion that single poses can't show on their own (lunges, smears, hit shake, knockdowns).
 import { SPRITE_ART, CHAR_SPRITES } from '../data/sprites.js';
+import { drawCharge } from './charge.js';
 
 const art = new Map();   // name -> { img, flash, ax, ay, h }
 
@@ -30,7 +31,8 @@ function prepare(name, img) {
   const fd = fg.createImageData(w, h);
   for (let i = 0; i < d.data.length; i += 4) if (d.data[i + 3] > 127) { fd.data[i] = 255; fd.data[i + 1] = 255; fd.data[i + 2] = 255; fd.data[i + 3] = 255; }
   fg.putImageData(fd, 0, 0);
-  art.set(name, { img: c, flash: f, ax: n ? Math.round(sx / n) : w / 2, ay: bottom + 1, h: meta.h });
+  const hand = meta.hand && { x: meta.face === 'left' ? w - 1 - meta.hand[0] : meta.hand[0], y: meta.hand[1] };
+  art.set(name, { img: c, flash: f, ax: n ? Math.round(sx / n) : w / 2, ay: bottom + 1, h: meta.h, hand });
 }
 
 export function loadSprites(base = 'assets/sprites/') {
@@ -202,10 +204,17 @@ export function drawSpriteFighter(ctx, f, x, y, px, { flash = false, alpha = 1, 
     g.translate(0, -bh * 0.5); g.rotate(p.spin); g.translate(0, bh * 0.5);
     g.globalAlpha = al;
     g.drawImage(img, -p.a.ax * s, -p.a.ay * s, p.a.img.width * s, p.a.img.height * s);
+    if (p.charge && p.a.hand) drawCharge(g, (p.a.hand.x - p.a.ax) * s, (p.a.hand.y - p.a.ay) * s, bh, p.charge, t);
     g.restore();
   };
   m.trail.forEach((p, i) => pose(ctx, p, tinted(p.a, trailColor), alpha * 0.1 * (i + 1)));
-  pose(ctx, { x: fx, y: fy, spin: m.spin, lean: m.lean, a, facing: f.facing }, flash ? a.flash : a.img, alpha);
+  // Abilities gather energy in the hand the artwork shows.
+  let charge = null;
+  if (f.state === 'cast' && f.cast && !flash) {
+    const c = f.cast, w = c.def.windup ?? 0.12;
+    charge = { fx: c.def.fx || c.def.id, k: Math.min(1, c.t / Math.max(0.05, w)), held: c.channel && !c.channel.done, color: c.def.color };
+  }
+  pose(ctx, { x: fx, y: fy, spin: m.spin, lean: m.lean, a, facing: f.facing, charge }, flash ? a.flash : a.img, alpha);
   ctx.restore();
   return lying;
 }
