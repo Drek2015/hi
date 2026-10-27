@@ -1,0 +1,55 @@
+import { A, S, U, prim as p } from '../build.js';
+
+export default {
+  id: 'ironman', name: 'Iron Man', universe: 'Marvel', title: 'Armored Avenger', energyName: 'Arc Power',
+  stats: { power: 1.05, defense: 1.08, speed: 1.0, hp: 1.04, energy: 1.1 },
+  color: '#c8282f',
+  branches: ['Repulsors', 'Arsenal', 'Armor Systems'],
+  skins: [
+    { id: 'mark', name: 'Mark 85', desc: 'Red and gold nanotech armor.' },
+    { id: 'chibi', name: 'Chibi', desc: 'Pocket-sized armor. Faster.', mods: { speed: 0.06 } },
+    { id: 'retro', name: '8-Bit', desc: 'Classic arcade armor. Hits harder.', mods: { dmg: 0.04 } },
+  ],
+  abilities: [
+    // Repulsors
+    A('repulsor', 'Repulsor Blast', 0, 0, p.projectile(60, { speed: 1850, r: 22 }), { cost: 12, cd: 1.2, anim: 'shoot', fx: 'repulsor' }),
+    S('calibratedRepulsors', 'Calibrated Repulsors', 0, 1, { boost: { repulsor: { dmg: 0.25 } } }, 'Repulsor Blast deals 25% more damage.'),
+    A('repulsorBarrage', 'Repulsor Barrage', 0, 2, p.projectile(45, { count: 4, spread: 10, speed: 1800, r: 18 }), { cost: 24, cd: 4, anim: 'shoot', fx: 'repulsor' }),
+    S('overclock', 'Overclocked Reactor', 0, 3, { regen: 0.12 }, 'Arc power recharges 12% faster.'),
+    A('unibeam', 'Unibeam', 0, 4, p.beam(240, { len: 1100, width: 90, time: 0.9 }), { cost: 40, cd: 8, anim: 'shoot', fx: 'unibeam' }),
+    S('focusedBeam', 'Focused Beam', 0, 5, { boost: { unibeam: { dmg: 0.2 } } }, 'Unibeam deals 20% more damage.'),
+    A('repulsorBurst', 'Repulsor Ring', 0, 6, p.burst(140, { r: 210, kb: 1000 }), { cost: 28, cd: 6, anim: 'burst', fx: 'repulsor' }),
+    S('arcReactor', 'Arc Reactor Core', 0, 7, { hp: 80 }, '+80 health.'),
+    A('protonCannon', 'Proton Cannon', 0, 8, p.beam(300, { len: 1300, width: 130, time: 1.1, windup: 0.6 }), { cost: 55, cd: 12, anim: 'shoot', fx: 'unibeam' }),
+    S('jarvis', 'J.A.R.V.I.S. Targeting', 0, 9, { crit: 0.08 }, '8% chance to land critical hits.'),
+    A('pointBlank', 'Point-Blank Blast', 0, 10, p.rush(170, { speed: 1500, time: 0.25 }), { cost: 28, cd: 5, anim: 'punch', fx: 'repulsor' }),
+    // Arsenal
+    A('microMissiles', 'Micro Missiles', 1, 0, p.projectile(40, { count: 4, spread: 18, homing: 3, speed: 1100, r: 16, explode: { r: 80, dmg: 20 } }), { cost: 22, cd: 4, anim: 'shoot', fx: 'missile' }),
+    S('guidance', 'Guidance Package', 1, 1, { boost: { microMissiles: { count: 2 } } }, 'Micro Missiles fires two more missiles.'),
+    A('shoulderLasers', 'Shoulder Lasers', 1, 2, p.beam(140, { len: 800, width: 30, time: 0.6, windup: 0.15 }), { cost: 26, cd: 5, anim: 'shoot', fx: 'laser' }),
+    S('targeting', 'Targeting Suite', 1, 3, { crit: 0.06 }, '6% chance to land critical hits.'),
+    A('countermeasures', 'Countermeasures', 1, 4, p.shield(150, { time: 2.5 }), { cost: 20, cd: 8, anim: 'guard', fx: 'flare' }),
+    A('missileRain', 'Missile Rain', 1, 5, p.rain(220, { count: 10, r: 20, explode: { r: 90, dmg: 25 } }), { cost: 40, cd: 8, anim: 'shoot', fx: 'missile' }),
+    S('munitions', 'Upgraded Munitions', 1, 6, { dmg: 0.06 }, 'All damage +6%.'),
+    A('nanoBlade', 'Nano Blade', 1, 7, p.combo(170, { time: 0.45 }), { cost: 30, cd: 5, anim: 'slash', fx: 'nanoBlade' }),
+    A('taserCable', 'Taser Cable', 1, 8, p.projectile(70, { speed: 1700, r: 18, status: { type: 'paralyze', time: 1.0 } }), { cost: 24, cd: 6, anim: 'shoot', fx: 'bolt' }),
+    S('tactical', 'Tactical Overlay', 1, 9, { cdr: 0.1 }, 'All cooldowns 10% shorter.'),
+    A('bunkerBuster', 'Bunker Buster', 1, 10, p.summon(240, { w: 300, h: 360, delay: 0.6, at: 'enemy' }), { cost: 48, cd: 11, anim: 'shoot', fx: 'missile' }),
+    // Armor Systems
+    A('thrusterDash', 'Thruster Dash', 2, 0, p.rush(100, { speed: 1950, time: 0.25 }), { cost: 14, cd: 2.5, anim: 'dash', fx: 'thruster' }),
+    S('lightweight', 'Lightweight Alloy', 2, 1, { speed: 0.1, airJumps: 1 }, '10% faster and one extra air jump.'),
+    A('energyShield', 'Energy Shield', 2, 2, p.shield(200, { time: 4 }), { cost: 24, cd: 9, anim: 'guard', fx: 'nanoShield' }),
+    S('platedArmor', 'Plated Armor', 2, 3, { def: 0.1 }, 'Take 10% less damage.'),
+    A('hulkbusterPunch', 'Hulkbuster Punch', 2, 4, p.rush(200, { speed: 1400, time: 0.3, kb: [1300, -500] }), { cost: 34, cd: 6, anim: 'punch', fx: 'fist' }),
+    S('selfRepair', 'Self-Repair', 2, 5, { regen: 0.1, hp: 60 }, '+60 health and faster arc power.'),
+    A('nanoRepair', 'Nano Repair', 2, 6, p.heal(180), { cost: 30, cd: 16, anim: 'pose', fx: 'nanoHeal' }),
+    S('mark85', 'Mark 85 Plating', 2, 7, { armor: 0.15 }, 'Armor: small hits barely stagger you.'),
+    A('arcOverdrive', 'Arc Overdrive', 2, 8, p.transform('arc', { dmg: 0.3, speed: 0.15, def: 0.15 }, { time: 10 }), { cost: 45, cd: 24, fx: 'arc' }),
+    S('heroicResolve', 'Heroic Resolve', 2, 9, { lifesteal: 0.05 }, 'Heal for 5% of damage dealt.'),
+    A('supersonicRam', 'Supersonic Ram', 2, 10, p.rush(240, { speed: 2300, time: 0.32, kb: [1400, -600] }), { cost: 40, cd: 8, anim: 'dash', fx: 'thruster' }),
+    // Ultimates
+    U('houseParty', 'House Party Protocol', 1, 11, p.rain(460, { count: 12, r: 26, explode: { r: 110, dmg: 160 } }), { fx: 'missile', color: '#ff4a2a' }),
+    U('nanoGauntletSnap', 'Nano Gauntlet Snap', 2, 11, p.burst(520, { r: 650, kb: 1400 }), { fx: 'snap', color: '#ffd84a' }),
+  ],
+  defaultLoadout: ['repulsor', 'microMissiles', 'thrusterDash', 'houseParty'],
+};

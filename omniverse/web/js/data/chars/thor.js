@@ -1,0 +1,55 @@
+import { A, S, U, prim as p } from '../build.js';
+
+export default {
+  id: 'thor', name: 'Thor', universe: 'Marvel', title: 'God of Thunder', energyName: 'Lightning',
+  stats: { power: 1.12, defense: 1.08, speed: 0.98, hp: 1.12, energy: 1.0 },
+  color: '#9fe3ff',
+  branches: ['Mjolnir', 'Lightning', 'God of Thunder'],
+  skins: [
+    { id: 'asgard', name: 'Asgardian', desc: 'Silver armor, red cape and Mjolnir.' },
+    { id: 'chibi', name: 'Chibi', desc: 'Pocket-sized thunder god. Faster.', mods: { speed: 0.06 } },
+    { id: 'retro', name: '8-Bit', desc: 'Classic arcade Thor. Hits harder.', mods: { dmg: 0.04 } },
+  ],
+  abilities: [
+    // Mjolnir
+    A('hammerThrow', 'Mjolnir Throw', 0, 0, p.projectile(90, { speed: 1500, r: 30, kb: [700, -300] }), { cost: 14, cd: 2.5, anim: 'throw', fx: 'mjolnir' }),
+    S('worthyGrip', 'Worthy', 0, 1, { dmg: 0.05 }, 'All damage +5%.'),
+    A('hammerSmash', 'Hammer Smash', 0, 2, p.rush(140, { speed: 1500, time: 0.28, kb: [1100, -500] }), { cost: 22, cd: 4, anim: 'punch', fx: 'mjolnir' }),
+    S('asgardian', 'Asgardian Physique', 0, 3, { hp: 100 }, '+100 health.'),
+    A('whirlwind', 'Hammer Whirlwind', 0, 4, p.burst(150, { r: 200, ticks: 4, interval: 0.12, life: 0.6 }), { cost: 28, cd: 5, anim: 'slash', fx: 'wind' }),
+    S('returnFlight', 'Return Flight', 0, 5, { boost: { hammerThrow: { dmg: 0.25 } } }, 'Mjolnir Throw deals 25% more damage.'),
+    A('groundSlam', 'Ground Slam', 0, 6, p.summon(180, { w: 360, h: 180, delay: 0.15, offset: 120 }), { cost: 30, cd: 6, anim: 'slam', fx: 'impact' }),
+    S('uruArmor', 'Uru Armor', 0, 7, { def: 0.1 }, 'Take 10% less damage.'),
+    A('stormbreakerThrow', 'Stormbreaker Throw', 0, 8, p.projectile(200, { speed: 1300, r: 44, explode: { r: 180, dmg: 60 } }), { cost: 42, cd: 8, anim: 'throw', fx: 'stormbreaker' }),
+    S('warriorsEye', "Warrior's Eye", 0, 9, { crit: 0.08 }, '8% chance to land critical hits.'),
+    A('hammerRush', 'Hammer Rush', 0, 10, p.combo(200, { time: 0.55 }), { cost: 36, cd: 7, anim: 'punch', fx: 'mjolnir' }),
+    // Lightning
+    A('lightningBolt', 'Lightning Bolt', 1, 0, p.summon(110, { w: 160, h: 600, delay: 0.25, at: 'enemy' }), { cost: 18, cd: 3, anim: 'pose', fx: 'thunder' }),
+    S('stormBorn', 'Storm-Born', 1, 1, { regen: 0.12 }, 'Lightning recharges 12% faster.'),
+    A('chainLightning', 'Chain Lightning', 1, 2, p.projectile(70, { speed: 2000, r: 20, status: { type: 'paralyze', time: 0.8 } }), { cost: 20, cd: 4, anim: 'shoot', fx: 'bolt' }),
+    S('thunderSurge', 'Thunder Surge', 1, 3, { ultGain: 0.2 }, 'Ultimate meter fills 20% faster.'),
+    A('thunderBeam', 'Thunder Beam', 1, 4, p.beam(220, { len: 1000, width: 80, time: 0.9 }), { cost: 38, cd: 8, anim: 'shoot', fx: 'lightningBeam' }),
+    S('focusedStorm', 'Focused Storm', 1, 5, { boost: { thunderBeam: { dmg: 0.2 } } }, 'Thunder Beam deals 20% more damage.'),
+    A('stormCall', 'Call the Storm', 1, 6, p.rain(220, { count: 8, r: 26, status: { type: 'paralyze', time: 0.5 } }), { cost: 40, cd: 9, anim: 'pose', fx: 'thunder' }),
+    S('stormEye', 'Eye of the Storm', 1, 7, { crit: 0.06 }, '6% chance to land critical hits.'),
+    A('thunderArmor', 'Thunder Armor', 1, 8, p.shield(220, { time: 4 }), { cost: 26, cd: 9, anim: 'guard', fx: 'thunderAura' }),
+    S('lifeOfStorm', 'Life of the Storm', 1, 9, { lifesteal: 0.05 }, 'Heal for 5% of damage dealt.'),
+    A('bifrostStrike', 'Bifrost Strike', 1, 10, p.summon(260, { w: 300, h: 700, delay: 0.45, at: 'enemy' }), { cost: 50, cd: 12, anim: 'pose', fx: 'bifrost' }),
+    // God of Thunder
+    A('thunderCharge', 'Thunder Charge', 2, 0, p.rush(110, { speed: 1800, time: 0.3 }), { cost: 16, cd: 3, anim: 'dash', fx: 'thunder' }),
+    S('flight', 'Hammer Flight', 2, 1, { speed: 0.08, airJumps: 1 }, '8% faster and one extra air jump.'),
+    A('thunderClap', 'Thunderclap', 2, 2, p.burst(130, { r: 220, kb: 1000, status: { type: 'paralyze', time: 0.5 } }), { cost: 24, cd: 5, anim: 'slam', fx: 'thunderClap' }),
+    S('godlyFrame', 'Godly Frame', 2, 3, { armor: 0.1 }, 'Light armor: small hits barely stagger you.'),
+    A('godOfThunder', 'God of Thunder', 2, 4, p.transform('thunder', { dmg: 0.3, speed: 0.15, def: 0.15 }, { time: 10 }), { cost: 40, cd: 22, fx: 'thunderAura' }),
+    S('kingOfAsgard', 'King of Asgard', 2, 5, { hp: 120 }, '+120 health.'),
+    A('lightningDash', 'Lightning Dash', 2, 6, p.teleport(120, { to: 'behind' }), { cost: 24, cd: 5, anim: 'dash', fx: 'bolt' }),
+    S('odinforce', 'Odinforce', 2, 7, { dmg: 0.08 }, 'All damage +8%.'),
+    A('asgardianVigor', 'Asgardian Vigor', 2, 8, p.heal(170), { cost: 30, cd: 16, anim: 'pose', fx: 'thunderAura' }),
+    S('allfather', 'Allfather', 2, 9, { cdr: 0.1 }, 'All cooldowns 10% shorter.'),
+    A('bifrostTravel', 'Bifrost Travel', 2, 10, p.phase({ time: 1.2 }), { cost: 26, cd: 10, fx: 'bifrost' }),
+    // Ultimates
+    U('bringMeThanos', 'Bring Me Thanos!', 0, 11, p.rush(480, { speed: 2100, time: 0.45, kb: [1500, -700] }), { fx: 'stormbreaker', color: '#9fe3ff' }),
+    U('lightningStorm', 'Ragnarok Storm', 1, 11, p.rain(470, { count: 10, r: 34, status: { type: 'paralyze', time: 0.6 } }), { fx: 'thunder', color: '#bfeaff' }),
+  ],
+  defaultLoadout: ['hammerThrow', 'lightningBolt', 'thunderCharge', 'bringMeThanos'],
+};

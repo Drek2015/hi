@@ -32,6 +32,13 @@ export const SPRITE_ART = {
   ironman: { face: 'right', h: 86 },
   cap: { face: 'front', h: 88 },
   thor: { face: 'right', h: 90 },
+  ironman_chibi: { face: 'front', h: 20 },
+  ironman_retro: { face: 'front', h: 30 },
+  cap_chibi: { face: 'front', h: 19 },
+  cap_retro: { face: 'right', h: 23 },
+  thor_chibi: { face: 'front', h: 20 },
+  thor_retro: { face: 'front', h: 30 },
+  madara_chibi: { face: 'front', h: 82 },
 };
 
 // Which picture each character shows for each kind of action. Slots: stand (idle, run, air),
@@ -51,6 +58,7 @@ export const CHAR_SPRITES = {
   },
   madara: {
     base: { stand: 'madara_stand', crouch: 'madara_stand', sign: 'madara_gunbai', strike: 'madara_gunbai', beam: 'madara_gunbai', victory: 'madara_stand' },
+    skins: { war: { stand: 'madara_gunbai', victory: 'madara_gunbai' }, chibi: { all: 'madara_chibi' } },
   },
   momoshiki: {
     base: { stand: 'momoshiki_stand' },
@@ -64,7 +72,7 @@ export const CHAR_SPRITES = {
   obito: { base: { stand: 'obito_tobi' } },
   sasuke: { base: { stand: 'sasuke_cloak' } },
   spiderman: { base: { stand: 'spiderman' } },
-  ironman: { base: { stand: 'ironman' } },
-  cap: { base: { stand: 'cap' } },
-  thor: { base: { stand: 'thor' } },
+  ironman: { base: { stand: 'ironman' }, skins: { chibi: { all: 'ironman_chibi' }, retro: { all: 'ironman_retro' } } },
+  cap: { base: { stand: 'cap' }, skins: { chibi: { all: 'cap_chibi' }, retro: { all: 'cap_retro' } } },
+  thor: { base: { stand: 'thor' }, skins: { chibi: { all: 'thor_chibi' }, retro: { all: 'thor_retro' } } },
 };

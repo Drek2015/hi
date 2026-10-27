@@ -79,6 +79,33 @@ export const FX = {
   susanoo: { style: 'aura', color: '#9a6bff' }, susanooBlue: { style: 'aura', color: '#4fb6ff' }, tenTails: { style: 'aura', color: '#d8d8f0' },
   sixpaths: { style: 'aura', color: '#ffd84a' },
   absorbPalm: { style: 'ring', color: '#c9a6ff', color2: '#ffffff' },
+  // Minato / Madara
+  raijin: { style: 'ring', color: '#ffd84a', color2: '#fff6c0' },
+  gunbai: { style: 'ring', color: '#c8282f', color2: '#ffe0e0' },
+  meteor: { style: 'darkOrb', color: '#5a3a2a', color2: '#ff9a4a', scale: 2.2 },
+  // Iron Man
+  repulsor: { style: 'orb', color: '#9fe8ff', color2: '#ffffff' },
+  unibeam: { style: 'beam', color: '#9fe8ff', color2: '#ffffff' },
+  laser: { style: 'beam', color: '#ff4a4a', color2: '#ffd0d0' },
+  missile: { style: 'fire', color: '#ff8a3a', color2: '#ffe0a0' },
+  flare: { style: 'ring', color: '#ff9a3a', color2: '#ffe0a0' },
+  nanoBlade: { style: 'slash', color: '#ff5a5a', color2: '#ffe0e0' },
+  nanoShield: { style: 'aura', color: '#ff5a3a' },
+  nanoHeal: { style: 'aura', color: '#ffd84a' },
+  thruster: { style: 'fire', color: '#7fd0ff', color2: '#ffffff' },
+  arc: { style: 'aura', color: '#7fd0ff' },
+  snap: { style: 'ring', color: '#ffd84a', color2: '#ffffff', flash: true },
+  // Captain America
+  shieldThrow: { style: 'star', color: '#d8283a', color2: '#2a5ad8', scale: 1.4 },
+  vibranium: { style: 'ring', color: '#cfd8ff', color2: '#ffffff' },
+  resolve: { style: 'aura', color: '#4f8aff' },
+  // Thor
+  mjolnir: { style: 'blade', color: '#9aa2b8', color2: '#ffffff', scale: 1.4 },
+  stormbreaker: { style: 'blade', color: '#c87a3a', color2: '#bfeaff', scale: 1.8 },
+  thunder: { style: 'pillar', color: '#bfeaff', color2: '#ffffff' },
+  thunderClap: { style: 'ring', color: '#9fe3ff', color2: '#ffffff' },
+  thunderAura: { style: 'aura', color: '#9fe3ff' },
+  bifrost: { style: 'pillar', color: '#ff9af0', color2: '#9ff0ff' },
 };
 
 export function fxInfo(id) {

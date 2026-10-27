@@ -1,0 +1,55 @@
+import { A, S, U, prim as p } from '../build.js';
+
+export default {
+  id: 'madara', name: 'Madara Uchiha', universe: 'Naruto', title: 'Ghost of the Uchiha', energyName: 'Chakra',
+  stats: { power: 1.12, defense: 1.06, speed: 0.96, hp: 1.1, energy: 1.0 },
+  color: '#c8282f',
+  branches: ['Uchiha Fire', 'Susanoo', 'Wood & Rinnegan'],
+  skins: [
+    { id: 'armor', name: 'Battle Armor', desc: 'Red Uchiha armor with gunbai and scythe.' },
+    { id: 'war', name: 'War Gunbai', desc: 'Gunbai and scythe drawn for the war. Regenerates.', mods: { regen: 0.1, hp: 60 } },
+    { id: 'chibi', name: 'Chibi', desc: 'Pocket-sized Madara with Sharingan blazing. Faster.', mods: { speed: 0.06 } },
+  ],
+  abilities: [
+    // Uchiha Fire
+    A('greatFireball', 'Great Fireball', 0, 0, p.projectile(110, { speed: 1000, r: 44, status: { type: 'burn', time: 2.5, dps: 14 } }), { cost: 22, cd: 3, anim: 'blow', fx: 'fireball' }),
+    S('uchihaBlood', 'Uchiha Blood', 0, 1, { dmg: 0.05 }, 'All damage +5%.'),
+    A('majesticDestroyer', 'Majestic Destroyer Flame', 0, 2, p.beam(230, { len: 900, width: 140, time: 1.0, status: { type: 'burn', time: 3, dps: 16 } }), { cost: 40, cd: 8, anim: 'blow', fx: 'fireBeam' }),
+    S('sharinganReads', 'Sharingan Reads', 0, 3, { crit: 0.08 }, '8% chance to land critical hits.'),
+    A('uchihaReturn', 'Uchiha Return', 0, 4, p.counter(160), { cost: 22, cd: 7, fx: 'gunbai' }),
+    A('gunbaiGale', 'Gunbai Gale', 0, 5, p.burst(130, { r: 200, offset: 120, kb: 1000 }), { cost: 24, cd: 4, anim: 'slash', fx: 'wind' }),
+    S('warVeteran', 'Veteran of the Warring States', 0, 6, { def: 0.1, hp: 80 }, '+80 health and 10% defense.'),
+    A('majesticDemolisher', 'Majestic Demolisher', 0, 7, p.rain(260, { count: 8, r: 34, status: { type: 'burn', time: 2, dps: 12 } }), { cost: 45, cd: 9, anim: 'blow', fx: 'fireball' }),
+    A('kamaChain', 'Kama Chain', 0, 8, p.projectile(90, { speed: 1800, r: 20, pull: 900 }), { cost: 20, cd: 5, anim: 'throw', fx: 'chain' }),
+    S('uchihaLegend', 'Uchiha Legend', 0, 9, { dmg: 0.08 }, 'All damage +8%.'),
+    A('mangekyoGenjutsu', 'Mangekyo Genjutsu', 0, 10, p.projectile(80, { speed: 1400, r: 34, status: { type: 'root', time: 1.2 } }), { cost: 30, cd: 8, anim: 'stare', fx: 'genjutsu' }),
+    // Susanoo
+    A('susanooRibcage', 'Susanoo Ribcage', 1, 0, p.shield(220, { time: 4 }), { cost: 24, cd: 9, anim: 'guard', fx: 'susanoo' }),
+    S('susanooArmor', 'Susanoo Armor', 1, 1, { armor: 0.1 }, 'Light armor: small hits barely stagger you.'),
+    A('susanooSlash', 'Susanoo Slash', 1, 2, p.burst(170, { r: 240, offset: 180, kb: 1000 }), { cost: 30, cd: 5, anim: 'slash', fx: 'susanooSword' }),
+    S('eternalMangekyo', 'Eternal Mangekyo', 1, 3, { regen: 0.12 }, 'Chakra regenerates 12% faster.'),
+    A('susanoo', 'Susanoo', 1, 4, p.transform('susanoo', { def: 0.3, dmg: 0.2 }, { time: 10 }), { cost: 40, cd: 22, fx: 'susanoo' }),
+    S('perfectBody', 'Perfect Body', 1, 5, { hp: 120 }, '+120 health.'),
+    A('susanooArrow', 'Susanoo Arrow', 1, 6, p.projectile(200, { speed: 1700, r: 40 }), { cost: 36, cd: 6, anim: 'bow', fx: 'susanooArrow' }),
+    S('susanooMastery', 'Susanoo Mastery', 1, 7, { def: 0.08 }, 'Take 8% less damage.'),
+    A('perfectSusanoo', 'Perfect Susanoo', 1, 8, p.transform('susanoo', { def: 0.45, dmg: 0.35, armor: 0.3 }, { time: 12, burst: { dmg: 120, r: 260 } }), { cost: 60, cd: 30, fx: 'susanoo' }),
+    S('tenguBlade', 'Tengu Blade', 1, 9, { dmg: 0.06 }, 'All damage +6%.'),
+    A('susanooCleave', 'Perfect Susanoo Cleave', 1, 10, p.summon(260, { w: 520, h: 300, delay: 0.35 }), { cost: 50, cd: 10, anim: 'slash', fx: 'susanooSword' }),
+    // Wood & Rinnegan
+    A('woodSpikes', 'Wood Release: Spikes', 2, 0, p.summon(110, { w: 260, h: 200, delay: 0.25 }), { cost: 20, cd: 4, anim: 'slam', fx: 'woodSpikes' }),
+    S('hashiramaCells', 'Hashirama Cells', 2, 1, { hp: 100 }, '+100 health.'),
+    A('woodDragon', 'Wood Dragon', 2, 2, p.rush(170, { speed: 1500, time: 0.4 }), { cost: 32, cd: 6, anim: 'dash', fx: 'woodSpikes' }),
+    S('cellRegeneration', 'Cell Regeneration', 2, 3, { regen: 0.1, lifesteal: 0.03 }, 'Faster chakra and heal for 3% of damage dealt.'),
+    A('deepForest', 'Deep Forest Emergence', 2, 4, p.rain(200, { count: 6, r: 40 }), { cost: 40, cd: 8, anim: 'slam', fx: 'woodSpikes' }),
+    A('pretaPath', 'Preta Path', 2, 5, p.shield(200, { time: 3 }), { cost: 26, cd: 10, anim: 'guard', fx: 'absorbPalm' }),
+    S('rinnegan', 'Rinnegan', 2, 6, { crit: 0.08 }, '8% chance to land critical hits.'),
+    A('shinraTensei', 'Shinra Tensei', 2, 7, p.burst(170, { r: 300, kb: 1300 }), { cost: 40, cd: 9, anim: 'burst', fx: 'shinra' }),
+    A('limboBorderJail', 'Limbo: Border Jail', 2, 8, p.clones({ count: 2, time: 6, hp: 160 }), { cost: 40, cd: 14, anim: 'stare', fx: 'smoke' }),
+    S('sixPathsPower', 'Six Paths Power', 2, 9, { dmg: 0.1 }, 'All damage +10%.'),
+    A('chibakuTensei', 'Chibaku Tensei', 2, 10, p.summon(230, { w: 400, h: 400, delay: 0.5, at: 'enemy' }), { cost: 50, cd: 12, anim: 'burst', fx: 'chibaku' }),
+    // Ultimates
+    U('tengaiShinsei', 'Tengai Shinsei', 2, 11, p.rain(480, { count: 3, r: 110, area: 500, speed: 1200, explode: { r: 260, dmg: 180 } }), { fx: 'meteor', color: '#ff7a2a' }),
+    U('susanooRampage', 'Perfect Susanoo Rampage', 1, 11, p.combo(440, { time: 1.0, speed: 900 }), { fx: 'susanooSword', color: '#9a6bff' }),
+  ],
+  defaultLoadout: ['greatFireball', 'susanooRibcage', 'woodSpikes', 'tengaiShinsei'],
+};

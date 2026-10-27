@@ -1,0 +1,55 @@
+import { A, S, U, prim as p } from '../build.js';
+
+export default {
+  id: 'minato', name: 'Minato Namikaze', universe: 'Naruto', title: 'The Yellow Flash', energyName: 'Chakra',
+  stats: { power: 1.0, defense: 0.96, speed: 1.14, hp: 1.0, energy: 1.12 },
+  color: '#ffd84a',
+  branches: ['Flying Raijin', 'Rasengan', 'Sage & Kurama'],
+  skins: [
+    { id: 'hokage', name: 'Fourth Hokage', desc: 'The flame-hemmed Hokage cloak.' },
+    { id: 'flash', name: 'Yellow Flash', desc: 'Battle-ready, kunai in hand. Teleports cost less.', mods: { cdr: 0.06 } },
+    { id: 'jonin', name: 'Jonin', desc: 'Standard Leaf flak jacket. Tougher.', mods: { def: 0.05, hp: 50 } },
+  ],
+  abilities: [
+    // Flying Raijin
+    A('flyingRaijin', 'Flying Thunder God', 0, 0, p.teleport(90, { to: 'behind' }), { cost: 20, cd: 3, anim: 'dash', fx: 'raijin' }),
+    S('raijinMarks', 'Space-Time Marks', 0, 1, { boost: { flyingRaijin: { cd: -0.25 } } }, 'Flying Thunder God recharges 25% faster.'),
+    A('kunaiVolley', 'Kunai Volley', 0, 2, p.projectile(45, { count: 3, spread: 12, speed: 1750, r: 16 }), { cost: 14, cd: 2, anim: 'throw', fx: 'kunai' }),
+    S('yellowFlash', 'Yellow Flash', 0, 3, { speed: 0.1 }, 'Moves 10% faster.'),
+    A('raijinSlash', 'Flying Raijin Slash', 0, 4, p.combo(140, { time: 0.4 }), { cost: 26, cd: 5, anim: 'slash', fx: 'slash' }),
+    A('raijinBarrier', 'Flying Raijin Barrier', 0, 5, p.counter(150), { cost: 22, cd: 7, fx: 'raijin' }),
+    S('hiraishinMastery', 'Hiraishin Mastery', 0, 6, { cdr: 0.1 }, 'All cooldowns 10% shorter.'),
+    A('markedKunaiStorm', 'Marked Kunai Storm', 0, 7, p.rain(200, { count: 10, r: 18, speed: 1900 }), { cost: 38, cd: 8, anim: 'throw', fx: 'kunai' }),
+    A('raijinSecondStep', 'Flying Raijin: Second Step', 0, 8, p.teleport(160, { to: 'above' }), { cost: 30, cd: 6, anim: 'dash', fx: 'raijin' }),
+    S('fastestShinobi', 'Fastest Shinobi Alive', 0, 9, { speed: 0.12, airJumps: 1 }, '12% faster and one extra air jump.'),
+    A('spaceTimeBarrier', 'Space-Time Barrier', 0, 10, p.phase({ time: 1.4 }), { cost: 30, cd: 12, fx: 'raijin' }),
+    // Rasengan
+    A('rasengan', 'Rasengan', 1, 0, p.rush(120, { speed: 1550, time: 0.3 }), { cost: 22, cd: 3, anim: 'thrust', fx: 'rasengan' }),
+    S('rasenganCreator', 'Creator of the Rasengan', 1, 1, { boost: { rasengan: { dmg: 0.25 } } }, 'Rasengan deals 25% more damage.'),
+    A('raijinRasengan', 'Raijin Rasengan', 1, 2, p.teleport(150, { to: 'behind' }), { cost: 30, cd: 6, anim: 'thrust', fx: 'rasengan' }),
+    S('shapeTransformation', 'Shape Transformation', 1, 3, { dmg: 0.05 }, 'All damage +5%.'),
+    A('bigBallRasengan', 'Big Ball Rasengan', 1, 4, p.rush(175, { speed: 1300, time: 0.36, kb: [1100, -520] }), { cost: 34, cd: 6, anim: 'thrust', fx: 'bigRasengan' }),
+    S('chakraFlow', 'Chakra Flow', 1, 5, { regen: 0.12 }, 'Chakra regenerates 12% faster.'),
+    A('rasenganBarrage', 'Rasengan Barrage', 1, 6, p.combo(160, { time: 0.55 }), { cost: 34, cd: 6, anim: 'thrust', fx: 'rasengan' }),
+    S('perfectSpiral', 'Perfect Spiral', 1, 7, { boost: { bigBallRasengan: { size: 0.3, dmg: 0.15 } } }, 'Big Ball Rasengan is bigger and hits harder.'),
+    A('planetaryRasengan', 'Rasengan Planetary', 1, 8, p.burst(200, { r: 170, offset: 160, ticks: 6, interval: 0.1, life: 0.7 }), { cost: 42, cd: 7, anim: 'thrust', fx: 'planetary' }),
+    S('eightTrigramsSeal', 'Eight Trigrams Seal', 1, 9, { def: 0.08 }, 'Take 8% less damage.'),
+    A('reaperDeathSeal', 'Reaper Death Seal', 1, 10, p.grab(220, { range: 200, status: { type: 'slow', time: 4 } }), { cost: 55, cd: 14, anim: 'grab', fx: 'genjutsu' }),
+    // Sage & Kurama
+    A('sageMode', 'Sage Mode', 2, 0, p.buff({ dmg: 0.2, def: 0.15 }, { time: 12 }), { cost: 30, cd: 18, anim: 'sign', fx: 'sage' }),
+    S('frogKata', 'Frog Kata', 2, 1, { armor: 0.1 }, 'Light armor: small hits barely stagger you.'),
+    A('gamabunta', 'Summoning: Gamabunta', 2, 2, p.summon(180, { w: 420, h: 380, delay: 0.45 }), { cost: 45, cd: 12, anim: 'slam', fx: 'toad' }),
+    S('toadSage', 'Toad Sage Training', 2, 3, { hp: 80 }, '+80 health.'),
+    A('kuramaMode', 'Kurama Chakra Mode', 2, 4, p.transform('kcm', { dmg: 0.2, speed: 0.15, def: 0.1 }, { time: 10 }), { cost: 35, cd: 20, fx: 'kcm' }),
+    S('yangKurama', 'Yang Kurama', 2, 5, { ultGain: 0.2 }, 'Ultimate meter fills 20% faster.'),
+    A('tailedBeastBomb', 'Tailed Beast Bomb', 2, 6, p.projectile(210, { speed: 950, r: 60, explode: { r: 250, dmg: 80 } }), { cost: 50, cd: 9, anim: 'throw', fx: 'tailedBomb', windup: 0.4 }),
+    S('warArcResolve', 'War Arc Resolve', 2, 7, { lifesteal: 0.05 }, 'Heal for 5% of damage dealt.'),
+    A('chakraArm', 'Chakra Arm', 2, 8, p.summon(130, { w: 360, h: 160, delay: 0.15, offset: 260, kb: [900, -300] }), { cost: 26, cd: 5, anim: 'punch', fx: 'paw' }),
+    S('reaperSight', 'Reaper Sight', 2, 9, { crit: 0.08 }, '8% chance to land critical hits.'),
+    A('raijinBarrage', 'Flying Raijin Barrage', 2, 10, p.combo(220, { time: 0.6 }), { cost: 45, cd: 9, anim: 'dash', fx: 'raijin' }),
+    // Ultimates
+    U('raijinMassTeleport', 'Flying Raijin: Mass Assault', 0, 11, p.combo(440, { time: 1.1, speed: 1100 }), { fx: 'raijin', color: '#ffd84a' }),
+    U('kuramaRasengan', 'Kurama Big Ball Rasengan', 2, 11, p.rush(420, { speed: 1700, time: 0.45, kb: [1500, -700] }), { fx: 'bigRasengan', color: '#ff9a1f' }),
+  ],
+  defaultLoadout: ['rasengan', 'flyingRaijin', 'sageMode', 'raijinMassTeleport'],
+};

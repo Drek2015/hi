@@ -1,0 +1,55 @@
+import { A, S, U, prim as p } from '../build.js';
+
+export default {
+  id: 'cap', name: 'Captain America', universe: 'Marvel', title: 'First Avenger', energyName: 'Stamina',
+  stats: { power: 1.02, defense: 1.12, speed: 1.02, hp: 1.1, energy: 1.0 },
+  color: '#2a5ad8',
+  branches: ['Vibranium Shield', 'Super Soldier', 'Leadership'],
+  skins: [
+    { id: 'avenger', name: 'Avenger', desc: 'Star-spangled stealth suit and vibranium shield.' },
+    { id: 'chibi', name: 'Chibi', desc: 'Pocket-sized Cap. Faster.', mods: { speed: 0.06 } },
+    { id: 'retro', name: '8-Bit', desc: 'Classic arcade Cap. Tougher.', mods: { def: 0.05 } },
+  ],
+  abilities: [
+    // Vibranium Shield
+    A('shieldThrow', 'Shield Throw', 0, 0, p.projectile(80, { speed: 1500, r: 30, pierce: true }), { cost: 14, cd: 2.5, anim: 'throw', fx: 'shieldThrow' }),
+    S('ricochet', 'Ricochet', 0, 1, { boost: { shieldThrow: { dmg: 0.25 } } }, 'Shield Throw deals 25% more damage.'),
+    A('shieldBash', 'Shield Bash', 0, 2, p.rush(110, { speed: 1500, time: 0.25 }), { cost: 16, cd: 3, anim: 'dash', fx: 'vibranium' }),
+    S('vibraniumGrip', 'Vibranium Grip', 0, 3, { def: 0.1 }, 'Take 10% less damage.'),
+    A('shieldBlock', 'Shield Block', 0, 4, p.shield(220, { time: 3, reflect: true }), { cost: 22, cd: 8, anim: 'guard', fx: 'vibranium' }),
+    A('shieldSlam', 'Shield Slam', 0, 5, p.burst(150, { r: 220, kb: 1000 }), { cost: 26, cd: 5, anim: 'slam', fx: 'vibranium' }),
+    S('perfectAim', 'Perfect Aim', 0, 6, { crit: 0.08 }, '8% chance to land critical hits.'),
+    A('tripleRicochet', 'Triple Ricochet', 0, 7, p.projectile(60, { count: 3, spread: 16, speed: 1500, r: 26 }), { cost: 30, cd: 6, anim: 'throw', fx: 'shieldThrow' }),
+    A('shieldCounter', 'Shield Counter', 0, 8, p.counter(160), { cost: 22, cd: 7, fx: 'vibranium' }),
+    S('starSpangled', 'Star-Spangled Man', 0, 9, { hp: 100 }, '+100 health.'),
+    A('vibraniumShockwave', 'Vibranium Shockwave', 0, 10, p.burst(220, { r: 320, kb: 1200 }), { cost: 45, cd: 10, anim: 'slam', fx: 'vibranium' }),
+    // Super Soldier
+    A('soldierCombo', 'Super Soldier Combo', 1, 0, p.combo(110, { time: 0.45 }), { cost: 18, cd: 3, anim: 'punch', fx: 'fist' }),
+    S('serum', 'Super Soldier Serum', 1, 1, { dmg: 0.06, hp: 60 }, '+6% damage and +60 health.'),
+    A('flyingKick', 'Flying Kick', 1, 2, p.rush(130, { speed: 1700, time: 0.28 }), { cost: 18, cd: 3.5, anim: 'kick', fx: 'fist' }),
+    S('endurance', 'Endurance', 1, 3, { regen: 0.12 }, 'Stamina recovers 12% faster.'),
+    A('bikeCharge', 'Motorcycle Charge', 1, 4, p.rush(190, { speed: 2000, time: 0.38, kb: [1300, -500] }), { cost: 32, cd: 7, anim: 'dash', fx: 'impact' }),
+    S('peakHuman', 'Peak Human', 1, 5, { speed: 0.1 }, 'Moves 10% faster.'),
+    A('grapple', 'Grapple Throw', 1, 6, p.grab(150, { range: 170 }), { cost: 20, cd: 5, anim: 'grab', fx: 'fist' }),
+    S('tactician', 'Tactician', 1, 7, { cdr: 0.08 }, 'All cooldowns 8% shorter.'),
+    A('neverGiveUp', 'I Can Do This All Day', 1, 8, p.buff({ dmg: 0.25, speed: 0.1, def: 0.1 }, { time: 10 }), { cost: 30, cd: 18, anim: 'pose', fx: 'resolve' }),
+    S('secondWind', 'Second Wind', 1, 9, { lifesteal: 0.05 }, 'Heal for 5% of damage dealt.'),
+    A('mjolnirStrike', 'Worthy: Mjolnir Strike', 1, 10, p.summon(240, { w: 220, h: 620, delay: 0.35, at: 'enemy', status: { type: 'paralyze', time: 0.8 } }), { cost: 50, cd: 12, anim: 'pose', fx: 'thunder' }),
+    // Leadership
+    A('rally', 'Rally', 2, 0, p.heal(140, { energy: 20 }), { cost: 20, cd: 14, anim: 'pose', fx: 'resolve' }),
+    S('inspire', 'Inspire', 2, 1, { ultGain: 0.2 }, 'Ultimate meter fills 20% faster.'),
+    A('airSupport', 'Air Support', 2, 2, p.rain(160, { count: 8, r: 20, explode: { r: 80, dmg: 20 } }), { cost: 32, cd: 8, anim: 'pose', fx: 'missile' }),
+    S('kevlar', 'Kevlar Weave', 2, 3, { armor: 0.1 }, 'Light armor: small hits barely stagger you.'),
+    A('assemble', 'Assemble', 2, 4, p.buff({ def: 0.25, dmg: 0.15 }, { time: 10 }), { cost: 28, cd: 18, anim: 'pose', fx: 'resolve' }),
+    S('firstAvenger', 'First Avenger', 2, 5, { hp: 80 }, '+80 health.'),
+    A('smokeGrenade', 'Smoke Grenade', 2, 6, p.trap(90, { status: { type: 'slow', time: 3 } }), { cost: 18, cd: 6, anim: 'throw', fx: 'smoke' }),
+    S('commander', 'Field Commander', 2, 7, { def: 0.08 }, 'Take 8% less damage.'),
+    A('battleCry', 'Battle Cry', 2, 8, p.burst(120, { r: 280, status: { type: 'slow', time: 2.5 } }), { cost: 28, cd: 9, anim: 'pose', fx: 'impact' }),
+    S('strategist', 'Strategist', 2, 9, { cdr: 0.1 }, 'All cooldowns 10% shorter.'),
+    A('ricochetStorm', 'Ricochet Storm', 2, 10, p.rain(240, { count: 8, r: 30 }), { cost: 45, cd: 10, anim: 'throw', fx: 'shieldThrow' }),
+    // Ultimates
+    U('avengersAssemble', 'Avengers... Assemble!', 2, 11, p.combo(450, { time: 1.1, speed: 1000 }), { fx: 'shieldThrow', color: '#2a5ad8' }),
+    U('worthy', 'Worthy: Thunder of Mjolnir', 1, 11, p.summon(500, { w: 440, h: 640, delay: 0.5, at: 'enemy', status: { type: 'paralyze', time: 1.2 } }), { fx: 'thunder', color: '#9fe3ff' }),
+  ],
+  defaultLoadout: ['shieldThrow', 'soldierCombo', 'rally', 'avengersAssemble'],
+};
