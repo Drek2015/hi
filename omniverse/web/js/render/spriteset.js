@@ -99,37 +99,115 @@ export function spriteFor(f) {
   return art.get(name) || art.get(set.stand) || null;
 }
 
+// Silhouettes tinted to a colour, for afterimages.
+const tints = new Map();
+function tinted(a, color) {
+  const key = a.img.width + 'x' + a.img.height + color + (a.ax | 0);
+  let c = tints.get(key);
+  if (c) return c;
+  c = canvas(a.img.width, a.img.height);
+  const g = c.getContext('2d');
+  g.drawImage(a.flash, 0, 0);
+  g.globalCompositeOperation = 'source-in';
+  g.fillStyle = color; g.fillRect(0, 0, c.width, c.height);
+  tints.set(key, c);
+  return c;
+}
+
+const motion = new WeakMap();
+const approach = (v, target, rate, dt) => v + (target - v) * (1 - Math.exp(-rate * dt));
+
+// Secondary motion layered on the supplied art: lean, squash and stretch, spins, knockdowns.
+// None of it redraws the sprite; it only moves, tilts and scales it.
+function updateMotion(f, dt, t) {
+  let m = motion.get(f);
+  if (!m) { m = { sq: 0, lean: 0, spin: 0, wasGround: true, lastVy: 0, trail: [], prevState: f.state }; motion.set(f, m); }
+  if (dt <= 0) return m;
+  // Landing squash and take-off stretch.
+  if (!m.wasGround && f.onGround) m.sq = -Math.min(0.26, 0.08 + Math.max(0, m.lastVy) / 9000);
+  if (m.wasGround && !f.onGround && f.vy < -500) m.sq = 0.16;
+  if (f.state === 'hurt' && m.prevState !== 'hurt') m.sq = -0.12;
+  if (f.state === 'attack' && m.prevState !== 'attack') m.sq = -0.06;
+  m.sq *= Math.exp(-dt * 13);
+  // Lean toward where the body is going.
+  let lean = 0;
+  switch (f.state) {
+    case 'run': lean = 0.11 * Math.min(1, Math.abs(f.vx) / 640); break;
+    case 'dash': lean = 0.26; break;
+    case 'attack': lean = f.move && f.moveT >= f.move.startup ? 0.13 : -0.06; break;
+    case 'hurt': lean = -0.24; break;
+    case 'guardbreak': lean = -0.3; break;
+    case 'guard': lean = -0.06; break;
+    case 'charge': lean = 0.04; break;
+    case 'air': lean = f.vy < 0 ? -0.05 : 0.07; break;
+    case 'cast': lean = f.cast && f.cast.t > (f.cast.def.windup ?? 0.12) ? 0.08 : -0.08; break;
+  }
+  m.lean = approach(m.lean, lean, 16, dt);
+  // Spins while launched, flat on the back when knocked down, rolling back up on get-up.
+  if (f.state === 'tumble') m.spin -= dt * (8 + Math.hypot(f.vx, f.vy) / 160);
+  else {
+    let target = 0;
+    if (f.state === 'down') target = -Math.PI / 2;
+    // Unwind the spin to the nearest equivalent angle before settling.
+    const full = Math.PI * 2;
+    while (m.spin - target > Math.PI) m.spin -= full;
+    while (target - m.spin > Math.PI) m.spin += full;
+    m.spin = approach(m.spin, target, f.state === 'down' ? 22 : 12, dt);
+  }
+  m.wasGround = f.onGround; m.lastVy = f.vy; m.prevState = f.state;
+  return m;
+}
+
 // Draw fighter f with its feet at screen point (x, y). `px` is screen pixels per art pixel;
 // sprites are sized so a standing character is 100 art pixels tall.
-export function drawSpriteFighter(ctx, f, x, y, px, { flash = false, alpha = 1, t = 0 } = {}) {
+export function drawSpriteFighter(ctx, f, x, y, px, { flash = false, alpha = 1, t = 0, dt = 0, trailColor = '#ffffff' } = {}) {
   const a = spriteFor(f);
   if (!a) return false;
+  const m = updateMotion(f, dt, t);
   const s = (100 / a.h) * px;
-  let ox = 0, oy = 0, quarter = 0;
+  const bh = 100 * px;
+  let ox = 0, oy = 0, sx = 1, sy = 1;
   const step = n => Math.floor(t * n);
   switch (f.state) {
-    case 'run': oy = step(10) % 2 ? -px : 0; break;
-    case 'attack': if (f.move && f.moveT >= f.move.startup && f.moveT < f.move.startup + f.move.active + f.move.recovery * 0.4) ox = 6 * px; break;
-    case 'hurt': if (f.stateT < 0.18) ox = (step(30) % 2 ? 2 : -2) * px; break;
+    case 'idle': sy += 0.012 * Math.sin(t * 3.4); break;
+    case 'run': { const ph = Math.abs(Math.sin(t * 13)); oy = -ph * 3 * px; sy += 0.04 * ph - 0.02; break; }
+    case 'attack': {
+      const mv = f.move;
+      if (mv && f.moveT >= mv.startup) { const k = Math.min(1, (f.moveT - mv.startup) / Math.max(0.01, mv.active + mv.recovery * 0.5)); ox = 10 * px * Math.sin(Math.min(1, k * 1.6) * Math.PI * 0.5) * (1 - Math.max(0, k - 0.6) * 2.5); }
+      break;
+    }
+    case 'hurt': if (f.stateT < 0.2) ox = (step(30) % 2 ? 2.5 : -2.5) * px; break;
     case 'charge': ox = (step(30) % 2 ? 1 : -1) * px; break;
-    case 'down': quarter = -1; break;
-    case 'tumble': quarter = -(step(12) % 4); break;
-    case 'guardbreak': ox = (step(20) % 2 ? 2 : -2) * px; break;
+    case 'guardbreak': ox = (step(20) % 2 ? 3 : -3) * px; break;
+  }
+  sx *= 1 - m.sq * 0.55; sy *= 1 + m.sq;
+  const lying = Math.abs(Math.sin(m.spin));
+  const fx = Math.round(x + ox * f.facing), fy = Math.round(y + oy);
+
+  // Afterimages: the last few positions in the fighter's colour.
+  const fast = f.state === 'dash' || f.state === 'tumble' || slotFor(f) === 'rush' || Math.abs(f.vx) > 1200;
+  if (dt > 0) {
+    if (fast) m.trail.push({ x: fx, y: fy, spin: m.spin, lean: m.lean, a, facing: f.facing });
+    if (m.trail.length > 5 || (!fast && m.trail.length)) m.trail.shift();
   }
   ctx.save();
   ctx.imageSmoothingEnabled = false;
-  ctx.translate(Math.round(x + ox * f.facing), Math.round(y + oy));
-  ctx.scale(f.facing, 1);
-  if (quarter) { ctx.translate(0, -a.img.height * s / 2 + (quarter === -1 ? a.img.height * s * 0.35 : 0)); ctx.rotate(quarter * Math.PI / 2); ctx.translate(0, a.img.height * s / 2 - (quarter === -1 ? a.img.height * s * 0.35 : 0)); }
-  const dx = -a.ax * s, dy = -a.ay * s, dw = a.img.width * s, dh = a.img.height * s;
-  // Speed smear behind attacks and dashes.
-  if (f.state === 'dash' || (f.state === 'attack' && ox) || slotFor(f) === 'rush') {
-    for (let i = 2; i >= 1; i--) { ctx.globalAlpha = alpha * 0.18 * (3 - i); ctx.drawImage(a.flash, dx - i * 8 * px, dy, dw, dh); }
-  }
-  ctx.globalAlpha = alpha;
-  ctx.drawImage(flash ? a.flash : a.img, dx, dy, dw, dh);
+  const pose = (g, p, img, al) => {
+    g.save();
+    g.translate(p.x, p.y);
+    g.scale(p.facing, 1);
+    g.rotate(p.lean);
+    g.translate(0, (Math.abs(Math.sin(p.spin)) * bh * 0.33));
+    g.scale(sx, sy);
+    g.translate(0, -bh * 0.5); g.rotate(p.spin); g.translate(0, bh * 0.5);
+    g.globalAlpha = al;
+    g.drawImage(img, -p.a.ax * s, -p.a.ay * s, p.a.img.width * s, p.a.img.height * s);
+    g.restore();
+  };
+  m.trail.forEach((p, i) => pose(ctx, p, tinted(p.a, trailColor), alpha * 0.1 * (i + 1)));
+  pose(ctx, { x: fx, y: fy, spin: m.spin, lean: m.lean, a, facing: f.facing }, flash ? a.flash : a.img, alpha);
   ctx.restore();
-  return true;
+  return lying;
 }
 
 // Menu portrait: the character's standing picture, scaled by whole pixels.

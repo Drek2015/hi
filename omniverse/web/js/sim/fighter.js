@@ -263,7 +263,14 @@ export class Fighter {
     this.platform = p;
     this.jumpsLeft = this.mod('airJumps');
     if (this.state === 'tumble') {
-      if (impact > 700) { this.setState('down'); this.world.emit('bounce', { f: this, v: impact }); }
+      // Hard launches bounce once off the floor before the knockdown.
+      if (impact > 1000 && !this.bounced) {
+        this.bounced = true;
+        this.vy = -impact * 0.32; this.vx *= 0.6; this.onGround = false;
+        this.world.emit('bounce', { f: this, v: impact });
+        return;
+      }
+      if (impact > 600 || this.bounced) { this.setState('down'); this.world.emit('bounce', { f: this, v: impact }); }
       else if (this.stun <= 0) this.setState('idle');
       else this.setState('hurt');
     } else if (this.state === 'attack' && this.move?.air) {
@@ -416,6 +423,7 @@ export class Fighter {
     this.stun = h.stun * (1 - this.mod('armor') * 0.5);
     this.move = null;
     if (this.cast && !this.cast.def.uninterruptible) { this.cast.channel && (this.cast.channel.done = true); this.cast = null; }
+    this.bounced = false;
     this.setState(Math.hypot(this.vx, this.vy) > 650 || this.vy < -600 ? 'tumble' : 'hurt');
     this.facing = -dir;
     if (this.hp <= 0) { this.setState('tumble'); this.vy = Math.min(this.vy, -700); this.stun = 99; }

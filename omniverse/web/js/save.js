@@ -4,7 +4,7 @@ import { ROSTER } from './data/roster.js';
 const KEY = 'omniverse-save-v1';
 
 const DEFAULT_SETTINGS = {
-  padMap: null, deadzone: 0.2, rumble: true, sfx: 0.8, touch: 'auto', unlockAll: false, showFps: false,
+  padMap: null, deadzone: 0.2, rumble: true, sfx: 0.8, touch: 'auto', unlockAll: false, showFps: false, damageNumbers: false,
 };
 
 export const START_POINTS = 6;

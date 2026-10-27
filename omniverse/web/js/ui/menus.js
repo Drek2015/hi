@@ -223,6 +223,7 @@ export class Menus {
         toggle('Controller rumble', 'rumble', [[true, 'ON'], [false, 'OFF']]),
         toggle('Touch controls', 'touch', [['auto', 'AUTO'], ['on', 'ALWAYS'], ['off', 'OFF']]),
         toggle('Unlock every ability (free play)', 'unlockAll', [[false, 'OFF'], [true, 'ON']]),
+        toggle('Damage numbers', 'damageNumbers', [[false, 'OFF'], [true, 'ON']]),
         toggle('Show FPS', 'showFps', [[false, 'OFF'], [true, 'ON']]),
         h('div', { class: 'crow' }, h('span', {}, 'Reset all skill progress'), btn('RESET', () => { if (confirm('Reset all skill points and unlocks?')) { this.save.reset(); a.audio.play('back'); } }, 'small'))),
       btn('BACK', () => this.back(), 'small', { autofocus: true }),

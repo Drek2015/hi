@@ -4,6 +4,7 @@
 import { arenaArt, buildStage, drawBackdrop } from './arenas.js';
 import { drawEntity, fxInfo, ParticleSystem } from './fx.js';
 import { glowSprite, rgba } from './colors.js';
+import { HitFx } from './hitfx.js';
 import { UNIT } from './pixel.js';
 import { drawSpriteFighter, spriteFor } from './spriteset.js';
 
@@ -20,6 +21,9 @@ export class Renderer {
     this.cam = { x: 0, y: -280 };
     this.shake = 0;
     this.particles = new ParticleSystem();
+    this.hitfx = new HitFx();
+    this.impact = 0;
+    this.showNumbers = false;
     this.hitFlash = new Map();
     this.screenFlash = 0; this.screenFlashColor = '#ffffff';
     this.time = 0;
@@ -30,6 +34,7 @@ export class Renderer {
     this.art = arenaArt(world.arena.theme);
     this.stage = buildStage(this.art, world.arena);
     this.particles = new ParticleSystem();
+    this.hitfx = new HitFx();
     this.hitFlash.clear();
     this.cam = { x: 0, y: -280 };
   }
@@ -66,17 +71,19 @@ export class Renderer {
       switch (e.type) {
         case 'hit': {
           const big = e.dmg > 70;
-          const col = e.crit ? '#ffd23a' : '#fff4d8';
-          P.burst(e.x, e.y, big ? 18 : 10, col, { kind: 'spark', speed: big ? 1300 : 900, size: big ? 18 : 12, life: 0.25 });
-          P.add({ x: e.x, y: e.y, kind: 'ring', size: 10, size1: big ? 120 : 70, life: 0.22, color: col });
-          P.add({ x: e.x, y: e.y, kind: 'glow', size: big ? 90 : 55, size1: 10, life: 0.15, color: col });
-          P.text(e.x + (Math.random() - 0.5) * 40, e.y - 40, Math.round(e.dmg) + (e.crit ? '!' : ''), e.crit ? '#ffd23a' : '#ffffff', big || e.crit);
+          const dir = e.a ? Math.sign(e.f.x - e.a.x) || e.a.facing || 1 : 1;
+          const col = e.a?.owner?.char?.color || '#fff4d8';
+          this.hitfx.add(e.crit ? 'crit' : big ? 'heavy' : 'light', e.x, e.y, dir, col);
+          P.burst(e.x, e.y, big ? 10 : 5, '#ffffff', { kind: 'spark', speed: big ? 1500 : 1000, size: big ? 16 : 10, life: 0.18, angle: dir > 0 ? 0 : Math.PI, spread: 1.6 });
+          if (e.dmg > 110 || e.crit) this.impact = Math.max(this.impact, e.dmg > 160 ? 0.07 : 0.045);
+          if (e.crit) P.text(e.x, e.y - 70, 'CRITICAL', '#ffd23a', true);
+          if (this.showNumbers) P.text(e.x + (Math.random() - 0.5) * 40, e.y - 40, String(Math.round(e.dmg)), '#ffffff', big);
           this.hitFlash.set(e.f, 0.12);
           this.shake = Math.max(this.shake, Math.min(26, 4 + e.dmg * 0.12));
           break;
         }
-        case 'guard': P.burst(e.f.x + e.f.facing * 40, e.f.y - 110, 8, '#8fd8ff', { kind: 'spark', speed: 700, size: 10, life: 0.2 }); P.add({ x: e.f.x + e.f.facing * 40, y: e.f.y - 110, kind: 'ring', size: 40, size1: 90, life: 0.2, color: '#8fd8ff' }); break;
-        case 'parry': P.text(e.f.x, e.f.y - 230, 'PARRY', '#7fffd0', true); P.add({ x: e.f.x, y: e.f.y - 100, kind: 'ring', size: 30, size1: 200, life: 0.3, color: '#7fffd0' }); this.flashScreen('#7fffd0', 0.25); break;
+        case 'guard': this.hitfx.add('guard', e.f.x + e.f.facing * 46, e.f.y - 100, e.f.facing); P.burst(e.f.x + e.f.facing * 46, e.f.y - 100, 6, '#bfeaff', { kind: 'spark', speed: 800, size: 10, life: 0.16 }); break;
+        case 'parry': this.hitfx.add('parry', e.f.x + e.f.facing * 40, e.f.y - 100); this.impact = 0.06; P.text(e.f.x, e.f.y - 230, 'PARRY', '#7fffd0', true); P.add({ x: e.f.x, y: e.f.y - 100, kind: 'ring', size: 30, size1: 200, life: 0.3, color: '#7fffd0' }); this.flashScreen('#7fffd0', 0.25); break;
         case 'guardBreak': P.text(e.f.x, e.f.y - 230, 'GUARD BREAK', '#ff7a5a', true); P.burst(e.f.x, e.f.y - 100, 20, '#8fd8ff', { kind: 'spark', speed: 1100, size: 14 }); this.shake = Math.max(this.shake, 16); break;
         case 'shieldHit': P.add({ x: e.x, y: e.y, kind: 'ring', size: 60, size1: 130, life: 0.2, color: '#9fe3ff' }); break;
         case 'counter': P.text(e.f.x, e.f.y - 230, 'COUNTER', '#ffd23a', true); this.flashScreen('#ffffff', 0.3); break;
@@ -89,7 +96,7 @@ export class Renderer {
           if (e.type === 'strike' || e.big) { P.burst(e.x, e.y, 12, '#5a4a40', { kind: 'smoke', speed: 400, size: 30, size1: 70, life: 0.8, g: -100 }); this.shake = Math.max(this.shake, e.big ? 22 : 12); }
           break;
         }
-        case 'clash': P.burst(e.x, e.y, 26, '#ffffff', { kind: 'spark', speed: 1500, size: 18 }); P.add({ x: e.x, y: e.y, kind: 'ring', size: 20, size1: 220, life: 0.35, color: '#ffffff' }); this.shake = Math.max(this.shake, 18); this.flashScreen('#ffffff', 0.25); break;
+        case 'clash': this.hitfx.add('clash', e.x, e.y); this.impact = 0.06; P.burst(e.x, e.y, 26, '#ffffff', { kind: 'spark', speed: 1500, size: 18 }); P.add({ x: e.x, y: e.y, kind: 'ring', size: 20, size1: 220, life: 0.35, color: '#ffffff' }); this.shake = Math.max(this.shake, 18); this.flashScreen('#ffffff', 0.25); break;
         case 'land': dust(P, e.f.x, e.f.y, e.v > 900 ? 10 : 5); break;
         case 'bounce': dust(P, e.f.x, e.f.y, 14); this.shake = Math.max(this.shake, 10); break;
         case 'jump': if (e.ground) dust(P, e.f.x, e.f.y, 5); else P.add({ x: e.f.x, y: e.f.y, kind: 'ring', size: 20, size1: 60, life: 0.2, color: '#ffffff', alpha: 0.6 }); break;
@@ -110,7 +117,7 @@ export class Renderer {
         case 'grab': P.text(e.target.x, e.target.y - 220, 'GRAB', '#ffffff'); break;
         case 'pull': P.add({ x: e.f.x, y: e.f.y - 100, kind: 'ring', size: 20, size1: 80, life: 0.2, color: '#ffffff' }); break;
         case 'ultimate': this.flashScreen(e.def.color || '#ffffff', 0.5); this.shake = Math.max(this.shake, 10); break;
-        case 'ko': this.shake = Math.max(this.shake, 30); this.flashScreen('#ffffff', 0.6); break;
+        case 'ko': this.shake = Math.max(this.shake, 30); this.impact = 0.12; break;
       }
     }
   }
@@ -138,6 +145,7 @@ export class Renderer {
     for (const [f, v] of this.hitFlash) { const n = v - dt; if (n <= 0) this.hitFlash.delete(f); else this.hitFlash.set(f, n); }
     for (const f of [...w.fighters, ...w.clones]) this.statusFx(f, worldDt);
     this.particles.update(worldDt);
+    this.hitfx.update(worldDt || dt * 0.25);
 
     const sh = this.shake;
     this.shake = Math.max(0, this.shake - dt * 70);
@@ -190,7 +198,15 @@ export class Renderer {
         out.drawImage(glowSprite(aura, 64), px - 70 * k, py - 130 * k, 140 * k, 150 * k);
         out.globalAlpha = 1; out.globalCompositeOperation = 'source-over';
       }
-      drawSpriteFighter(out, f, px, py, k, { flash: this.hitFlash.has(f), alpha, t: f.animT });
+      drawSpriteFighter(out, f, px, py, k, { flash: this.hitFlash.has(f), alpha, t: f.animT, dt: worldDt, trailColor: f.char.color });
+    }
+
+    // Impact frame: an instant of stark black with white silhouettes, as in anime fight cuts.
+    if (this.impact > 0) {
+      this.impact -= dt;
+      out.fillStyle = 'rgba(8,4,14,0.86)';
+      out.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      for (const f of w.fighters) drawSpriteFighter(out, f, (ox + f.x / UNIT) * k, (oy + f.y / UNIT) * k, k, { flash: true, t: f.animT });
     }
 
     // Effects layer at art resolution, scaled up over the fighters.
@@ -209,6 +225,7 @@ export class Renderer {
     }
     for (const e of front) drawEntity(fx, e, t);
     this.particles.draw(fx);
+    this.hitfx.draw(fx);
     fx.restore();
     for (const f of w.fighters) if (f.shield) pixelRing(fx, Math.round(ox + f.x / UNIT), Math.round(oy + f.y / UNIT - 56), 64, fxInfo(f.shield.fx).color);
     if (this.screenFlash > 0) {

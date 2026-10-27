@@ -59,6 +59,7 @@ class App {
   }
 
   applySettings() {
+    this.renderer.showNumbers = this.save.settings.damageNumbers;
     const t = this.save.settings.touch;
     const touchCapable = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     this.touchOn = t === 'on' || (t === 'auto' && touchCapable && !this.input.padConnected);
