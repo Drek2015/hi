@@ -68,7 +68,12 @@ export class Menus {
   // ---------- title ----------
   title() {
     const a = this.app;
+    // Two fighters from the roster flank the logo, different each visit.
+    const list = PLAYABLE();
+    const i = Math.floor(Math.random() * list.length), j = (i + 1 + Math.floor(Math.random() * (list.length - 1))) % list.length;
+    const hero = (c, side) => { const cv = h('canvas', { class: 'title-hero ' + side, width: 300, height: 300, style: `--cc:${c.color}` }); drawSpritePortrait(cv, c, c.skins[0]); return cv; };
     return h('div', { class: 'screen title' },
+      hero(list[i], 'left'), hero(list[j], 'right'),
       h('div', { class: 'logo' }, h('span', { class: 'l1' }, 'OMNIVERSE'), h('span', { class: 'l2' }, 'CLASH')),
       h('div', { class: 'menu-col' },
         btn('FIGHT', () => { a.audio.play('ok'); this.show('setup'); }, 'big', { autofocus: true }),

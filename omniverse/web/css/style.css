@@ -153,3 +153,9 @@ h3 { margin: 0 0 8px; font-size: calc(var(--u) * 6); color: var(--gold); }
 .chip { font-size: calc(var(--u) * 2.8); background: #120a1a; color: var(--dim); padding: 3px 6px; border: 2px solid #3a3150; }
 .ddesc { color: #fff; }
 .sk-actions { display: flex; flex-direction: column; gap: 6px; }
+.title-hero { position: absolute; bottom: 0; height: 88vh; width: auto; aspect-ratio: 1; image-rendering: pixelated; pointer-events: none; filter: drop-shadow(0 0 18px var(--cc)); animation: heroin 0.5s steps(6) both; }
+.title-hero.left { left: -4vw; }
+.title-hero.right { right: -4vw; transform: scaleX(-1); animation-name: heroinR; }
+.title .logo, .title .menu-col, .title .hint { position: relative; z-index: 1; }
+@keyframes heroin { from { transform: translateX(-40vw); } to { transform: none; } }
+@keyframes heroinR { from { transform: translateX(40vw) scaleX(-1); } to { transform: scaleX(-1); } }
