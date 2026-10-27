@@ -210,6 +210,19 @@ export class Renderer {
     out.drawImage(this.low, cx, cy, cw, ch, 0, 0, this.canvas.width, this.canvas.height);
     const K = k * z;
 
+    // Reflections in the water / polished floor.
+    const shine = { valley: 0.32, kara: 0.16, tower: 0.12 }[w.arena.theme] || 0;
+    if (shine) {
+      const floorY = (oy - cy) * K;
+      out.save();
+      out.beginPath(); out.rect(0, floorY, this.canvas.width, this.canvas.height - floorY); out.clip();
+      out.translate(0, floorY * 2); out.scale(1, -1);
+      for (const f of w.fighters) {
+        if (f.y < -400) continue;
+        drawSpriteFighter(out, f, (ox + f.x / UNIT - cx) * K, (oy + f.y / UNIT - cy) * K, K, { alpha: shine * (1 + f.y / 400), t: f.animT });
+      }
+      out.restore();
+    }
     for (const f of [...w.clones, ...w.fighters]) {
       const px = (ox + f.x / UNIT - cx) * K, py = (oy + f.y / UNIT - cy) * K;
       let alpha = f.isClone ? 0.75 : 1;
