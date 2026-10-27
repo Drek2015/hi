@@ -4,7 +4,7 @@ import { ROSTER } from './data/roster.js';
 const KEY = 'omniverse-save-v1';
 
 const DEFAULT_SETTINGS = {
-  padMap: null, deadzone: 0.2, rumble: true, sfx: 0.8, touch: 'auto', unlockAll: false, showFps: false, damageNumbers: false,
+  padMap: null, deadzone: 0.2, rumble: true, sfx: 0.8, touch: 'auto', unlockAll: true, showFps: false, damageNumbers: false,
 };
 
 export const START_POINTS = 6;
@@ -27,6 +27,8 @@ export class Save {
     try { data = JSON.parse(localStorage.getItem(KEY)); } catch { data = null; }
     this.data = data && data.chars ? data : { chars: {}, settings: {} };
     this.data.settings = { ...DEFAULT_SETTINGS, ...this.data.settings };
+    // v2: every ability starts unlocked for every fighter (can still be turned off in Settings).
+    if ((this.data.version || 1) < 2) { this.data.settings.unlockAll = true; this.data.version = 2; }
     for (const c of ROSTER) if (!this.data.chars[c.id]) this.data.chars[c.id] = freshChar(c);
     this.last = this.data.last || null;
   }

@@ -1,5 +1,6 @@
 // Ability visuals and particles. Every entity `fx` id maps to a drawing style and palette.
 import { glowSprite, flameSprite, rgba, shade } from './colors.js';
+import { hash } from './signature.js';
 
 // fx id -> { style, color, color2 }
 export const FX = {
@@ -220,7 +221,7 @@ function glow(ctx, x, y, r, color, alpha = 1) {
   ctx.drawImage(glowSprite(color, 128), x - r, y - r, r * 2, r * 2);
 }
 
-export function drawEntity(ctx, e, time) {
+function drawEntityBase(ctx, e, time) {
   const info = fxInfo(e.fx);
   const t = e.t;
   ctx.save();
@@ -233,6 +234,46 @@ export function drawEntity(ctx, e, time) {
     case 'rush': drawRush(ctx, e, info, time); break;
     case 'burst': drawBurst(ctx, e, info, time); break;
     default: drawVisual(ctx, e, info, time);
+  }
+  ctx.restore();
+}
+
+// Every ability's effect carries its own signature on top of the shared style: a pattern of
+// pixel runes, rings or sparks chosen from the ability id, in the ability's own colours.
+export function drawEntity(ctx, e, time) {
+  drawEntityBase(ctx, e, time);
+  if (!e.sig || e.kind === 'visual' || e.kind === 'trap') return;
+  if (e.delay > 0) return;
+  const info = fxInfo(e.fx);
+  const h = hash(e.sig);
+  const col = e.sigColor || info.color2 || '#ffffff';
+  const col2 = info.color || '#ffffff';
+  let x, y, r;
+  if (e.kind === 'beam') { x = e.ex ?? e.x; y = e.ey ?? e.y; r = (e.width || 60) * 0.6; }
+  else if (e.kind === 'strike') { x = e.x; y = (e.y || 0) - (e.h || 200) * 0.5; r = (e.w || 200) * 0.45; }
+  else if (e.kind === 'rush') { const o = e.owner; x = o.x + o.facing * 60; y = o.y - 100; r = 60; }
+  else { x = e.x; y = e.y; r = e.r || 40; }
+  if (x === undefined || y === undefined) return;
+  const n = 3 + (h % 4);
+  const spd = ((h >> 4) % 5 + 2) * (h & 64 ? 1 : -1);
+  const kind = (h >> 8) % 4;
+  const R = r * (1.25 + ((h >> 12) % 4) * 0.12);
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  ctx.globalAlpha = 0.9;
+  for (let i = 0; i < n; i++) {
+    const a = time * spd + (i / n) * Math.PI * 2;
+    const px = x + Math.cos(a) * R, py = y + Math.sin(a) * R * 0.8;
+    const sz = Math.max(6, r * 0.18);
+    ctx.fillStyle = i % 2 ? col : col2;
+    switch (kind) {
+      case 0: ctx.fillRect(px - sz / 2, py - sz / 2, sz, sz); break;                       // pixel orbits
+      case 1: ctx.save(); ctx.translate(px, py); ctx.rotate(a);                              // runes
+        ctx.beginPath(); ctx.moveTo(0, -sz); ctx.lineTo(sz * 0.8, sz * 0.6); ctx.lineTo(-sz * 0.8, sz * 0.6); ctx.closePath(); ctx.fill(); ctx.restore(); break;
+      case 2: ctx.fillRect(px - sz, py - sz * 0.2, sz * 2, sz * 0.4); ctx.fillRect(px - sz * 0.2, py - sz, sz * 0.4, sz * 2); break;   // sparkles
+      default: ctx.strokeStyle = i % 2 ? col : col2; ctx.lineWidth = Math.max(2, sz * 0.3);  // ring arcs
+        ctx.beginPath(); ctx.arc(x, y, R * (0.8 + 0.1 * i), a, a + 0.9); ctx.stroke();
+    }
   }
   ctx.restore();
 }

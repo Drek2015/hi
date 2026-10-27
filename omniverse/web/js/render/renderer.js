@@ -119,6 +119,7 @@ export class Renderer {
         case 'shieldUp': P.add({ x: e.f.x, y: e.f.y - 100, kind: 'ring', size: 40, size1: 140, life: 0.3, color: fxInfo(e.fx).color }); break;
         case 'grab': P.text(e.target.x, e.target.y - 220, 'GRAB', '#ffffff'); break;
         case 'pull': P.add({ x: e.f.x, y: e.f.y - 100, kind: 'ring', size: 20, size1: 80, life: 0.2, color: '#ffffff' }); break;
+        case 'cast': if (e.def.kind !== 'ultimate' && e.f && !e.f.isClone) say(e.f.x, e.f.y - 250, e.def.name.toUpperCase(), e.def.color || fxInfo(e.def.fx).color || '#ffffff'); break;
         case 'ultimate': this.flashScreen(e.def.color || '#ffffff', 0.5); this.shake = Math.max(this.shake, 10); break;
         case 'ko': this.shake = Math.max(this.shake, 30); this.impact = 0.12; break;
       }

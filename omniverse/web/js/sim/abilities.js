@@ -235,6 +235,7 @@ export class Visual extends Entity {
 // ---------- casting ----------
 
 export function castAbility(w, f, def, boost, cast) {
+  const firstNew = w.entities.length;
   const p = def.params || {};
   const size = 1 + (boost.size || 0);
   const dmg = scaleDmg(f, p, boost);
@@ -357,6 +358,8 @@ export function castAbility(w, f, def, boost, cast) {
     default:
       break;
   }
+  // Tag what this ability spawned so the renderer can give it the ability's own look.
+  for (let i = firstNew; i < w.entities.length; i++) { w.entities[i].sig = def.id; w.entities[i].sigColor = def.color; }
   w.emit('abilityFired', { f, def, x: f.x, y: f.y });
 }
 

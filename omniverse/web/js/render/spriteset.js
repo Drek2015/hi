@@ -2,6 +2,7 @@
 // the motion that single poses can't show on their own (lunges, smears, hit shake, knockdowns).
 import { SPRITE_ART, CHAR_SPRITES } from '../data/sprites.js';
 import { drawCharge } from './charge.js';
+import { actionMotion, drawSwing } from './signature.js';
 
 const art = new Map();   // name -> { img, flash, ax, ay, h }
 
@@ -162,7 +163,7 @@ function updateMotion(f, dt, t) {
 
 // Draw fighter f with its feet at screen point (x, y). `px` is screen pixels per art pixel;
 // sprites are sized so a standing character is 100 art pixels tall.
-export function drawSpriteFighter(ctx, f, x, y, px, { flash = false, alpha = 1, t = 0, dt = 0, trailColor = '#ffffff' } = {}) {
+export function drawSpriteFighter(ctx, f, x, y, px, { flash = false, alpha = 1, t = 0, dt = 0, trailColor = '#ffffff', swing = true } = {}) {
   const a = spriteFor(f);
   if (!a) return false;
   const m = updateMotion(f, dt, t);
@@ -173,21 +174,20 @@ export function drawSpriteFighter(ctx, f, x, y, px, { flash = false, alpha = 1, 
   switch (f.state) {
     case 'idle': sy += 0.012 * Math.sin(t * 3.4); break;
     case 'run': { const ph = Math.abs(Math.sin(t * 13)); oy = -ph * 3 * px; sy += 0.04 * ph - 0.02; break; }
-    case 'attack': {
-      const mv = f.move;
-      if (mv && f.moveT >= mv.startup) { const k = Math.min(1, (f.moveT - mv.startup) / Math.max(0.01, mv.active + mv.recovery * 0.5)); ox = 10 * px * Math.sin(Math.min(1, k * 1.6) * Math.PI * 0.5) * (1 - Math.max(0, k - 0.6) * 2.5); }
-      break;
-    }
     case 'hurt': if (f.stateT < 0.2) ox = (step(30) % 2 ? 2.5 : -2.5) * px; break;
     case 'charge': ox = (step(30) % 2 ? 1 : -1) * px; break;
     case 'guardbreak': ox = (step(20) % 2 ? 3 : -3) * px; break;
   }
   sx *= 1 - m.sq * 0.55; sy *= 1 + m.sq;
+  // Move- and ability-specific motion (spins, leaps, slams, flurries, teleport flickers).
+  const sig = actionMotion(f);
+  ox += sig.dx * bh; oy += sig.dy * bh; sx *= sig.sx; sy *= sig.sy;
+  alpha *= sig.alpha;
   const lying = Math.abs(Math.sin(m.spin));
   const fx = Math.round(x + ox * f.facing), fy = Math.round(y + oy);
 
   // Afterimages: the last few positions in the fighter's colour.
-  const fast = f.state === 'dash' || f.state === 'tumble' || slotFor(f) === 'rush' || Math.abs(f.vx) > 1200;
+  const fast = f.state === 'dash' || f.state === 'tumble' || slotFor(f) === 'rush' || Math.abs(f.vx) > 1200 || (f.state === 'cast' && (f.cast?.def.prim === 'combo' || f.cast?.def.prim === 'teleport'));
   if (dt > 0) {
     if (fast) m.trail.push({ x: fx, y: fy, spin: m.spin, lean: m.lean, a, facing: f.facing });
     if (m.trail.length > 5 || (!fast && m.trail.length)) m.trail.shift();
@@ -214,7 +214,8 @@ export function drawSpriteFighter(ctx, f, x, y, px, { flash = false, alpha = 1, 
     const c = f.cast, w = c.def.windup ?? 0.12;
     charge = { fx: c.def.fx || c.def.id, k: Math.min(1, c.t / Math.max(0.05, w)), held: c.channel && !c.channel.done, color: c.def.color };
   }
-  pose(ctx, { x: fx, y: fy, spin: m.spin, lean: m.lean, a, facing: f.facing, charge }, flash ? a.flash : a.img, alpha);
+  pose(ctx, { x: fx, y: fy, spin: m.spin + sig.spin, lean: m.lean, a, facing: f.facing, charge }, flash ? a.flash : a.img, alpha);
+  if (swing && !flash && f.state === 'attack') drawSwing(ctx, f, fx, fy, bh, trailColor);
   ctx.restore();
   return lying;
 }

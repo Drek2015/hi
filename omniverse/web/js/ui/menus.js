@@ -201,7 +201,7 @@ export class Menus {
     const side = h('div', { class: 'sk-side', style: `--cc:${c.color}` },
       h('div', { class: 'row nowrap' }, btn('◀', () => go(-1), 'small', { 'data-pad': 'L1' }), h('div', { class: 'sk-name' }, c.short || c.name), btn('▶', () => go(1), 'small', { 'data-pad': 'R1' })),
       big,
-      h('div', { class: 'sk-points' }, sv.settings.unlockAll ? 'FREE PLAY' : h('span', {}, h('b', {}, String(cs.points)), ' SKILL POINTS')),
+      h('div', { class: 'sk-points' }, sv.settings.unlockAll ? 'ALL 35 UNLOCKED' : h('span', {}, h('b', {}, String(cs.points)), ' SKILL POINTS')),
       h('div', { class: 'sk-loadout' }, ...loadout.map((id, i) => {
         const n = c.abilities.find(x => x.id === id);
         return h('button', { class: 'sk-slot', onclick: () => n && this.show('skills', c.id, n.id) }, h('b', {}, i === 3 ? 'ULT' : String(i + 1)), n ? iconEl(n) : null);
@@ -274,7 +274,7 @@ export class Menus {
         toggle('Sound effects', 'sfx', [[0.8, 'ON'], [0.4, 'LOW'], [0, 'OFF']]),
         toggle('Controller rumble', 'rumble', [[true, 'ON'], [false, 'OFF']]),
         toggle('Touch controls', 'touch', [['auto', 'AUTO'], ['on', 'ALWAYS'], ['off', 'OFF']]),
-        toggle('Unlock every ability (free play)', 'unlockAll', [[false, 'OFF'], [true, 'ON']]),
+        toggle('Every ability unlocked', 'unlockAll', [[true, 'ON'], [false, 'OFF']]),
         toggle('Damage numbers', 'damageNumbers', [[false, 'OFF'], [true, 'ON']]),
         toggle('Show FPS', 'showFps', [[false, 'OFF'], [true, 'ON']]),
         h('div', { class: 'crow' }, h('span', {}, 'Reset all skill progress'), btn('RESET', () => { if (confirm('Reset all skill points and unlocks?')) { this.save.reset(); a.audio.play('back'); } }, 'small'))),
