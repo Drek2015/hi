@@ -122,7 +122,7 @@ export class Menus {
     const cells = list.map(c => h('button', {
       class: `pick ${s[side] === c.id ? 'sel' : ''}`, 'data-key': 'c' + c.id,
       onclick: () => { s[side] = c.id; s[side + 'Skin'] = side === 'p1' ? a.save.char(c).skin : c.skins[0].id; a.audio.play('ok'); this.show('setup'); },
-    }, portrait(c, c.skins[0], 88), h('span', {}, c.name.split(' ')[0])));
+    }, portrait(c, c.skins[0], 88), h('span', {}, c.short || c.name.split(' ')[0])));
     if (side === 'p2') cells.push(h('button', { class: 'pick', onclick: () => { const c = list[Math.floor(Math.random() * list.length)]; s.p2 = c.id; s.p2Skin = c.skins[Math.floor(Math.random() * c.skins.length)].id; a.audio.play('ok'); this.show('setup'); } }, h('div', { class: 'qmark' }, '?'), h('span', {}, 'Random')));
     const el = h('div', { class: 'screen picker' }, h('h2', {}, side === 'p1' ? 'CHOOSE YOUR FIGHTER' : 'CHOOSE YOUR OPPONENT'), h('div', { class: 'grid' }, cells), btn('BACK', () => this.back(), 'small'));
     setTimeout(() => el.querySelector('.pick.sel')?.focus({ preventScroll: true }));

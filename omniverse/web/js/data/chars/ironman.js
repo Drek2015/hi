@@ -1,7 +1,7 @@
 import { A, S, U, prim as p } from '../build.js';
 
 export default {
-  id: 'ironman', name: 'Iron Man', universe: 'Marvel', title: 'Armored Avenger', energyName: 'Arc Power',
+  id: 'ironman', name: 'Iron Man', short: 'Iron Man', universe: 'Marvel', title: 'Armored Avenger', energyName: 'Arc Power',
   stats: { power: 1.05, defense: 1.08, speed: 1.0, hp: 1.04, energy: 1.1 },
   color: '#c8282f',
   branches: ['Repulsors', 'Arsenal', 'Armor Systems'],
