@@ -7,6 +7,7 @@ import { glowSprite, rgba } from './colors.js';
 import { HitFx } from './hitfx.js';
 import { UNIT } from './pixel.js';
 import { drawSpriteFighter, spriteFor } from './spriteset.js';
+import { drawVfx, drawAura, drawShield, drawChargeVfx, specFor } from './vfx.js';
 
 const TARGET_ART_H = 400;   // art pixels tall; screens scale up by a whole number when they can
 
@@ -200,7 +201,7 @@ export class Renderer {
 
     const back = [], front = [];
     for (const e of w.entities) (e.kind === 'trap' ? back : front).push(e);
-    for (const e of back) drawEntity(ctx, e, t);
+    for (const e of back) if (!specFor(e.sig, e.fx)) drawEntity(ctx, e, t);
     ctx.restore();
 
     // Background done: scale it up with hard pixels, then draw fighters at full resolution so
@@ -224,19 +225,40 @@ export class Renderer {
       }
       out.restore();
     }
+    // High-detail effects are drawn at full resolution in world units.
+    const toWorld = g => { g.save(); g.translate((ox - cx) * K, (oy - cy) * K); g.scale(K / UNIT, K / UNIT); };
+    toWorld(out);
+    // Ground effects and transformation auras behind the fighters.
+    for (const e of back) drawVfx(out, e, t);
+    for (const f of [...w.clones, ...w.fighters]) {
+      const seen = new Set();
+      for (const b of f.buffs || []) {
+        const sp = specFor(b.id, b.aura);
+        if (sp && sp.kind === 'aura' && !seen.has(sp)) { seen.add(sp); drawAura(out, f, sp, t); }
+      }
+    }
+    out.restore();
+
     for (const f of [...w.clones, ...w.fighters]) {
       const px = (ox + f.x / UNIT - cx) * K, py = (oy + f.y / UNIT - cy) * K;
       let alpha = f.isClone ? 0.75 : 1;
-      if (f.intangible > 0) alpha = 0.45 + Math.sin(t * 40) * 0.15;
-      const aura = f.form ? fxInfo(f.form).color : null;
-      if (aura) {
-        out.globalCompositeOperation = 'lighter';
-        out.globalAlpha = 0.45 + Math.sin(t * 9) * 0.1;
-        out.drawImage(glowSprite(aura, 64), px - 70 * K, py - 130 * K, 140 * K, 150 * K);
-        out.globalAlpha = 1; out.globalCompositeOperation = 'source-over';
-      }
-      drawSpriteFighter(out, f, px, py, K, { flash: this.hitFlash.has(f), alpha, t: f.animT, dt: worldDt, trailColor: f.char.color });
+      const ghost = f.intangible > 0 ? (specFor(f.phaseSig, f.phaseFx)?.ghost || 'flicker') : null;
+      if (ghost === 'flicker') alpha = 0.45 + Math.sin(t * 40) * 0.15;
+      const vcharge = f.state === 'cast' && f.cast && !(f.cast.channel) && f.cast.t < (f.cast.def.windup ?? 0.12) && ['projectile', 'rush', 'beam', 'rain'].includes(f.cast.def.prim);
+      drawSpriteFighter(out, f, px, py, K, { flash: this.hitFlash.has(f), alpha, t: f.animT, dt: worldDt, trailColor: f.char.color, ghost, noCharge: vcharge && !!specFor(f.cast.def.id, f.cast.def.fx) });
     }
+
+    toWorld(out);
+    for (const f of w.fighters) {
+      if (f.shield) { const sp = specFor(f.shield.sig, f.shield.fx); if (sp) drawShield(out, f, { ...sp, style: sp.kind === 'shield' ? sp.style : (sp.shieldStyle || 'dome') }, t); }
+      if (f.state === 'cast' && f.cast && f.cast.t < (f.cast.def.windup ?? 0.12) && ['projectile', 'rush', 'beam', 'rain'].includes(f.cast.def.prim)) {
+        const sp = specFor(f.cast.def.id, f.cast.def.fx);
+        if (sp && ['orb', 'lightning', 'flame', 'vortex'].includes(sp.kind)) drawChargeVfx(out, f, sp, t);
+      }
+    }
+    this.vfxDrawn = new Set();
+    for (const e of front) if (drawVfx(out, e, t)) this.vfxDrawn.add(e);
+    out.restore();
 
     // Impact frame: an instant of stark black with white silhouettes, as in anime fight cuts.
     if (this.impact > 0) {
@@ -253,18 +275,18 @@ export class Renderer {
     fx.save();
     fx.translate(ox, oy);
     fx.scale(1 / UNIT, 1 / UNIT);
-    for (const f of w.fighters) if (f.shield) {
+    for (const f of w.fighters) if (f.shield && !specFor(f.shield.sig, f.shield.fx)) {
       const c = fxInfo(f.shield.fx).color;
       fx.globalCompositeOperation = 'lighter';
       fx.globalAlpha = 0.25 + 0.35 * (f.shield.hp / f.shield.max);
       fx.drawImage(glowSprite(c, 64), f.x - 144, f.y - 256, 288, 288);
       fx.globalAlpha = 1; fx.globalCompositeOperation = 'source-over';
     }
-    for (const e of front) drawEntity(fx, e, t);
+    for (const e of front) if (!this.vfxDrawn.has(e)) drawEntity(fx, e, t);
     this.particles.draw(fx);
     this.hitfx.draw(fx);
     fx.restore();
-    for (const f of w.fighters) if (f.shield) pixelRing(fx, Math.round(ox + f.x / UNIT), Math.round(oy + f.y / UNIT - 56), 64, fxInfo(f.shield.fx).color);
+    for (const f of w.fighters) if (f.shield && !specFor(f.shield.sig, f.shield.fx)) pixelRing(fx, Math.round(ox + f.x / UNIT), Math.round(oy + f.y / UNIT - 56), 64, fxInfo(f.shield.fx).color);
     if (this.screenFlash > 0) {
       fx.globalCompositeOperation = 'lighter';
       fx.fillStyle = rgba(this.screenFlashColor, Math.min(0.6, this.screenFlash));
@@ -275,7 +297,7 @@ export class Renderer {
     out.drawImage(this.fxLow, cx, cy, cw, ch, 0, 0, this.canvas.width, this.canvas.height);
     if (!this.vignette) this.vignette = makeVignette(W, H);
     out.drawImage(this.vignette, 0, 0, this.canvas.width, this.canvas.height);
-    if (w.flash && w.flash.t < 0.9) drawCutIn(out, this.canvas.width, this.canvas.height, w.flash);
+    if (w.flash && w.flash.t < 0.45) drawCutIn(out, this.canvas.width, this.canvas.height, w.flash);
   }
 }
 
@@ -308,7 +330,7 @@ function groundBelow(w, f) {
 
 // Ultimate cut-in at full resolution: a slanted band with the fighter's own art and the move name.
 function drawCutIn(ctx, W, H, fl) {
-  const u = fl.t / 0.9;
+  const u = fl.t / 0.45;
   const inK = Math.min(1, fl.t / 0.12), outK = u > 0.8 ? (1 - u) / 0.2 : 1;
   const k = inK * outK;
   ctx.save();

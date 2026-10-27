@@ -76,7 +76,11 @@ export class Projectile extends Entity {
   die(w) {
     if (this.dead) return;
     this.dead = true;
-    if (this.explode) w.add(new Burst(this.owner, { x: this.x, y: this.y, r: this.explode.r, dmg: this.explode.dmg, kb: this.explode.kb ?? 700, stun: 0.5, fx: this.explode.fx || this.fx + 'Boom', life: 0.45, status: this.status }));
+    if (this.explode) {
+      const b = new Burst(this.owner, { x: this.x, y: this.y, r: this.explode.r, dmg: this.explode.dmg, kb: this.explode.kb ?? 700, stun: 0.5, fx: this.explode.fx || this.fx + 'Boom', life: 0.55, status: this.status });
+      b.sig = this.sig; b.sigColor = this.sigColor;
+      w.add(b);
+    }
     else w.emit('fizzle', { x: this.x, y: this.y, fx: this.fx });
   }
 }
@@ -306,6 +310,7 @@ export function castAbility(w, f, def, boost, cast) {
     }
     case 'phase':
       f.intangible = (p.time ?? 1.2) * size;
+      f.phaseSig = def.id; f.phaseFx = def.fx;
       w.add(new Visual(f, { x: f.x, y: f.y - 90, fx: def.fx, life: f.intangible, follow: true }));
       if (p.dmg) w.add(new Burst(f, { x: f.x, y: f.y - 90, r: 120, dmg, kb: 300, fx: def.fx + 'Hit', follow: true, ticks: 4, interval: 0.25, life: f.intangible }));
       break;
@@ -325,7 +330,7 @@ export function castAbility(w, f, def, boost, cast) {
       break;
     }
     case 'shield':
-      f.shield = { hp: (p.hp ?? 200) * size, t: p.time ?? 4, fx: def.fx, max: (p.hp ?? 200) * size };
+      f.shield = { hp: (p.hp ?? 200) * size, t: p.time ?? 4, fx: def.fx, sig: def.id, max: (p.hp ?? 200) * size };
       if (p.reflect) f.shield.reflect = true;
       w.emit('shieldUp', { f, fx: def.fx });
       break;

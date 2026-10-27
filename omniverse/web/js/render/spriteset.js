@@ -102,6 +102,39 @@ export function spriteFor(f) {
   return art.get(name) || art.get(set.stand) || null;
 }
 
+// Intangible fighters: Kamui turns the body translucent and ghostly with a spiral at the eye;
+// afterimage dodges leave copies; Bifrost travel shimmers in rainbow light.
+function drawGhost(ctx, f, body, a, s, bh, alpha, t, kind, pose) {
+  if (kind === 'afterimage') {
+    for (let i = 3; i >= 1; i--) pose(ctx, { ...body, x: body.x - f.facing * i * bh * 0.18 * Math.sin(t * 6 + i) }, tinted(a, '#e8f0ff'), alpha * 0.22);
+    pose(ctx, body, a.img, alpha * 0.85);
+    return;
+  }
+  if (kind === 'bifrost' || kind === 'raijin') {
+    const col = kind === 'raijin' ? '#ffd84a' : ['#ff5a5a', '#ffe84a', '#7fff7a', '#5ad8ff', '#9a7aff'][Math.floor(t * 12) % 5];
+    pose(ctx, body, tinted(a, col), alpha * 0.5);
+    pose(ctx, body, a.img, alpha * (0.35 + 0.25 * Math.abs(Math.sin(t * 20))));
+    return;
+  }
+  // Kamui: see-through, cold-tinted, wavering, with a vortex where the eye is.
+  const wob = Math.sin(t * 9) * 0.04;
+  ctx.save();
+  ctx.globalCompositeOperation = 'source-over';
+  pose(ctx, { ...body, lean: body.lean + wob }, tinted(a, '#2a1a40'), alpha * 0.35);
+  pose(ctx, { ...body, lean: body.lean - wob, x: body.x + Math.sin(t * 13) * bh * 0.01 }, a.img, alpha * 0.32);
+  // Swirl at the head, pulling the body in.
+  const hx = body.x + f.facing * bh * 0.06, hy = body.y - bh * 0.86;
+  ctx.globalCompositeOperation = 'lighter';
+  for (let arm = 0; arm < 5; arm++) {
+    ctx.strokeStyle = arm % 2 ? 'rgba(255,154,74,0.6)' : 'rgba(140,90,200,0.6)';
+    ctx.lineWidth = bh * 0.018;
+    ctx.beginPath();
+    for (let k = 0; k <= 24; k++) { const q = k / 24, ang = arm * 1.256 + t * 8 + q * 4, r = bh * 0.32 * (1 - q); ctx.lineTo(hx + Math.cos(ang) * r, hy + Math.sin(ang) * r * 0.9); }
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
 // Silhouettes tinted to a colour, for afterimages.
 const tints = new Map();
 function tinted(a, color) {
@@ -163,7 +196,7 @@ function updateMotion(f, dt, t) {
 
 // Draw fighter f with its feet at screen point (x, y). `px` is screen pixels per art pixel;
 // sprites are sized so a standing character is 100 art pixels tall.
-export function drawSpriteFighter(ctx, f, x, y, px, { flash = false, alpha = 1, t = 0, dt = 0, trailColor = '#ffffff', swing = true } = {}) {
+export function drawSpriteFighter(ctx, f, x, y, px, { flash = false, alpha = 1, t = 0, dt = 0, trailColor = '#ffffff', swing = true, ghost = null, noCharge = false } = {}) {
   const a = spriteFor(f);
   if (!a) return false;
   const m = updateMotion(f, dt, t);
@@ -210,11 +243,13 @@ export function drawSpriteFighter(ctx, f, x, y, px, { flash = false, alpha = 1, 
   m.trail.forEach((p, i) => pose(ctx, p, tinted(p.a, trailColor), alpha * 0.1 * (i + 1)));
   // Abilities gather energy in the hand the artwork shows.
   let charge = null;
-  if (f.state === 'cast' && f.cast && !flash) {
+  if (f.state === 'cast' && f.cast && !flash && !noCharge) {
     const c = f.cast, w = c.def.windup ?? 0.12;
     charge = { fx: c.def.fx || c.def.id, k: Math.min(1, c.t / Math.max(0.05, w)), held: c.channel && !c.channel.done, color: c.def.color };
   }
-  pose(ctx, { x: fx, y: fy, spin: m.spin + sig.spin, lean: m.lean, a, facing: f.facing, charge }, flash ? a.flash : a.img, alpha);
+  const body = { x: fx, y: fy, spin: m.spin + sig.spin, lean: m.lean, a, facing: f.facing, charge };
+  if (ghost && ghost !== 'flicker' && !flash) drawGhost(ctx, f, body, a, s, bh, alpha, t, ghost, pose);
+  else pose(ctx, body, flash ? a.flash : a.img, alpha);
   if (swing && !flash && f.state === 'attack') drawSwing(ctx, f, fx, fy, bh, trailColor);
   ctx.restore();
   return lying;
