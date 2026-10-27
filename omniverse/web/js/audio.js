@@ -1,4 +1,5 @@
 // Synthesised sound effects (no audio files): short noise and oscillator envelopes.
+import { fxInfo } from './render/fx.js';
 export class Audio {
   constructor(settings) {
     this.settings = settings;
@@ -74,6 +75,10 @@ export class Audio {
       case 'fight': this.tone(0.12, { vol: 0.25, f0: 523 }); this.tone(0.12, { vol: 0.25, f0: 659, delay: 0.1 }); this.tone(0.35, { vol: 0.25, f0: 784, delay: 0.2 }); break;
       case 'win': [523, 659, 784, 1046].forEach((f, i) => this.tone(0.25, { vol: 0.2, f0: f, delay: i * 0.12 })); break;
       case 'lose': [392, 330, 262].forEach((f, i) => this.tone(0.35, { vol: 0.2, f0: f, delay: i * 0.18, type: 'triangle' })); break;
+      case 'whir': for (let i = 0; i < 6; i++) this.tone(0.09, { vol: 0.1, f0: 300 + i * 90, f1: 500 + i * 120, type: 'sawtooth', delay: i * 0.05 }); this.noise(0.4, { vol: 0.2, f0: 1500, f1: 4000, type: 'bandpass', q: 3 }); break;
+      case 'charge': this.tone(0.5, { vol: 0.15, f0: 120, f1: 700, type: 'sawtooth' }); this.noise(0.5, { vol: 0.2, f0: 300, f1: 3000, type: 'bandpass', q: 2 }); break;
+      case 'flame': this.noise(0.45, { vol: 0.45, f0: 800, f1: 200 }); break;
+      case 'throw': this.noise(0.12, { vol: 0.25, f0: 2500, f1: 6000, type: 'bandpass', q: 4 }); break;
       case 'ui': this.tone(0.04, { vol: 0.12, f0: 880 }); break;
       case 'ok': this.tone(0.07, { vol: 0.15, f0: 660, f1: 990 }); break;
       case 'back': this.tone(0.07, { vol: 0.15, f0: 520, f1: 330 }); break;
@@ -94,7 +99,14 @@ export class Audio {
         case 'jump': if (e.f === player) this.play('jump'); break;
         case 'land': if (e.f === player) this.play('land'); break;
         case 'dash': case 'teleport': this.play('dash'); break;
-        case 'cast': this.play(/beam|bolt|raikiri|chidori|kirin|lightning|thunder/i.test(e.def.fx || e.def.id) ? 'zap' : 'cast'); break;
+        case 'cast': {
+          // Each kind of jutsu or power gets its own sound.
+          const st = fxInfo(e.def.fx).style;
+          const k = st === 'bolt' || st === 'beamBolt' || st === 'pillar' ? 'zap' : st === 'spiral' ? 'whir' : st === 'beam' ? 'charge'
+            : st === 'fire' || st === 'beamFire' ? 'flame' : st === 'blade' || st === 'star' || st === 'needle' ? 'throw' : 'cast';
+          this.play(k);
+          break;
+        }
         case 'burst': case 'strike': if (e.big || e.type === 'strike') this.play('boom'); break;
         case 'clash': this.play('boom'); break;
         case 'ultimate': this.play('ultimate'); break;
