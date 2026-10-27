@@ -19,7 +19,7 @@ function paintLayer(paint) {
     g.scale(LS, LS);
     g.translate(LW / 2, -LY0);
     paint(g);
-  }));
+  }), 22);
 }
 
 // ---------- Valley of the End ----------
@@ -303,7 +303,7 @@ export function buildStage(art, arena) {
     art.floor(g, arena.left, arena.right);
     for (const p of arena.platforms) if (p.thin) art.platform(g, p);
   });
-  return { img: ditherCanvas(c, 12), x0, y0 };
+  return { img: ditherCanvas(c, 24), x0, y0 };
 }
 
 // Draw the backdrop in art pixels for a camera at (cam.x, cam.y), screen W x H art pixels.

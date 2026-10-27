@@ -199,7 +199,7 @@ export function drawSpriteFighter(ctx, f, x, y, px, { flash = false, alpha = 1, 
     g.translate(p.x, p.y);
     g.scale(p.facing, 1);
     g.rotate(p.lean);
-    g.translate(0, (Math.abs(Math.sin(p.spin)) * bh * 0.33));
+    g.translate(0, (Math.abs(Math.sin(p.spin)) * bh * 0.24));
     g.scale(sx, sy);
     g.translate(0, -bh * 0.5); g.rotate(p.spin); g.translate(0, bh * 0.5);
     g.globalAlpha = al;

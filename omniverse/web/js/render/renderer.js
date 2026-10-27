@@ -128,6 +128,14 @@ export class Renderer {
   flashScreen(color, a) { this.screenFlashColor = color; this.screenFlash = Math.max(this.screenFlash, a); }
 
   statusFx(f, dt) {
+    // Footstep dust while running, kicked up behind the runner.
+    if (f.state === 'run' && f.onGround && Math.abs(f.vx) > 300) {
+      f.stepT = (f.stepT || 0) - dt;
+      if (f.stepT <= 0) {
+        f.stepT = 0.16;
+        this.particles.add({ x: f.x - Math.sign(f.vx) * 20, y: f.y - 6, vx: -Math.sign(f.vx) * (120 + Math.random() * 120), vy: -60 - Math.random() * 60, kind: 'smoke', size: 10, size1: 26, life: 0.35, drag: 5, color: '#d8ccb8' });
+      }
+    }
     for (const s of f.status) {
       if (s.type === 'burn' && Math.random() < dt * 30) this.particles.add({ x: f.x + (Math.random() - 0.5) * 50, y: f.y - Math.random() * 160, vy: -160, kind: 'flame', size: 26, size1: 8, life: 0.4, color: '#ff7a2a' });
       if (s.type === 'paralyze' && Math.random() < dt * 14) this.particles.burst(f.x, f.y - 100, 2, '#bff4ff', { kind: 'spark', speed: 500, size: 10, life: 0.15 });

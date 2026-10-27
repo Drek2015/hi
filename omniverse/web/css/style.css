@@ -92,19 +92,19 @@ h3 { margin: 0 0 8px; font-size: calc(var(--u) * 6); color: var(--gold); }
 .stick::before { content: ''; position: absolute; left: -11vh; top: -11vh; width: 22vh; height: 22vh; border-radius: 50%; border: 3px solid rgba(255,255,255,0.35); background: rgba(20,14,30,0.25); }
 .stick.on { opacity: 0.9; }
 .knob { position: absolute; left: -5vh; top: -5vh; width: 10vh; height: 10vh; border-radius: 50%; background: rgba(255,255,255,0.45); border: 3px solid var(--ink); }
-.pad { position: absolute; right: max(10px, env(safe-area-inset-right)); bottom: 3vh; width: 46vh; height: 62vh; }
-.tbtn { position: absolute; width: 14vh; height: 14vh; border-radius: 50%; border: 3px solid var(--ink); background: rgba(36,28,56,0.55); display: flex; align-items: center; justify-content: center; font-size: 2.4vh; color: #fff; pointer-events: auto; text-shadow: 2px 2px 0 var(--ink); }
+.pad { position: absolute; right: max(10px, env(safe-area-inset-right)); bottom: 3vh; width: 60vh; height: 50vh; }
+.tbtn { position: absolute; width: 13vh; height: 13vh; border-radius: 50%; border: 3px solid var(--ink); background: rgba(36,28,56,0.55); display: flex; align-items: center; justify-content: center; font-size: 2.3vh; color: #fff; pointer-events: auto; text-shadow: 2px 2px 0 var(--ink); }
 .tbtn.on { background: rgba(255,216,74,0.7); transform: scale(0.94); }
 .tbtn.dim { opacity: 0.4; }
 .b-jump { right: 0; bottom: 0; width: 17vh; height: 17vh; background: rgba(60,120,220,0.55); }
-.b-light { right: 18vh; bottom: 2vh; background: rgba(220,90,60,0.55); }
-.b-heavy { right: 34vh; bottom: 6vh; background: rgba(220,60,60,0.55); }
+.b-light { right: 18vh; bottom: 1vh; width: 14vh; height: 14vh; background: rgba(220,90,60,0.55); }
+.b-heavy { right: 33vh; bottom: 3vh; background: rgba(220,60,60,0.55); }
 .b-ab0 { right: 2vh; bottom: 19vh; }
-.b-ab1 { right: 17vh; bottom: 17vh; }
-.b-ab2 { right: 32vh; bottom: 21vh; }
+.b-ab1 { right: 16vh; bottom: 17vh; }
+.b-ab2 { right: 30vh; bottom: 18vh; width: 12vh; height: 12vh; }
 .b-ult { right: 8vh; bottom: 34vh; background: rgba(200,74,255,0.55); }
-.b-guard { left: max(10px, env(safe-area-inset-left)); bottom: auto; top: 22vh; position: fixed; width: 11vh; height: 11vh; }
-.b-dash { right: 24vh; bottom: 36vh; width: 11vh; height: 11vh; }
+.b-guard { right: 47vh; bottom: 7vh; width: 12vh; height: 12vh; background: rgba(80,160,220,0.5); }
+.b-dash { right: 46vh; bottom: 23vh; width: 11vh; height: 11vh; }
 .tpause { position: absolute; top: 10px; left: 50%; transform: translateX(-50%) translateY(13vh); width: 7vh; height: 7vh; display: flex; align-items: center; justify-content: center; font-size: 2.4vh; background: rgba(36,28,56,0.6); border: 3px solid var(--ink); pointer-events: auto; }
 
 /* Skill tree */

@@ -31,7 +31,7 @@ export class HitFx {
   draw(ctx) {
     ctx.save();
     for (const h of this.list) {
-      ctx.save(); ctx.translate(h.x, h.y); ctx.scale(1.45, 1.45); ctx.translate(-h.x, -h.y);
+      ctx.save(); ctx.translate(h.x, h.y); const sc = h.kind === 'parry' || h.kind === 'clash' ? 0.85 : 1.35; ctx.scale(sc, sc); ctx.translate(-h.x, -h.y);
       const f = Math.floor(h.t / FRAME);              // stepped frame index
       const u = h.t / h.life;
       switch (h.kind) {
