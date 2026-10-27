@@ -6,6 +6,8 @@ import { ROSTER, getChar } from '../js/data/roster.js';
 import { ARENAS } from '../js/data/arenas.js';
 import { DT } from '../js/sim/constants.js';
 import { Renderer } from '../js/render/renderer.js';
+import { loadSprites } from '../js/render/spriteset.js';
+await loadSprites('../assets/sprites/');
 const q = new URLSearchParams(location.search);
 const A = getChar(q.get('a') || 'naruto'), B = getChar(q.get('b') || 'sasuke');
 const arena = ARENAS.find(x => x.id === (q.get('arena') || 'valley'));

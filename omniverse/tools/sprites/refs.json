@@ -1,0 +1,162 @@
+{
+ "minato_flash": {
+  "file": "eb893e5f-image.png",
+  "T": 13
+ },
+ "minato_kunai": {
+  "file": "2c164613-image.png"
+ },
+ "minato_blue": {
+  "file": "3d6e23fa-image.jpg"
+ },
+ "naruto_punch": {
+  "file": "c753e190-image.png",
+  "T": 4
+ },
+ "naruto_poses": {
+  "file": "bcee19e1-image.jpg",
+  "T": 3.03,
+  "tol": 80
+ },
+ "kakashi_poses": {
+  "file": "9241def8-image.jpg",
+  "T": 3.02,
+  "tol": 80
+ },
+ "kakashi_raikiri": {
+  "file": "343b0bd8-image.jpg"
+ },
+ "madara_gunbai": {
+  "file": "e25d65ee-image.png",
+  "T": 15
+ },
+ "madara_ninja": {
+  "file": "a44315ca-image.jpg"
+ },
+ "madara_chibi": {
+  "file": "038faf2e-image.png",
+  "T": 12
+ },
+ "momoshiki_grid": {
+  "file": "370c0b2a-image.jpg"
+ },
+ "momoshiki_two": {
+  "file": "997478f4-image.jpg"
+ },
+ "momoshiki_big": {
+  "file": "85b27947-image.jpg"
+ },
+ "avengers_chibi": {
+  "file": "0640b2df-image.png",
+  "T": 16
+ },
+ "avengers_group": {
+  "file": "625ef41a-image.jpg"
+ },
+ "marvel_grid": {
+  "file": "094f91e3-image.jpg"
+ },
+ "imct": {
+  "file": "d3e2f16d-image.png"
+ },
+ "dbz_group": {
+  "file": "8c496ed7-image.jpg",
+  "tol": 90
+ },
+ "goku_ui_up": {
+  "file": "e9901945-image.jpg",
+  "tol": 90,
+  "samp": 0.3,
+  "range": [
+   6,
+   16
+  ]
+ },
+ "goku_kame": {
+  "file": "2ca75fbf-image.jpg",
+  "tol": 90,
+  "samp": 0.3,
+  "range": [
+   6,
+   16
+  ]
+ },
+ "goku_ssj_kame": {
+  "file": "2804d6ff-image.jpg",
+  "tol": 150,
+  "samp": 0.3,
+  "range": [
+   6,
+   16
+  ],
+  "step": 80
+ },
+ "goku_ssj3": {
+  "file": "d0f48eb9-image.jpg",
+  "tol": 150,
+  "samp": 0.3,
+  "range": [
+   6,
+   16
+  ],
+  "step": 80
+ },
+ "goku_vegeta": {
+  "file": "af137482-image.jpg",
+  "tol": 90,
+  "samp": 0.3,
+  "range": [
+   25,
+   60
+  ]
+ },
+ "goku_ui_bomb": {
+  "file": "8106e9f7-image.jpg",
+  "tol": 150,
+  "samp": 0.3,
+  "range": [
+   20,
+   50
+  ],
+  "step": 80
+ },
+ "trio": {
+  "file": "e63c2a5b-image.jpg",
+  "T": 2.0,
+  "tol": 40
+ },
+ "minato_rasengan": {
+  "file": "1b3ad945-image.jpg",
+  "T": 2.0,
+  "tol": 40
+ },
+ "kakashi_small": {
+  "file": "5ea9b173-image.png",
+  "T": 1.0,
+  "tol": 60
+ },
+ "tobi_a": {
+  "file": "dab436bc-image.jpg",
+  "crop": [
+   205,
+   25,
+   385,
+   490
+  ],
+  "range": [
+   6,
+   14
+  ],
+  "skygrass": true,
+  "tol": 30,
+  "minpx": 80
+ },
+ "tobi_b": {
+  "file": "475f5cce-image.jpg",
+  "tol": 70,
+  "range": [
+   5,
+   30
+  ]
+ }
+}

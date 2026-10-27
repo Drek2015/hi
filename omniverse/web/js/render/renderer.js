@@ -4,9 +4,10 @@
 import { arenaArt, buildStage, drawBackdrop } from './arenas.js';
 import { drawEntity, fxInfo, ParticleSystem } from './fx.js';
 import { glowSprite, rgba } from './colors.js';
-import { SpriteBaker, UNIT } from './pixel.js';
+import { UNIT } from './pixel.js';
+import { drawSpriteFighter } from './spriteset.js';
 
-const TARGET_ART_H = 480;   // art pixels tall; screens scale up by a whole number when they can
+const TARGET_ART_H = 400;   // art pixels tall; screens scale up by a whole number when they can
 
 export class Renderer {
   constructor(canvas) {
@@ -14,8 +15,9 @@ export class Renderer {
     this.ctx = canvas.getContext('2d', { alpha: false });
     this.low = document.createElement('canvas');
     this.lctx = this.low.getContext('2d', { alpha: false });
-    this.baker = new SpriteBaker();
-    this.cam = { x: 0, y: -336 };
+    this.fxLow = document.createElement('canvas');
+    this.fctx = this.fxLow.getContext('2d');
+    this.cam = { x: 0, y: -280 };
     this.shake = 0;
     this.particles = new ParticleSystem();
     this.hitFlash = new Map();
@@ -29,7 +31,7 @@ export class Renderer {
     this.stage = buildStage(this.art, world.arena);
     this.particles = new ParticleSystem();
     this.hitFlash.clear();
-    this.cam = { x: 0, y: -336 };
+    this.cam = { x: 0, y: -280 };
   }
 
   resizeLow() {
@@ -37,7 +39,9 @@ export class Renderer {
     // Fixed art height; 1440-px phone screens get an exact 3x scale.
     const k = H / TARGET_ART_H;
     const lw = Math.round(W / k), lh = TARGET_ART_H;
-    if (this.low.width !== lw || this.low.height !== lh) { this.low.width = lw; this.low.height = lh; this.vignette = null; }
+    if (this.low.width !== lw || this.low.height !== lh) {
+      this.low.width = this.fxLow.width = lw; this.low.height = this.fxLow.height = lh; this.vignette = null;
+    }
     this.k = k;
   }
 
@@ -168,51 +172,56 @@ export class Renderer {
     for (const e of back) drawEntity(ctx, e, t);
     ctx.restore();
 
-    // Fighters as baked pixel sprites.
-    for (const f of [...w.clones, ...w.fighters]) {
-      const px = ox + f.x / UNIT, py = oy + f.y / UNIT;
-      let alpha = f.isClone ? 0.9 : 1;
-      if (f.intangible > 0) alpha = 0.45 + Math.sin(t * 40) * 0.15;
-      if (f.state === 'dash') {
-        for (let i = 3; i >= 1; i--) { ctx.globalAlpha = 0.16 / i; this.baker.draw(ctx, f, px - f.vx * 0.018 * i / UNIT, py, { t: f.animT }); }
-      }
-      ctx.globalAlpha = alpha;
-      this.baker.draw(ctx, f, px, py, { t: f.animT, flash: this.hitFlash.has(f) });
-      ctx.globalAlpha = 1;
-      if (f.shield) {
-        const c = fxInfo(f.shield.fx).color;
-        ctx.globalCompositeOperation = 'lighter';
-        ctx.globalAlpha = 0.25 + 0.35 * (f.shield.hp / f.shield.max);
-        ctx.drawImage(glowSprite(c, 64), Math.round(px - 72), Math.round(py - 128), 144, 144);
-        ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
-        pixelRing(ctx, Math.round(px), Math.round(py - 56), 64, c);
-      }
-    }
-
-    ctx.save();
-    ctx.translate(ox, oy);
-    ctx.scale(1 / UNIT, 1 / UNIT);
-    for (const e of front) drawEntity(ctx, e, t);
-    this.particles.draw(ctx);
-    ctx.restore();
-
-    // Screen-space effects.
-    if (w.flash && w.flash.t < 0.9) drawCutIn(ctx, W, H, w.flash);
-    if (this.screenFlash > 0) {
-      ctx.globalCompositeOperation = 'lighter';
-      ctx.fillStyle = rgba(this.screenFlashColor, Math.min(0.6, this.screenFlash));
-      ctx.fillRect(0, 0, W, H);
-      ctx.globalCompositeOperation = 'source-over';
-      this.screenFlash -= dt * 2.5;
-    }
-    if (!this.vignette) this.vignette = makeVignette(W, H);
-    ctx.drawImage(this.vignette, 0, 0);
-
-    // Upscale with hard pixels.
-    const out = this.ctx;
+    // Background done: scale it up with hard pixels, then draw fighters at full resolution so
+    // the supplied sprite art keeps its exact pixels.
+    const out = this.ctx, k = this.k;
     out.imageSmoothingEnabled = false;
     out.setTransform(1, 0, 0, 1, 0, 0);
     out.drawImage(this.low, 0, 0, this.canvas.width, this.canvas.height);
+
+    for (const f of [...w.clones, ...w.fighters]) {
+      const px = (ox + f.x / UNIT) * k, py = (oy + f.y / UNIT) * k;
+      let alpha = f.isClone ? 0.75 : 1;
+      if (f.intangible > 0) alpha = 0.45 + Math.sin(t * 40) * 0.15;
+      const aura = f.form ? fxInfo(f.form).color : null;
+      if (aura) {
+        out.globalCompositeOperation = 'lighter';
+        out.globalAlpha = 0.45 + Math.sin(t * 9) * 0.1;
+        out.drawImage(glowSprite(aura, 64), px - 70 * k, py - 130 * k, 140 * k, 150 * k);
+        out.globalAlpha = 1; out.globalCompositeOperation = 'source-over';
+      }
+      drawSpriteFighter(out, f, px, py, k, { flash: this.hitFlash.has(f), alpha, t: f.animT });
+    }
+
+    // Effects layer at art resolution, scaled up over the fighters.
+    const fx = this.fctx;
+    fx.setTransform(1, 0, 0, 1, 0, 0);
+    fx.clearRect(0, 0, W, H);
+    fx.save();
+    fx.translate(ox, oy);
+    fx.scale(1 / UNIT, 1 / UNIT);
+    for (const f of w.fighters) if (f.shield) {
+      const c = fxInfo(f.shield.fx).color;
+      fx.globalCompositeOperation = 'lighter';
+      fx.globalAlpha = 0.25 + 0.35 * (f.shield.hp / f.shield.max);
+      fx.drawImage(glowSprite(c, 64), f.x - 144, f.y - 256, 288, 288);
+      fx.globalAlpha = 1; fx.globalCompositeOperation = 'source-over';
+    }
+    for (const e of front) drawEntity(fx, e, t);
+    this.particles.draw(fx);
+    fx.restore();
+    for (const f of w.fighters) if (f.shield) pixelRing(fx, Math.round(ox + f.x / UNIT), Math.round(oy + f.y / UNIT - 56), 64, fxInfo(f.shield.fx).color);
+    if (w.flash && w.flash.t < 0.9) drawCutIn(fx, W, H, w.flash);
+    if (this.screenFlash > 0) {
+      fx.globalCompositeOperation = 'lighter';
+      fx.fillStyle = rgba(this.screenFlashColor, Math.min(0.6, this.screenFlash));
+      fx.fillRect(0, 0, W, H);
+      fx.globalCompositeOperation = 'source-over';
+      this.screenFlash -= dt * 2.5;
+    }
+    if (!this.vignette) this.vignette = makeVignette(W, H);
+    fx.drawImage(this.vignette, 0, 0);
+    out.drawImage(this.fxLow, 0, 0, this.canvas.width, this.canvas.height);
   }
 }
 
