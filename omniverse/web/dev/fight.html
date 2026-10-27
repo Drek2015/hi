@@ -1,0 +1,18 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style></head><body><canvas id="c" width="1440" height="660"></canvas>
+<script type="module">
+import { World } from '../js/sim/world.js';
+import { AIController } from '../js/sim/ai.js';
+import { ROSTER, getChar } from '../js/data/roster.js';
+import { ARENAS } from '../js/data/arenas.js';
+import { DT } from '../js/sim/constants.js';
+import { Renderer } from '../js/render/renderer.js';
+const q = new URLSearchParams(location.search);
+const A = getChar(q.get('a') || 'naruto'), B = getChar(q.get('b') || 'sasuke');
+const arena = ARENAS.find(x => x.id === (q.get('arena') || 'valley'));
+const mk = (c, s) => { const skin = c.skins[+s || 0]; return { char: c, skin, slots: c.defaultLoadout.map(id => c.abilities.find(a => a.id === id)), passives: [] }; };
+const w = new World({ arena, players: [mk(A, q.get('sa')), mk(B, q.get('sb'))] });
+const ai = [new AIController(w, w.fighters[0], 'hard'), new AIController(w, w.fighters[1], 'hard')];
+const r = new Renderer(document.getElementById('c')); r.bind(w);
+window.advance = (sec) => { const n = Math.round(sec / DT); for (let i = 0; i < n; i++) { w.step([ai[0].input(), ai[1].input()]); if (i % 2 === 0 || i === n - 1) r.render(DT * 2, DT * 2 * w.slowScale); } };
+window.w = w; window.ready = true;
+</script></body></html>

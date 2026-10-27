@@ -1,0 +1,12 @@
+<!doctype html><html><head><meta charset="utf-8"><style>body{margin:0;background:#2a2440;display:grid;grid-template-columns:repeat(8,1fr);gap:2px}canvas{width:100%;image-rendering:pixelated;background:#5a7ab0}</style></head><body>
+<script type="module">
+import { ROSTER } from '../js/data/roster.js';
+import { drawPixelPortrait } from '../js/render/pixel.js';
+const big = location.search.includes("big"); if (big) document.body.style.gridTemplateColumns = "repeat(4,1fr)";
+for (const c of (big ? ROSTER.filter(c => ["spiderman","goku","sasuke","naruto"].includes(c.id)) : ROSTER)) for (const s of (big ? c.skins.slice(0,1) : c.skins)) {
+  const cv = document.createElement('canvas'); cv.width = 120; cv.height = 120;
+  document.body.append(cv);
+  drawPixelPortrait(cv, c, s, {});
+}
+window.done = true;
+</script></body></html>
