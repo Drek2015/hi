@@ -6,6 +6,7 @@ import { describe } from '../data/build.js';
 import { drawSpritePortrait, hasSprites } from '../render/spriteset.js';
 import { nodeCost } from '../save.js';
 import { ACTIONS, PAD_NAMES, DEFAULT_PAD } from '../input.js';
+import { abilityIcon } from './icons.js';
 
 export const PLAYABLE = () => ROSTER.filter(hasSprites);
 
@@ -137,45 +138,91 @@ export class Menus {
     const cs = sv.char(c);
     const skin = c.skins.find(k => k.id === cs.skin) || c.skins[0];
     const loadout = cs.loadout;
+    const BRANCH_COL = ['#4fb6ff', '#ffb31a', '#ff4a7a'];
+    const cur = c.abilities.find(n => n.id === sel);
+    const iconEl = (n, cls = '') => { const cv = abilityIcon(n); const img = h('canvas', { class: 'sk-icon ' + cls, width: 24, height: 24 }); img.getContext('2d').drawImage(cv, 0, 0); return img; };
+
     const node = n => {
       const owned = sv.isUnlocked(c, n), can = sv.canUnlock(c, n), reach = sv.prereqMet(c, n);
       const slot = loadout.indexOf(n.id);
-      const cls = ['node', n.kind, owned ? 'owned' : can ? 'can' : reach ? 'reach' : 'locked', slot >= 0 ? 'eq' : '', sel === n.id ? 'sel' : ''].join(' ');
-      return h('button', { class: cls, 'data-key': 'n' + n.id, onclick: () => { a.audio.play('ui'); this.show('skills', c.id, n.id); } },
-        h('span', { class: 'nt' }, n.name),
-        h('span', { class: 'nm' }, slot >= 0 ? `SLOT ${slot + 1}` : owned ? (n.kind === 'passive' ? 'PASSIVE' : 'OWNED') : `${nodeCost(n)} PT`),
-        n.skin ? h('span', { class: 'nskin' }, c.skins.find(k => k.id === n.skin)?.name) : null);
+      const cls = ['sk-node', n.kind, owned ? 'owned' : can ? 'can' : reach ? 'reach' : 'locked', sel === n.id ? 'sel' : ''].join(' ');
+      return h('button', { class: cls, 'data-key': 'n' + n.id, 'data-id': n.id, style: `--bc:${BRANCH_COL[n.branch] || '#fff'}`,
+        onclick: () => { a.audio.play('ui'); this.show('skills', c.id, n.id); } },
+        iconEl(n),
+        slot >= 0 ? h('span', { class: 'sk-badge' }, slot === 3 ? 'U' : String(slot + 1)) : null,
+        n.skin ? h('span', { class: 'sk-skinpip' }, '★') : null,
+        !owned ? h('span', { class: 'sk-cost' }, String(nodeCost(n))) : null);
     };
-    const branches = c.branches.map((b, bi) => h('div', { class: 'branch' }, h('div', { class: 'bname' }, b),
-      ...c.abilities.filter(n => n.branch === bi).sort((x, y) => x.tier - y.tier).map(node)));
-    const cur = c.abilities.find(n => n.id === sel);
-    let detail = h('div', { class: 'detail' }, h('div', { class: 'dim' }, 'Select an ability to see what it does, unlock it, or equip it.'));
+    const rows = c.branches.map((b, bi) => {
+      const nodes = c.abilities.filter(n => n.branch === bi).sort((x, y) => x.tier - y.tier);
+      const owned = nodes.filter(n => sv.isUnlocked(c, n)).length;
+      return h('div', { class: 'sk-row', style: `--bc:${BRANCH_COL[bi]}` },
+        h('div', { class: 'sk-bname' }, h('b', {}, b), h('span', {}, `${owned}/${nodes.length}`)),
+        h('div', { class: 'sk-nodes' }, ...nodes.map(node)));
+    });
+    const svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svgEl.setAttribute('class', 'sk-lines');
+    const tree = h('div', { class: 'sk-tree' }, svgEl, ...rows);
+
+    // Detail card
+    let detail;
     if (cur) {
       const owned = sv.isUnlocked(c, cur);
       const actions = [];
-      if (!owned) actions.push(btn(`UNLOCK (${nodeCost(cur)} PT)`, () => { if (sv.unlock(c, cur)) a.audio.play('ok'); else a.audio.play('deny'); this.refresh(); }, sv.canUnlock(c, cur) ? 'go' : 'off', { 'data-key': 'unlock' }));
-      else if (cur.kind === 'active') [0, 1, 2].forEach(i => actions.push(btn(`EQUIP ${i + 1}`, () => { sv.equip(c, i, cur); a.audio.play('ok'); this.refresh(); }, loadout[i] === cur.id ? 'sel' : '', { 'data-key': 'eq' + i })));
+      if (!owned) actions.push(btn(`UNLOCK · ${nodeCost(cur)} PT`, () => { if (sv.unlock(c, cur)) { a.audio.play('ok'); this.unlockFlash = cur.id; } else a.audio.play('deny'); this.refresh(); }, sv.canUnlock(c, cur) ? 'go' : 'off', { 'data-key': 'unlock' }));
+      else if (cur.kind === 'active') [0, 1, 2].forEach(i => actions.push(btn(`SLOT ${i + 1}`, () => { sv.equip(c, i, cur); a.audio.play('ok'); this.refresh(); }, loadout[i] === cur.id ? 'sel' : '', { 'data-key': 'eq' + i })));
       else if (cur.kind === 'ultimate') actions.push(btn('EQUIP ULTIMATE', () => { sv.equip(c, 3, cur); a.audio.play('ok'); this.refresh(); }, loadout[3] === cur.id ? 'sel' : '', { 'data-key': 'eq3' }));
-      detail = h('div', { class: 'detail' },
-        h('div', { class: 'dname' }, cur.name),
-        h('div', { class: 'dkind' }, `${cur.kind.toUpperCase()} · TIER ${cur.tier}${cur.cost ? ` · ${cur.cost} ${c.energyName.toUpperCase()}` : ''}${cur.cd ? ` · ${cur.cd}s` : ''}`),
-        h('div', {}, describe(cur)),
-        cur.skin ? h('div', { class: 'warn' }, `Only with the ${c.skins.find(k => k.id === cur.skin)?.name} skin.`) : null,
-        !owned && !sv.prereqMet(c, cur) ? h('div', { class: 'warn' }, 'Unlock the ability above it in this branch first.') : null,
-        h('div', { class: 'row' }, ...actions));
+      const chips = [cur.kind.toUpperCase(), `TIER ${cur.tier + 1}`];
+      if (cur.cost) chips.push(`${cur.cost} ${c.energyName.toUpperCase()}`);
+      if (cur.cd) chips.push(`${cur.cd}s COOLDOWN`);
+      detail = h('div', { class: 'sk-detail', style: `--bc:${BRANCH_COL[cur.branch] || '#fff'}` },
+        iconEl(cur, 'big'),
+        h('div', { class: 'col' },
+          h('div', { class: 'dname' }, cur.name),
+          h('div', { class: 'chips' }, ...chips.map(t => h('span', { class: 'chip' }, t))),
+          h('div', { class: 'ddesc' }, describe(cur)),
+          cur.skin ? h('div', { class: 'warn' }, `★ ${c.skins.find(k => k.id === cur.skin)?.name} skin only`) : null,
+          !owned && !sv.prereqMet(c, cur) ? h('div', { class: 'warn' }, 'Unlock the previous ability on this path first.') : null),
+        h('div', { class: 'sk-actions' }, ...actions));
+    } else {
+      detail = h('div', { class: 'sk-detail empty' }, h('div', { class: 'dim' }, 'Tap an ability to inspect it. Gold rings can be unlocked now; spend points from wins to grow each path.'));
     }
+
+    // Side panel: the fighter, points, loadout
     const ci = list.indexOf(c);
-    const go = d => { this.show('skills', list[(ci + d + list.length) % list.length].id); a.audio.play('ui'); };
-    return h('div', { class: 'screen skills' },
-      h('div', { class: 'row top' },
-        btn('◀ L1', () => go(-1), 'small', { 'data-pad': 'L1' }),
-        portrait(c, skin, 64),
-        h('div', { class: 'col' }, h('div', { class: 'cname' }, c.name), h('div', { class: 'csub' }, sv.settings.unlockAll ? 'Everything unlocked (Settings)' : `${cs.points} SKILL POINTS · ${cs.wins}W ${cs.losses}L`)),
-        btn('R1 ▶', () => go(1), 'small', { 'data-pad': 'R1' }),
-        h('div', { class: 'loadout' }, ...loadout.map((id, i) => h('div', { class: 'lslot' }, h('b', {}, i === 3 ? 'ULT' : String(i + 1)), c.abilities.find(n => n.id === id)?.name ?? '-'))),
-        btn('BACK', () => this.back(), 'small')),
-      h('div', { class: 'tree' }, ...branches, detail),
-    );
+    const go = d => { a.audio.play('ui'); this.show('skills', list[(ci + d + list.length) % list.length].id); };
+    const big = h('canvas', { class: 'sk-art', width: 220, height: 220 });
+    drawSpritePortrait(big, c, skin);
+    const side = h('div', { class: 'sk-side', style: `--cc:${c.color}` },
+      h('div', { class: 'row nowrap' }, btn('◀', () => go(-1), 'small', { 'data-pad': 'L1' }), h('div', { class: 'sk-name' }, c.short || c.name), btn('▶', () => go(1), 'small', { 'data-pad': 'R1' })),
+      big,
+      h('div', { class: 'sk-points' }, sv.settings.unlockAll ? 'FREE PLAY' : h('span', {}, h('b', {}, String(cs.points)), ' SKILL POINTS')),
+      h('div', { class: 'sk-loadout' }, ...loadout.map((id, i) => {
+        const n = c.abilities.find(x => x.id === id);
+        return h('button', { class: 'sk-slot', onclick: () => n && this.show('skills', c.id, n.id) }, h('b', {}, i === 3 ? 'ULT' : String(i + 1)), n ? iconEl(n) : null);
+      })),
+      btn('BACK', () => this.back(), 'small'));
+
+    const el = h('div', { class: 'screen skills2' }, side, h('div', { class: 'sk-main' }, tree, detail));
+    // Draw connectors once laid out.
+    requestAnimationFrame(() => {
+      const svg = tree.querySelector('.sk-lines');
+      const base = tree.getBoundingClientRect();
+      svg.setAttribute('width', base.width); svg.setAttribute('height', base.height);
+      let out = '';
+      for (const row of tree.querySelectorAll('.sk-nodes')) {
+        const ns = [...row.children];
+        for (let i = 1; i < ns.length; i++) {
+          const p = ns[i - 1].getBoundingClientRect(), q = ns[i].getBoundingClientRect();
+          const lit = ns[i - 1].classList.contains('owned') && (ns[i].classList.contains('owned'));
+          const col = getComputedStyle(row.parentElement).getPropertyValue('--bc');
+          out += `<line x1="${p.right - base.left}" y1="${p.top + p.height / 2 - base.top}" x2="${q.left - base.left}" y2="${q.top + q.height / 2 - base.top}" stroke="${lit ? col : '#3a3150'}" stroke-width="${lit ? 4 : 3}" />`;
+        }
+      }
+      svg.innerHTML = out;   // SVG element, so the markup parses as SVG lines
+      if (this.unlockFlash) { tree.querySelector(`[data-id="${this.unlockFlash}"]`)?.classList.add('pop'); this.unlockFlash = null; }
+    });
+    return el;
   }
 
   // ---------- controls ----------
