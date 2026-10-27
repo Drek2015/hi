@@ -134,8 +134,9 @@ export class World {
       if ((f.state === 'idle' || f.state === 'guard' || f.state === 'charge') && f.onGround) f.facing = Math.sign(o.x - f.x) || f.facing;
     }
     // Push fighters apart.
-    if (a.alive && b.alive && Math.abs(a.x - b.x) < 56 && Math.abs(a.y - b.y) < 140 && a.intangible <= 0 && b.intangible <= 0) {
-      const push = (56 - Math.abs(a.x - b.x)) / 2 * (Math.sign(a.x - b.x) || 1);
+    const BODY = 88;   // fighters keep this far apart so bodies don't stack
+    if (a.alive && b.alive && Math.abs(a.x - b.x) < BODY && Math.abs(a.y - b.y) < 140 && a.intangible <= 0 && b.intangible <= 0) {
+      const push = (BODY - Math.abs(a.x - b.x)) / 2 * (Math.sign(a.x - b.x) || 1);
       a.x += push; b.x -= push;
     }
 

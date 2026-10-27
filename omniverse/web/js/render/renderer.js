@@ -19,6 +19,7 @@ export class Renderer {
     this.fxLow = document.createElement('canvas');
     this.fctx = this.fxLow.getContext('2d');
     this.cam = { x: 0, y: -280 };
+    this.zoom = 1;
     this.shake = 0;
     this.particles = new ParticleSystem();
     this.hitfx = new HitFx();
@@ -67,6 +68,8 @@ export class Renderer {
 
   consumeEvents() {
     const P = this.particles;
+    // Call-outs (PARRY, CRITICAL...) at most once every half second each.
+    const say = (x, y, str, col) => { const now = this.time; if ((this.said?.[str] ?? -9) > now - 0.5) return; (this.said ||= {})[str] = now; P.text(x, y, str, col, true); };
     for (const e of this.world.events) {
       switch (e.type) {
         case 'hit': {
@@ -76,17 +79,17 @@ export class Renderer {
           this.hitfx.add(e.crit ? 'crit' : big ? 'heavy' : 'light', e.x, e.y, dir, col);
           P.burst(e.x, e.y, big ? 10 : 5, '#ffffff', { kind: 'spark', speed: big ? 1500 : 1000, size: big ? 16 : 10, life: 0.18, angle: dir > 0 ? 0 : Math.PI, spread: 1.6 });
           if (e.dmg > 110 || e.crit) this.impact = Math.max(this.impact, e.dmg > 160 ? 0.07 : 0.045);
-          if (e.crit) P.text(e.x, e.y - 70, 'CRITICAL', '#ffd23a', true);
+          if (e.crit) say(e.x, e.y - 70, 'CRITICAL', '#ffd23a');
           if (this.showNumbers) P.text(e.x + (Math.random() - 0.5) * 40, e.y - 40, String(Math.round(e.dmg)), '#ffffff', big);
           this.hitFlash.set(e.f, 0.12);
           this.shake = Math.max(this.shake, Math.min(26, 4 + e.dmg * 0.12));
           break;
         }
         case 'guard': this.hitfx.add('guard', e.f.x + e.f.facing * 46, e.f.y - 100, e.f.facing); P.burst(e.f.x + e.f.facing * 46, e.f.y - 100, 6, '#bfeaff', { kind: 'spark', speed: 800, size: 10, life: 0.16 }); break;
-        case 'parry': this.hitfx.add('parry', e.f.x + e.f.facing * 40, e.f.y - 100); this.impact = 0.06; P.text(e.f.x, e.f.y - 230, 'PARRY', '#7fffd0', true); P.add({ x: e.f.x, y: e.f.y - 100, kind: 'ring', size: 30, size1: 200, life: 0.3, color: '#7fffd0' }); this.flashScreen('#7fffd0', 0.25); break;
-        case 'guardBreak': P.text(e.f.x, e.f.y - 230, 'GUARD BREAK', '#ff7a5a', true); P.burst(e.f.x, e.f.y - 100, 20, '#8fd8ff', { kind: 'spark', speed: 1100, size: 14 }); this.shake = Math.max(this.shake, 16); break;
+        case 'parry': this.hitfx.add('parry', e.f.x + e.f.facing * 40, e.f.y - 100); this.impact = 0.06; say(e.f.x, e.f.y - 230, 'PARRY', '#7fffd0'); P.add({ x: e.f.x, y: e.f.y - 100, kind: 'ring', size: 30, size1: 200, life: 0.3, color: '#7fffd0' }); this.flashScreen('#7fffd0', 0.25); break;
+        case 'guardBreak': say(e.f.x, e.f.y - 230, 'GUARD BREAK', '#ff7a5a'); P.burst(e.f.x, e.f.y - 100, 20, '#8fd8ff', { kind: 'spark', speed: 1100, size: 14 }); this.shake = Math.max(this.shake, 16); break;
         case 'shieldHit': P.add({ x: e.x, y: e.y, kind: 'ring', size: 60, size1: 130, life: 0.2, color: '#9fe3ff' }); break;
-        case 'counter': P.text(e.f.x, e.f.y - 230, 'COUNTER', '#ffd23a', true); this.flashScreen('#ffffff', 0.3); break;
+        case 'counter': say(e.f.x, e.f.y - 230, 'COUNTER', '#ffd23a'); this.flashScreen('#ffffff', 0.3); break;
         case 'burst': case 'strike': case 'rushImpact': case 'trap': case 'fizzle': {
           const fx = fxInfo(e.fx);
           const r = e.r || e.w || 90;
@@ -153,6 +156,17 @@ export class Renderer {
     const cam = { x: Math.round(this.cam.x / UNIT) * UNIT, y: Math.round(this.cam.y / UNIT) * UNIT };
     // World point -> art pixel.
     const ox = Math.round(W / 2 - cam.x / UNIT) + sx, oy = Math.round(H / 2 - cam.y / UNIT) + sy;
+    // Zoom in when the fighters are close, out when they separate (crop of the art canvas).
+    const [fa, fb] = w.fighters;
+    const dist = Math.abs(fa.x - fb.x) + Math.abs(fa.y - fb.y) * 0.7;
+    let zt = Math.max(1, Math.min(1.5, 1.62 - dist / 1250));
+    if (w.flash && w.flash.t < 0.7) zt = Math.min(1.7, zt + 0.25);
+    this.zoom = approachZ(this.zoom, zt, dt);
+    const z = this.zoom;
+    const midX = ox + (fa.x + fb.x) / 2 / UNIT, midY = oy + (Math.min(fa.y, fb.y) - 120) / UNIT;
+    const cw = W / z, ch = H / z;
+    const cx = Math.max(0, Math.min(W - cw, midX - cw / 2)), cy = Math.max(0, Math.min(H - ch, midY - ch * 0.45));
+    this.view = { cx, cy, z };
 
     ctx.imageSmoothingEnabled = false;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -185,20 +199,21 @@ export class Renderer {
     const out = this.ctx, k = this.k;
     out.imageSmoothingEnabled = false;
     out.setTransform(1, 0, 0, 1, 0, 0);
-    out.drawImage(this.low, 0, 0, this.canvas.width, this.canvas.height);
+    out.drawImage(this.low, cx, cy, cw, ch, 0, 0, this.canvas.width, this.canvas.height);
+    const K = k * z;
 
     for (const f of [...w.clones, ...w.fighters]) {
-      const px = (ox + f.x / UNIT) * k, py = (oy + f.y / UNIT) * k;
+      const px = (ox + f.x / UNIT - cx) * K, py = (oy + f.y / UNIT - cy) * K;
       let alpha = f.isClone ? 0.75 : 1;
       if (f.intangible > 0) alpha = 0.45 + Math.sin(t * 40) * 0.15;
       const aura = f.form ? fxInfo(f.form).color : null;
       if (aura) {
         out.globalCompositeOperation = 'lighter';
         out.globalAlpha = 0.45 + Math.sin(t * 9) * 0.1;
-        out.drawImage(glowSprite(aura, 64), px - 70 * k, py - 130 * k, 140 * k, 150 * k);
+        out.drawImage(glowSprite(aura, 64), px - 70 * K, py - 130 * K, 140 * K, 150 * K);
         out.globalAlpha = 1; out.globalCompositeOperation = 'source-over';
       }
-      drawSpriteFighter(out, f, px, py, k, { flash: this.hitFlash.has(f), alpha, t: f.animT, dt: worldDt, trailColor: f.char.color });
+      drawSpriteFighter(out, f, px, py, K, { flash: this.hitFlash.has(f), alpha, t: f.animT, dt: worldDt, trailColor: f.char.color });
     }
 
     // Impact frame: an instant of stark black with white silhouettes, as in anime fight cuts.
@@ -206,7 +221,7 @@ export class Renderer {
       this.impact -= dt;
       out.fillStyle = 'rgba(8,4,14,0.86)';
       out.fillRect(0, 0, this.canvas.width, this.canvas.height);
-      for (const f of w.fighters) drawSpriteFighter(out, f, (ox + f.x / UNIT) * k, (oy + f.y / UNIT) * k, k, { flash: true, t: f.animT });
+      for (const f of w.fighters) drawSpriteFighter(out, f, (ox + f.x / UNIT - cx) * K, (oy + f.y / UNIT - cy) * K, K, { flash: true, t: f.animT });
     }
 
     // Effects layer at art resolution, scaled up over the fighters.
@@ -235,9 +250,9 @@ export class Renderer {
       fx.globalCompositeOperation = 'source-over';
       this.screenFlash -= dt * 2.5;
     }
+    out.drawImage(this.fxLow, cx, cy, cw, ch, 0, 0, this.canvas.width, this.canvas.height);
     if (!this.vignette) this.vignette = makeVignette(W, H);
-    fx.drawImage(this.vignette, 0, 0);
-    out.drawImage(this.fxLow, 0, 0, this.canvas.width, this.canvas.height);
+    out.drawImage(this.vignette, 0, 0, this.canvas.width, this.canvas.height);
     if (w.flash && w.flash.t < 0.9) drawCutIn(out, this.canvas.width, this.canvas.height, w.flash);
   }
 }
@@ -261,6 +276,8 @@ function dust(P, x, y, n) {
 }
 
 // Nearest surface at or below the feet.
+function approachZ(v, t, dt) { return v + (t - v) * (1 - Math.exp(-dt * (t > v ? 3 : 5))); }
+
 function groundBelow(w, f) {
   let g = Infinity;
   for (const p of w.platforms) if (f.x >= p.x1 && f.x <= p.x2 && p.y >= f.y - 1) g = Math.min(g, p.y);
