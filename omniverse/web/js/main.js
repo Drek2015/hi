@@ -13,6 +13,7 @@ import { Save, cpuSetup } from './save.js';
 import { Hud } from './ui/hud.js';
 import { Menus, PLAYABLE } from './ui/menus.js';
 import { TouchControls } from './ui/touch.js';
+import { Intro, Versus } from './ui/intro.js';
 
 class App {
   constructor() {
@@ -47,7 +48,11 @@ class App {
     this.resize();
     this.applySettings();
     this.menuBackdrop();
-    this.menus.show('title');
+    // Opening sequence, then the title menu.
+    this.menus.hide();
+    this.playSplash(new Intro(PLAYABLE(), this.audio), () => this.menus.show('title'));
+    addEventListener('pointerdown', () => this.skipSplash());
+    addEventListener('keydown', () => this.skipSplash());
     this.last = performance.now();
     requestAnimationFrame(t => this.frame(t));
   }
@@ -77,7 +82,22 @@ class App {
     this.renderer.bind(this.world);
   }
 
+  playSplash(splash, then) { this.splash = splash; this.splashThen = then; this.splashAge = 0; }
+
+  skipSplash() { if (this.splash && this.splashAge > 0.25) this.splash.skip(); }
+
+  // Show the versus splash, then fight.
   startMatch() {
+    const s = this.setup;
+    const c1 = ROSTER.find(c => c.id === s.p1), c2 = ROSTER.find(c => c.id === s.p2);
+    const arena = ARENAS.find(x => x.id === s.arena) || ARENAS[0];
+    this.menus.hide();
+    this.touch.show(false);
+    this.mode = 'versus';
+    this.playSplash(new Versus(c1, s.p1Skin, c2, s.p2Skin, arena.name, DIFFICULTY[s.difficulty].label, this.audio), () => this.beginMatch());
+  }
+
+  beginMatch() {
     const s = this.setup, sv = this.save;
     const c1 = ROSTER.find(c => c.id === s.p1), c2 = ROSTER.find(c => c.id === s.p2);
     const k1 = c1.skins.find(k => k.id === s.p1Skin) || c1.skins[0], k2 = c2.skins.find(k => k.id === s.p2Skin) || c2.skins[0];
@@ -110,6 +130,15 @@ class App {
     this.frames++; this.fpsT += dt;
     if (this.fpsT >= 0.5) { this.fps = Math.round(this.frames / this.fpsT); this.frames = 0; this.fpsT = 0; }
 
+    if (this.splash) {
+      this.splashAge += dt;
+      const pad = this.input.pad();
+      if (pad && pad.buttons.some(b => b.pressed)) this.skipSplash();
+      this.splash.update(dt);
+      this.splash.draw(this.renderer.ctx);
+      if (this.splash.done) { const then = this.splashThen; this.splash = null; then(); this.nav.swallow = true; }
+      return;
+    }
     if (this.mode !== 'fight') this.nav.update(dt, document.getElementById('ui'));
     if (this.input.consumePause()) {
       if (this.mode === 'fight' || this.mode === 'paused') this.togglePause();
