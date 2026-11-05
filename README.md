@@ -8,7 +8,15 @@ with a target of 240 FPS.
 > and sound in this repo is original and procedurally generated. No official assets are used. Please
 > don't sell or redistribute builds.
 
-![Spade Citadel, Zenon](docs/screenshots/zenon.png)
+| | |
+|---|---|
+| ![Zenon in the Spade Citadel](docs/screenshots/zenon.jpg) | ![First-person Asta vs Yuno](docs/screenshots/yuno.jpg) |
+
+![Mid-fight vs Yuno: lock-on, Gale Blade Shower volley, attack callouts](docs/screenshots/combat.jpg)
+![Dark Triad + Lucifero](docs/screenshots/dark_triad.jpg)
+
+*Screenshots come from a software (CPU) renderer in CI, so the FPS counter reads 1–3. On a real GPU you get
+volumetric fog, SSAO and full frame rate.*
 
 ## What's in it
 
