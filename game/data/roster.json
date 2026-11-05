@@ -1,0 +1,307 @@
+{
+  "_doc": "Boss roster: Black Clover season 2 (Spade Kingdom arc) cast plus Black Bull sparring duels. Fan-made, original stylised interpretations. Schema: docs/ASSET_PIPELINE.md. Attack types: melee, volley, aoe, ring, beam, teleport, pull, summon, regen, combo.",
+  "bosses": [
+    {
+      "id": "yuno", "name": "Yuno", "title": "Golden Dawn Captain — Spirit of Zephyr",
+      "affiliation": "Golden Dawn / Spade bloodline", "magic": "Wind Magic + Star Magic",
+      "description": "Your rival since the church in Hage. He rides the wind spirit Bell and, unleashed, calls down the star magic of his Spade heritage. Fast, airborne, relentless at range — close the gap.",
+      "arena": "clover_ruins", "element": "wind", "xp": 900,
+      "stats": {"hp": 3600, "poise": 280, "damage": 1.0, "speed": 5.6, "preferred_range": 9.0},
+      "appearance": {
+        "height": 1.02, "skin": "#efcfb4", "hair_color": "#15171c", "hair_style": "short_messy", "eye_color": "#f0c050",
+        "outfit": "coat", "outfit_primary": "#22242c", "outfit_secondary": "#2d2c36", "accent": "#d4a52c", "boots": "#2a2420",
+        "cape": true, "cape_color": "#f2efe6", "grimoire_color": "#2e6b3a", "grimoire_glow": "#a8ffd0",
+        "aura_color": "#7dffc0", "wings": "wind", "aura_element": "wind"
+      },
+      "phases": [
+        {"name": "Spirit of Zephyr", "threshold": 1.0, "speed": 1.0, "aura": "#7dffc0",
+         "attacks": ["gale_blades", "wind_rush", "tornado", "spirit_dive"]},
+        {"name": "Star Magic: Spade Ascension", "threshold": 0.5, "speed": 1.2, "hover": 1.6, "aura": "#ffd76a",
+         "attacks": ["shooting_stars", "constellation", "spirit_storm", "stardust_fall", "zephyr_combo", "wind_rush"]}
+      ],
+      "attacks": {
+        "gale_blades":   {"type": "volley", "name": "Wind Magic: Gale Blade Shower", "range": [4, 40], "cooldown": 3.0, "weight": 3, "windup": 0.65, "recovery": 0.8,
+                          "params": {"count": 7, "spread": 46, "speed": 24, "dmg": 55, "radius": 0.32, "delay": 0.05}},
+        "wind_rush":     {"type": "melee", "name": "Wind Blade Rush", "range": [0, 9], "cooldown": 2.5, "weight": 3, "windup": 0.55, "recovery": 0.9,
+                          "params": {"hits": 3, "dmg": 70, "dash": 15, "reach": 2.6, "magic": true, "interval": 0.28}},
+        "tornado":       {"type": "aoe", "name": "Wind Magic: Towering Tornado", "range": [3, 40], "cooldown": 6.0, "weight": 2, "windup": 0.6, "recovery": 1.0,
+                          "params": {"count": 3, "radius": 2.6, "delay": 1.1, "dmg": 95, "interval": 0.35, "spread": 3.0}},
+        "spirit_dive":   {"type": "teleport", "name": "Spirit Dive", "range": [5, 40], "cooldown": 7.0, "weight": 1.5, "windup": 0.3, "follow": "wind_rush",
+                          "params": {"side": "flank", "dist": 4.0}},
+        "shooting_stars":{"type": "volley", "name": "Star Magic: Shooting Stars", "range": [3, 40], "cooldown": 3.5, "weight": 3, "windup": 0.7, "recovery": 0.8,
+                          "params": {"from": "above", "count": 10, "speed": 17, "dmg": 50, "radius": 0.36, "homing": 1.5, "delay": 0.09, "pattern": "random", "spread": 40, "element": "star"}},
+        "constellation": {"type": "summon", "name": "Star Magic: Constellation Wheel", "range": [2, 40], "cooldown": 9.0, "weight": 2, "windup": 0.6, "recovery": 0.6,
+                          "params": {"count": 8, "dmg": 55, "speed": 18, "homing": 1.4, "delay": 0.7, "interval": 0.14, "element": "star"}},
+        "spirit_storm":  {"type": "beam", "name": "Spirit Magic: Spirit Storm", "range": [5, 40], "cooldown": 8.0, "weight": 2, "windup": 0.5, "recovery": 1.2,
+                          "params": {"dmg": 330, "width": 1.2, "charge": 0.9, "duration": 1.8, "track": 0.5}},
+        "stardust_fall": {"type": "aoe", "name": "Star Magic: Stardust Fall", "range": [0, 40], "cooldown": 7.0, "weight": 2, "windup": 0.6, "recovery": 0.8,
+                          "params": {"count": 6, "radius": 2.4, "delay": 1.3, "dmg": 90, "interval": 0.18, "spread": 5.0, "style": "rain", "element": "star"}},
+        "zephyr_combo":  {"type": "combo", "name": "Zephyr Spirit Dive", "range": [0, 40], "cooldown": 10.0, "weight": 1.5, "recovery": 1.4,
+                          "params": {"sequence": ["spirit_dive", "gale_blades"]}}
+      }
+    },
+    {
+      "id": "noelle", "name": "Noelle Silva", "title": "Black Bulls — Valkyrie of the Sea",
+      "affiliation": "Black Bulls / Royal Silva family", "magic": "Water Creation Magic",
+      "description": "A sparring duel with the royal who stopped running from her own power. Valkyrie spear charges, the Sea Dragon's Roar and a water nest that punishes greed.",
+      "arena": "bulls_training", "element": "water", "xp": 700,
+      "stats": {"hp": 3000, "poise": 240, "damage": 0.9, "speed": 5.2, "preferred_range": 6.0},
+      "appearance": {
+        "height": 0.96, "skin": "#f3d9c8", "hair_color": "#dfe3ea", "hair_style": "twintail", "eye_color": "#d070e0",
+        "outfit": "dress", "dress_color": "#e8eaf2", "outfit_primary": "#2a3046", "outfit_secondary": "#22252f", "accent": "#7fd8ff", "boots": "#e0e2ea",
+        "cape": true, "cape_color": "#141414", "grimoire_color": "#3a5aa0", "grimoire_glow": "#9fe0ff",
+        "aura_color": "#66ccff", "weapon": "spear"
+      },
+      "phases": [
+        {"name": "Sea Dragon", "threshold": 1.0, "speed": 1.0, "aura": "#66ccff",
+         "attacks": ["water_bullets", "sea_dragon_roar", "valkyrie_lance", "dragon_cradle"]},
+        {"name": "Saint Stage: Valkyrie Armor", "threshold": 0.5, "speed": 1.25, "aura": "#bff0ff",
+         "attacks": ["valkyrie_cyclone", "sea_dragon_nest", "roaring_sea", "valkyrie_lance", "water_bullets"]}
+      ],
+      "attacks": {
+        "water_bullets":    {"type": "volley", "name": "Water Magic: Sea Serpent Bullets", "range": [3, 40], "cooldown": 2.5, "weight": 3, "windup": 0.6, "recovery": 0.7,
+                             "params": {"count": 6, "spread": 30, "speed": 21, "dmg": 50, "radius": 0.34, "delay": 0.1}},
+        "sea_dragon_roar":  {"type": "beam", "name": "Sea Dragon's Roar", "range": [4, 40], "cooldown": 7.0, "weight": 2, "windup": 0.6, "recovery": 1.2,
+                             "params": {"dmg": 300, "width": 1.4, "charge": 1.0, "duration": 1.5, "track": 0.45}},
+        "valkyrie_lance":   {"type": "melee", "name": "Valkyrie Lance", "range": [0, 10], "cooldown": 2.5, "weight": 3, "windup": 0.55, "recovery": 0.8,
+                             "params": {"hits": 3, "dmg": 65, "dash": 16, "reach": 3.0, "poses": ["thrust", "slash_r", "thrust"], "windups": ["cast_charge_r", "windup_r", "cast_charge_r"], "interval": 0.3}},
+        "dragon_cradle":    {"type": "ring", "name": "Sea Dragon's Cradle", "range": [0, 6], "cooldown": 6.0, "weight": 2, "windup": 0.6, "recovery": 0.9,
+                             "params": {"count": 1, "speed": 12, "dmg": 70, "jump": false}},
+        "valkyrie_cyclone": {"type": "melee", "name": "Valkyrie Cyclone", "range": [0, 12], "cooldown": 3.5, "weight": 3, "windup": 0.45, "recovery": 1.0,
+                             "params": {"hits": 5, "dmg": 60, "dash": 18, "reach": 3.0, "interval": 0.22}},
+        "sea_dragon_nest":  {"type": "aoe", "name": "Sea Dragon's Nest", "range": [0, 40], "cooldown": 6.0, "weight": 2, "windup": 0.5, "recovery": 0.8,
+                             "params": {"count": 5, "radius": 2.6, "delay": 1.0, "dmg": 85, "interval": 0.15, "spread": 4.0}},
+        "roaring_sea":      {"type": "beam", "name": "Roaring Sea: Twin Dragons", "range": [4, 40], "cooldown": 9.0, "weight": 2, "windup": 0.5, "recovery": 1.2,
+                             "params": {"count": 2, "dmg": 260, "width": 1.2, "charge": 0.7, "duration": 1.1, "track": 0.6}}
+      }
+    },
+    {
+      "id": "yami", "name": "Yami Sukehiro", "title": "Black Bulls Captain — Surpass Your Limits",
+      "affiliation": "Black Bulls", "magic": "Dark Magic + Ki",
+      "description": "Your captain wants to see you surpass your limits — right now. Heavy katana combos, dimension-cutting slashes from across the field and a Black Moon that swallows the arena.",
+      "arena": "bulls_training", "element": "dark", "xp": 1300,
+      "stats": {"hp": 4400, "poise": 380, "damage": 1.15, "speed": 5.0, "preferred_range": 4.5},
+      "appearance": {
+        "height": 1.12, "skin": "#d8b496", "hair_color": "#0d0d10", "hair_style": "spiky", "eye_color": "#b080ff",
+        "outfit": "coat", "outfit_primary": "#2a2a2e", "outfit_secondary": "#1d1d22", "accent": "#50505a", "boots": "#151515",
+        "sleeves": false, "cape": true, "cape_color": "#101010", "grimoire_color": "#2a1840", "grimoire_glow": "#a060ff",
+        "aura_color": "#6a2bd1", "weapon": "katana"
+      },
+      "phases": [
+        {"name": "Dark Magic", "threshold": 1.0, "speed": 1.0, "aura": "#6a2bd1",
+         "attacks": ["cloaked_blade", "dimension_slash", "death_thrust", "black_moon"]},
+        {"name": "Surpassing Limits: Avidya", "threshold": 0.45, "speed": 1.2, "aura": "#b050ff",
+         "attacks": ["slash_flurry", "black_moon_ring", "avidya_wild_blade", "death_thrust", "dimension_slash"]}
+      ],
+      "attacks": {
+        "cloaked_blade":     {"type": "melee", "name": "Dark Cloaked Blade", "range": [0, 8], "cooldown": 2.0, "weight": 3, "windup": 0.75, "recovery": 1.0,
+                              "params": {"hits": 2, "dmg": 110, "dash": 16, "reach": 2.9, "interval": 0.45, "knockback": 9}},
+        "dimension_slash":   {"type": "beam", "name": "Dark Cloaked Dimension Slash", "range": [5, 40], "cooldown": 6.0, "weight": 2, "windup": 0.7, "recovery": 1.3,
+                              "params": {"dmg": 900, "width": 0.7, "charge": 1.0, "duration": 0.35, "track": 0.2}},
+        "death_thrust":      {"type": "teleport", "name": "Death Thrust", "range": [3, 40], "cooldown": 6.0, "weight": 1.5, "windup": 0.35, "follow": "thrust",
+                              "params": {"side": "flank", "dist": 3.0}},
+        "thrust":            {"type": "melee", "name": "", "announce": false, "range": [0, 40], "cooldown": 0.0, "weight": 0, "windup": 0.4,
+                              "params": {"hits": 1, "dmg": 130, "dash": 20, "reach": 3.2, "poses": ["thrust"], "windups": ["cast_charge_r"]}},
+        "black_moon":        {"type": "aoe", "name": "Black Moon", "range": [0, 40], "cooldown": 10.0, "weight": 1.5, "windup": 1.0, "recovery": 1.4,
+                              "params": {"count": 1, "radius": 6.5, "delay": 1.9, "dmg": 190, "spread": 0}},
+        "slash_flurry":      {"type": "beam", "name": "Dimension Slash: Triple Cut", "range": [4, 40], "cooldown": 7.0, "weight": 2, "windup": 0.5, "recovery": 1.2,
+                              "params": {"count": 3, "dmg": 700, "width": 0.6, "charge": 0.6, "duration": 0.3, "track": 0.3}},
+        "black_moon_ring":   {"type": "ring", "name": "Black Moon: Eclipse", "range": [0, 10], "cooldown": 7.0, "weight": 2, "windup": 0.7, "recovery": 1.0,
+                              "params": {"count": 2, "speed": 14, "dmg": 95, "interval": 0.6}},
+        "avidya_wild_blade": {"type": "melee", "name": "Avidya Slash: Wild Blade", "range": [0, 10], "cooldown": 3.0, "weight": 3, "windup": 0.6, "recovery": 1.1,
+                              "params": {"hits": 4, "dmg": 95, "dash": 17, "reach": 3.0, "interval": 0.3}}
+      }
+    },
+    {
+      "id": "nacht", "name": "Nacht Faust", "title": "Black Bulls Vice Captain — Devil Host",
+      "affiliation": "Black Bulls", "magic": "Shadow Magic + four devil contracts",
+      "description": "The man who lives in shadows and keeps four devils. He fights in three stages: shadow assassin, Gimodelo's charging bull, and finally a winged hybrid raining feathers and venom.",
+      "arena": "spade_citadel", "element": "shadow", "xp": 1200,
+      "stats": {"hp": 4200, "poise": 330, "damage": 1.05, "speed": 5.6, "preferred_range": 5.0},
+      "appearance": {
+        "height": 1.04, "skin": "#e3c6b0", "hair_color": "#0e0e10", "hair_style": "slick", "eye_color": "#9fffff",
+        "outfit": "coat", "outfit_primary": "#18181e", "outfit_secondary": "#121218", "accent": "#3a9a9a", "boots": "#0e0e0e",
+        "cape": false, "grimoire_color": "#1a2a2a", "grimoire_glow": "#60ffff", "aura_color": "#40e0e0"
+      },
+      "phases": [
+        {"name": "Shadow Magic", "threshold": 1.0, "speed": 1.0, "aura": "#40e0e0",
+         "attacks": ["shadow_step", "shadow_rend", "shadow_spears", "shadow_grasp"]},
+        {"name": "Devil Union: Gimodelo", "threshold": 0.66, "speed": 1.15, "aura": "#d04040", "element": "blood",
+         "attacks": ["gimodelo_charge", "stampede", "shadow_rend", "shadow_spears"]},
+        {"name": "Full Devil Union: Plumede & Walgner", "threshold": 0.33, "speed": 1.25, "hover": 2.2, "aura": "#30d0a0", "element": "shadow",
+         "attacks": ["plumede_feathers", "walgner_venom", "shadow_beam", "shadow_step"]}
+      ],
+      "attacks": {
+        "shadow_step":      {"type": "teleport", "name": "Shadow Magic: Shadow Step", "range": [0, 40], "cooldown": 5.0, "weight": 2, "windup": 0.25, "follow": "shadow_rend",
+                             "params": {"side": "behind", "dist": 3.0}},
+        "shadow_rend":      {"type": "melee", "name": "Shadow Rend", "range": [0, 8], "cooldown": 2.0, "weight": 3, "windup": 0.5, "recovery": 0.8,
+                             "params": {"hits": 3, "dmg": 70, "dash": 14, "reach": 2.6, "magic": true, "interval": 0.26}},
+        "shadow_spears":    {"type": "volley", "name": "Shadow Spears", "range": [3, 40], "cooldown": 3.0, "weight": 2.5, "windup": 0.6, "recovery": 0.8,
+                             "params": {"count": 8, "spread": 50, "speed": 22, "dmg": 50, "radius": 0.3, "delay": 0.06, "pattern": "random"}},
+        "shadow_grasp":     {"type": "aoe", "name": "Shadow Grasp", "range": [3, 30], "cooldown": 5.0, "weight": 2, "windup": 0.5, "recovery": 0.9,
+                             "params": {"count": 7, "radius": 1.7, "delay": 0.75, "dmg": 85, "interval": 0.09, "target": "line", "style": "spikes"}},
+        "gimodelo_charge":  {"type": "melee", "name": "Gimodelo: Bull Rampage", "range": [3, 30], "cooldown": 3.0, "weight": 3, "windup": 0.9, "recovery": 1.4,
+                             "params": {"hits": 1, "dmg": 150, "dash": 24, "dash_time": 0.7, "reach": 3.0, "poses": ["dash"], "windups": ["slam_windup"], "knockback": 14}},
+        "stampede":         {"type": "ring", "name": "Gimodelo: Stampede", "range": [0, 12], "cooldown": 6.0, "weight": 2, "windup": 0.7, "recovery": 1.0,
+                             "params": {"count": 3, "speed": 13, "dmg": 80, "interval": 0.5}},
+        "plumede_feathers": {"type": "volley", "name": "Plumede: Feather Storm", "range": [0, 40], "cooldown": 3.0, "weight": 3, "windup": 0.6, "recovery": 0.7,
+                             "params": {"from": "above", "count": 12, "speed": 18, "dmg": 45, "radius": 0.3, "homing": 1.2, "delay": 0.06, "pattern": "random", "spread": 60}},
+        "walgner_venom":    {"type": "aoe", "name": "Walgner: Venom Rain", "range": [0, 40], "cooldown": 6.0, "weight": 2, "windup": 0.6, "recovery": 0.8,
+                             "params": {"count": 7, "radius": 2.2, "delay": 1.2, "dmg": 85, "interval": 0.14, "spread": 5.5, "style": "rain", "element": "curse"}},
+        "shadow_beam":      {"type": "beam", "name": "Devil Union: Shadow Lance", "range": [4, 40], "cooldown": 8.0, "weight": 2, "windup": 0.5, "recovery": 1.2,
+                             "params": {"dmg": 300, "width": 1.0, "charge": 0.8, "duration": 1.4, "track": 0.6}}
+      }
+    },
+    {
+      "id": "zenon", "name": "Zenon Zogratis", "title": "Dark Triad — Bone & Space",
+      "affiliation": "Dark Triad / Spade Kingdom", "magic": "Bone Magic + Spatial Magic (Beelzebub)",
+      "description": "The Triad member who took Yuno's home from him. Bone spears and spike trails, then Devil Union with Beelzebub tears space itself — he blinks behind you and cuts through distance.",
+      "arena": "spade_citadel", "element": "bone", "xp": 1400,
+      "stats": {"hp": 4800, "poise": 360, "damage": 1.15, "speed": 5.0, "preferred_range": 7.0},
+      "appearance": {
+        "height": 1.06, "skin": "#e6d0bf", "hair_color": "#2a2730", "hair_style": "short_messy", "eye_color": "#e8e0c8",
+        "outfit": "coat", "outfit_primary": "#2c2a33", "outfit_secondary": "#1f1e25", "accent": "#8c7b5a", "boots": "#1a1a1e",
+        "cape": true, "cape_color": "#1b1a20", "grimoire_color": "#3a3a40", "grimoire_glow": "#c0a8ff",
+        "aura_color": "#b49cff", "wings": "bone", "weapon": "bone_blade"
+      },
+      "phases": [
+        {"name": "Bone Magic", "threshold": 1.0, "speed": 1.0, "aura": "#e8e0c8",
+         "attacks": ["bone_spears", "spike_trail", "bone_blade", "bone_prison"]},
+        {"name": "Devil Union: Beelzebub", "threshold": 0.5, "speed": 1.2, "aura": "#9b7bff",
+         "attacks": ["spatial_blink", "spatial_rend", "bone_meteor", "bone_wing_volley", "spike_trail"]}
+      ],
+      "attacks": {
+        "bone_spears":      {"type": "volley", "name": "Bone Magic: Spear Volley", "range": [4, 40], "cooldown": 2.8, "weight": 3, "windup": 0.6, "recovery": 0.8,
+                             "params": {"count": 9, "spread": 54, "speed": 26, "dmg": 55, "radius": 0.28, "delay": 0.03}},
+        "spike_trail":      {"type": "aoe", "name": "Bone Magic: Thorn Path", "range": [3, 30], "cooldown": 4.5, "weight": 2.5, "windup": 0.45, "recovery": 0.8,
+                             "params": {"count": 9, "radius": 1.6, "delay": 0.7, "dmg": 90, "interval": 0.07, "target": "line", "style": "spikes"}},
+        "bone_blade":       {"type": "melee", "name": "Bone Blade", "range": [0, 8], "cooldown": 2.2, "weight": 3, "windup": 0.6, "recovery": 0.9,
+                             "params": {"hits": 2, "dmg": 90, "dash": 14, "reach": 2.8, "interval": 0.35}},
+        "bone_prison":      {"type": "aoe", "name": "Bone Magic: Ossuary Prison", "range": [0, 40], "cooldown": 8.0, "weight": 1.5, "windup": 0.7, "recovery": 1.0,
+                             "params": {"count": 6, "radius": 2.0, "delay": 1.1, "dmg": 95, "interval": 0.05, "spread": 3.5, "style": "spikes"}},
+        "spatial_blink":    {"type": "teleport", "name": "Spatial Magic: Blink", "range": [0, 40], "cooldown": 4.0, "weight": 2, "windup": 0.2, "follow": "bone_blade",
+                             "params": {"side": "random", "dist": 3.0, "element": "spatial"}},
+        "spatial_rend":     {"type": "beam", "name": "Spatial Rend", "range": [4, 40], "cooldown": 7.0, "weight": 2, "windup": 0.5, "recovery": 1.1,
+                             "params": {"count": 2, "dmg": 550, "width": 0.7, "charge": 0.7, "duration": 0.4, "track": 0.3, "element": "spatial"}},
+        "bone_meteor":      {"type": "aoe", "name": "Bone Meteor", "range": [0, 40], "cooldown": 7.0, "weight": 2, "windup": 0.6, "recovery": 0.8,
+                             "params": {"count": 6, "radius": 2.5, "delay": 1.3, "dmg": 100, "interval": 0.16, "spread": 5.0, "style": "rain"}},
+        "bone_wing_volley": {"type": "volley", "name": "Beelzebub: Wing Barrage", "range": [0, 40], "cooldown": 4.0, "weight": 2.5, "windup": 0.6, "recovery": 0.7,
+                             "params": {"from": "around", "count": 10, "speed": 19, "dmg": 50, "radius": 0.3, "homing": 1.3, "delay": 0.07, "pattern": "aim"}}
+      }
+    },
+    {
+      "id": "vanica", "name": "Vanica Zogratis", "title": "Dark Triad — Crimson Curse",
+      "affiliation": "Dark Triad / Spade Kingdom", "magic": "Blood Magic + Curse Magic (Megicula)",
+      "description": "She fights purely for the thrill of it. Blood spears and a crimson dragon, then Megicula's curse-warding seals carpet the ground while blood moons hunt you down.",
+      "arena": "hell_gate", "element": "blood", "xp": 1500,
+      "stats": {"hp": 4800, "poise": 320, "damage": 1.2, "speed": 5.4, "preferred_range": 8.0},
+      "appearance": {
+        "height": 0.98, "skin": "#f0d8cf", "hair_color": "#e6d2dc", "hair_style": "long_straight", "eye_color": "#ff3355",
+        "outfit": "dress", "dress_color": "#3a0a16", "outfit_primary": "#4a0e1e", "outfit_secondary": "#2a0812", "accent": "#c0123a", "boots": "#200610",
+        "cape": false, "grimoire_color": "#5a0a1a", "grimoire_glow": "#ff3050", "aura_color": "#ff2244", "horns": false
+      },
+      "phases": [
+        {"name": "Blood Magic", "threshold": 1.0, "speed": 1.0, "aura": "#ff2244",
+         "attacks": ["blood_spears", "blood_rain", "blood_dragon", "blood_claws"]},
+        {"name": "Devil Union: Megicula", "threshold": 0.5, "speed": 1.2, "hover": 1.4, "aura": "#ff3fb4", "element": "curse",
+         "attacks": ["warding_seals", "blood_moons", "curse_ring", "crimson_flood", "blood_spears"]}
+      ],
+      "attacks": {
+        "blood_spears":  {"type": "volley", "name": "Blood Magic: Crimson Spears", "range": [3, 40], "cooldown": 2.6, "weight": 3, "windup": 0.6, "recovery": 0.7,
+                          "params": {"count": 5, "spread": 26, "speed": 26, "dmg": 65, "radius": 0.45, "delay": 0.1, "element": "blood"}},
+        "blood_rain":    {"type": "aoe", "name": "Blood Magic: Scarlet Downpour", "range": [0, 40], "cooldown": 6.0, "weight": 2, "windup": 0.6, "recovery": 0.8,
+                          "params": {"count": 8, "radius": 2.2, "delay": 1.2, "dmg": 85, "interval": 0.12, "spread": 6.0, "style": "rain", "element": "blood"}},
+        "blood_dragon":  {"type": "beam", "name": "Blood Magic: Crimson Dragon", "range": [4, 40], "cooldown": 7.0, "weight": 2, "windup": 0.6, "recovery": 1.2,
+                          "params": {"dmg": 340, "width": 1.5, "charge": 0.9, "duration": 1.6, "track": 0.5, "element": "blood"}},
+        "blood_claws":   {"type": "melee", "name": "Blood Claws", "range": [0, 7], "cooldown": 2.2, "weight": 2.5, "windup": 0.5, "recovery": 0.8,
+                          "params": {"hits": 3, "dmg": 75, "dash": 13, "reach": 2.5, "magic": true, "interval": 0.24, "element": "blood"}},
+        "warding_seals": {"type": "aoe", "name": "Curse-Warding Seal", "range": [0, 40], "cooldown": 6.0, "weight": 2.5, "windup": 0.5, "recovery": 0.8,
+                          "params": {"count": 7, "radius": 2.4, "delay": 1.0, "dmg": 95, "interval": 0.1, "spread": 6.0}},
+        "blood_moons":   {"type": "summon", "name": "Megicula: Blood Moons", "range": [0, 40], "cooldown": 8.0, "weight": 2, "windup": 0.6, "recovery": 0.6,
+                          "params": {"count": 10, "dmg": 55, "speed": 17, "homing": 1.5, "delay": 0.6, "interval": 0.12, "radius": 0.45}},
+        "curse_ring":    {"type": "ring", "name": "Curse Wave", "range": [0, 14], "cooldown": 6.0, "weight": 2, "windup": 0.6, "recovery": 0.9,
+                          "params": {"count": 3, "speed": 15, "dmg": 85, "interval": 0.5, "jump": false}},
+        "crimson_flood": {"type": "beam", "name": "Crimson Dragon Flood", "range": [4, 40], "cooldown": 9.0, "weight": 2, "windup": 0.5, "recovery": 1.2,
+                          "params": {"count": 2, "dmg": 300, "width": 1.6, "charge": 0.7, "duration": 1.2, "track": 0.6, "element": "blood"}}
+      }
+    },
+    {
+      "id": "dante", "name": "Dante Zogratis", "title": "Dark Triad — The Body That Will Not Die",
+      "affiliation": "Dark Triad / Spade Kingdom", "magic": "Body Magic + Gravity Magic (Lucifero)",
+      "description": "The Triad's leader and Lucifero's host. Flesh-whips with huge reach and constant regeneration — stagger him to stop the healing. At half health, gravity itself turns against you.",
+      "arena": "hell_gate", "element": "body", "xp": 1700,
+      "stats": {"hp": 5400, "poise": 420, "damage": 1.25, "speed": 4.8, "preferred_range": 5.5},
+      "appearance": {
+        "height": 1.14, "skin": "#e0c4b0", "hair_color": "#9a9590", "hair_style": "slick", "eye_color": "#ffcc33",
+        "outfit": "coat", "outfit_primary": "#2a1e22", "outfit_secondary": "#1e1618", "accent": "#a07040", "boots": "#140e0e",
+        "sleeves": false, "cape": true, "cape_color": "#2a0e14", "grimoire_color": "#40242a", "grimoire_glow": "#ff8a50",
+        "aura_color": "#ff6080"
+      },
+      "phases": [
+        {"name": "Body Magic", "threshold": 1.0, "speed": 1.0, "aura": "#ff6080",
+         "attacks": ["flesh_whip", "regeneration", "gut_spears", "flesh_eruption"]},
+        {"name": "Devil Union: Lucifero — Gravity", "threshold": 0.5, "speed": 1.15, "aura": "#7b3cff", "element": "gravity",
+         "attacks": ["gravity_well", "gravity_crush", "gravity_shockwave", "regeneration", "singularity", "flesh_whip"]}
+      ],
+      "attacks": {
+        "flesh_whip":        {"type": "melee", "name": "Body Magic: Flesh Lash", "range": [0, 9], "cooldown": 2.2, "weight": 3, "windup": 0.6, "recovery": 0.9,
+                              "params": {"hits": 3, "dmg": 85, "dash": 8, "reach": 4.0, "arc": 140, "magic": true, "interval": 0.3, "element": "body"}},
+        "regeneration":      {"type": "regen", "name": "Body Magic: Regeneration", "range": [0, 40], "cooldown": 12.0, "weight": 1.5, "recovery": 0.5,
+                              "params": {"amount": 0.07, "duration": 2.2, "element": "body"}},
+        "gut_spears":        {"type": "volley", "name": "Body Magic: Bone-Flesh Spines", "range": [0, 40], "cooldown": 4.0, "weight": 2, "windup": 0.6, "recovery": 0.8,
+                              "params": {"count": 16, "speed": 18, "dmg": 55, "radius": 0.35, "delay": 0.0, "pattern": "ring", "element": "body"}},
+        "flesh_eruption":    {"type": "aoe", "name": "Flesh Eruption", "range": [0, 40], "cooldown": 5.5, "weight": 2, "windup": 0.5, "recovery": 0.8,
+                              "params": {"count": 4, "radius": 2.8, "delay": 1.0, "dmg": 100, "interval": 0.25, "spread": 4.0, "element": "body"}},
+        "gravity_well":      {"type": "pull", "name": "Gravity Magic: Event Horizon", "range": [0, 20], "cooldown": 9.0, "weight": 2, "windup": 0.5, "recovery": 1.0,
+                              "params": {"duration": 2.2, "radius": 5.5, "strength": 10, "dmg": 170}},
+        "gravity_crush":     {"type": "aoe", "name": "Gravity Magic: Crush", "range": [0, 40], "cooldown": 5.0, "weight": 2.5, "windup": 0.5, "recovery": 0.8,
+                              "params": {"count": 3, "radius": 3.4, "delay": 1.0, "dmg": 120, "interval": 0.3, "spread": 3.0}},
+        "gravity_shockwave": {"type": "ring", "name": "Gravity Shockwave", "range": [0, 14], "cooldown": 6.0, "weight": 2, "windup": 0.7, "recovery": 1.0,
+                              "params": {"count": 2, "speed": 14, "dmg": 95, "interval": 0.55}},
+        "singularity":       {"type": "beam", "name": "Gravity Singularity", "range": [5, 40], "cooldown": 9.0, "weight": 1.5, "windup": 0.6, "recovery": 1.3,
+                              "params": {"dmg": 360, "width": 1.3, "charge": 1.0, "duration": 1.6, "track": 0.45}}
+      }
+    },
+    {
+      "id": "lucifero", "name": "Lucifero", "title": "Supreme Devil — King of the Underworld",
+      "affiliation": "Underworld", "magic": "Gravity Magic",
+      "description": "The highest devil, fully advented. A towering giant whose fists crater the ground and whose gravity bends the arena. Three phases; the last one does not let you breathe. Only anti-magic can cut him.",
+      "arena": "hell_gate", "element": "gravity", "xp": 2600,
+      "stats": {"hp": 7200, "poise": 650, "damage": 1.35, "speed": 4.2, "preferred_range": 7.5},
+      "appearance": {
+        "height": 2.35, "skin": "#d9d2cc", "hair_color": "#ecebf2", "hair_style": "long_straight", "eye_color": "#ffffff",
+        "outfit": "coat", "outfit_primary": "#141018", "outfit_secondary": "#0e0b12", "accent": "#5a2aa0", "boots": "#0a080c",
+        "sleeves": false, "cape": false, "grimoire": false, "horns": true, "horn_color": "#151218", "wings": "devil",
+        "aura_color": "#7b3cff"
+      },
+      "phases": [
+        {"name": "Supreme Devil", "threshold": 1.0, "speed": 1.0, "aura": "#7b3cff",
+         "attacks": ["heaven_fist", "gravity_crush", "gravity_rain", "gravity_well"]},
+        {"name": "Full Advent", "threshold": 0.6, "speed": 1.15, "aura": "#a040ff",
+         "attacks": ["singularity", "quake", "dark_orbs", "heaven_fist", "gravity_crush"]},
+        {"name": "King of the Underworld", "threshold": 0.25, "speed": 1.3, "aura": "#ff2a3a",
+         "attacks": ["apocalypse", "quake", "gravity_rain", "singularity", "heaven_fist"]}
+      ],
+      "attacks": {
+        "heaven_fist":   {"type": "melee", "name": "Gravity Fist", "range": [0, 12], "cooldown": 2.4, "weight": 3, "windup": 0.85, "recovery": 1.1,
+                          "params": {"hits": 2, "dmg": 140, "dash": 9, "reach": 2.4, "arc": 120, "interval": 0.5, "knockback": 14, "poses": ["slam", "slash_r"], "windups": ["slam_windup", "windup_r"]}},
+        "gravity_crush": {"type": "aoe", "name": "Gravity Magic: Crush", "range": [0, 40], "cooldown": 4.5, "weight": 2.5, "windup": 0.5, "recovery": 0.8,
+                          "params": {"count": 4, "radius": 3.6, "delay": 1.0, "dmg": 130, "interval": 0.25, "spread": 4.0}},
+        "gravity_rain":  {"type": "aoe", "name": "Gravity Magic: Falling Heavens", "range": [0, 40], "cooldown": 6.5, "weight": 2, "windup": 0.6, "recovery": 0.8,
+                          "params": {"count": 10, "radius": 2.6, "delay": 1.3, "dmg": 110, "interval": 0.1, "spread": 7.0, "style": "rain"}},
+        "gravity_well":  {"type": "pull", "name": "Gravity Magic: Collapse", "range": [0, 25], "cooldown": 9.0, "weight": 2, "windup": 0.5, "recovery": 1.0,
+                          "params": {"duration": 2.3, "radius": 7.0, "strength": 12, "dmg": 200}},
+        "singularity":   {"type": "beam", "name": "Singularity Ray", "range": [5, 40], "cooldown": 7.5, "weight": 2, "windup": 0.6, "recovery": 1.2,
+                          "params": {"dmg": 420, "width": 1.8, "charge": 1.0, "duration": 1.8, "track": 0.5}},
+        "quake":         {"type": "ring", "name": "Underworld Quake", "range": [0, 18], "cooldown": 5.5, "weight": 2, "windup": 0.8, "recovery": 1.0,
+                          "params": {"count": 3, "speed": 16, "dmg": 110, "interval": 0.5}},
+        "dark_orbs":     {"type": "summon", "name": "Gravity Orbs", "range": [0, 40], "cooldown": 8.0, "weight": 2, "windup": 0.6, "recovery": 0.6,
+                          "params": {"count": 10, "dmg": 70, "speed": 16, "homing": 1.3, "delay": 0.7, "interval": 0.12, "radius": 0.6}},
+        "warp":          {"type": "teleport", "name": "", "announce": false, "range": [0, 40], "cooldown": 0.0, "weight": 0, "windup": 0.3,
+                          "params": {"side": "random", "dist": 6.0}},
+        "apocalypse":    {"type": "combo", "name": "Apocalypse", "range": [0, 40], "cooldown": 11.0, "weight": 2, "recovery": 1.5,
+                          "params": {"sequence": ["warp", "heaven_fist", "quake"]}}
+      }
+    }
+  ]
+}

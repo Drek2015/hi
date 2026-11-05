@@ -1,0 +1,30 @@
+{
+  "_doc": "Boss rig pose library (degrees, per joint, euler XYZ). Arms hang down: +X raises forward, +Z moves the RIGHT arm outward, -Z the LEFT arm outward. Spine/chest: -X leans forward, +Y twists the right shoulder forward. Thigh +X kicks forward, shin -X bends the knee. root_y offsets hip height (metres, scaled). Unlisted joints return to 0. Authored by the animator agent.",
+  "poses": {
+    "idle":          {"upper_arm_l": [5, 0, -10], "upper_arm_r": [5, 0, 10], "forearm_l": [15, 0, 0], "forearm_r": [15, 0, 0]},
+    "combat":        {"spine": [-6, 0, 0], "upper_arm_r": [35, 0, 22], "forearm_r": [45, 0, 0], "upper_arm_l": [22, 0, -25], "forearm_l": [50, 0, 0],
+                      "thigh_l": [18, 0, -5], "shin_l": [-22, 0, 0], "thigh_r": [-12, 0, 5], "shin_r": [-12, 0, 0], "root_y": -0.04},
+    "cast_charge_r": {"chest": [0, -22, 0], "upper_arm_r": [40, 0, 55], "forearm_r": [75, 0, 0], "upper_arm_l": [25, 0, -30], "forearm_l": [40, 0, 0], "head": [-5, 0, 0]},
+    "cast_r":        {"chest": [-4, 22, 0], "upper_arm_r": [88, 0, 8], "forearm_r": [4, 0, 0], "upper_arm_l": [10, 0, -22], "forearm_l": [30, 0, 0],
+                      "thigh_l": [20, 0, 0], "shin_l": [-15, 0, 0], "thigh_r": [-15, 0, 0]},
+    "cast_both":     {"chest": [-5, 0, 0], "upper_arm_l": [84, 0, -14], "upper_arm_r": [84, 0, 14], "forearm_l": [5, 0, 0], "forearm_r": [5, 0, 0],
+                      "thigh_l": [16, 0, 0], "shin_l": [-14, 0, 0], "thigh_r": [-14, 0, 0]},
+    "cast_overhead": {"chest": [10, 0, 0], "head": [16, 0, 0], "upper_arm_l": [165, 0, -16], "upper_arm_r": [165, 0, 16], "forearm_l": [10, 0, 0], "forearm_r": [10, 0, 0]},
+    "slam_windup":   {"chest": [12, 0, 0], "upper_arm_l": [170, 0, -10], "upper_arm_r": [170, 0, 10], "thigh_l": [40, 0, 0], "thigh_r": [40, 0, 0], "shin_l": [-60, 0, 0], "shin_r": [-60, 0, 0], "root_y": -0.16},
+    "slam":          {"chest": [-35, 0, 0], "head": [-10, 0, 0], "upper_arm_l": [60, 0, -12], "upper_arm_r": [60, 0, 12], "thigh_l": [55, 0, 0], "thigh_r": [-10, 0, 0], "shin_l": [-75, 0, 0], "shin_r": [-40, 0, 0], "root_y": -0.34},
+    "windup_r":      {"chest": [0, -35, 0], "upper_arm_r": [100, 0, 70], "forearm_r": [60, 0, 0], "upper_arm_l": [30, 0, -30], "forearm_l": [40, 0, 0], "thigh_r": [-10, 0, 0], "thigh_l": [15, 0, 0]},
+    "slash_r":       {"chest": [-10, 40, 0], "upper_arm_r": [75, 0, -35], "forearm_r": [10, 0, 0], "upper_arm_l": [10, 0, -35], "thigh_r": [32, 0, 0], "shin_r": [-22, 0, 0], "thigh_l": [-18, 0, 0]},
+    "windup_l":      {"chest": [0, 35, 0], "upper_arm_l": [100, 0, -70], "forearm_l": [60, 0, 0], "upper_arm_r": [30, 0, 30], "forearm_r": [40, 0, 0], "thigh_l": [-10, 0, 0], "thigh_r": [15, 0, 0]},
+    "slash_l":       {"chest": [-10, -40, 0], "upper_arm_l": [75, 0, 35], "forearm_l": [10, 0, 0], "upper_arm_r": [10, 0, 35], "thigh_l": [32, 0, 0], "shin_l": [-22, 0, 0], "thigh_r": [-18, 0, 0]},
+    "thrust":        {"chest": [-20, 25, 0], "upper_arm_r": [90, 0, 0], "forearm_r": [0, 0, 0], "upper_arm_l": [-20, 0, -30], "thigh_l": [42, 0, 0], "shin_l": [-30, 0, 0], "thigh_r": [-28, 0, 0], "root_y": -0.1},
+    "dash":          {"spine": [-35, 0, 0], "head": [20, 0, 0], "upper_arm_l": [-40, 0, -15], "upper_arm_r": [-40, 0, 15], "thigh_l": [50, 0, 0], "thigh_r": [-30, 0, 0], "shin_l": [-60, 0, 0], "shin_r": [-40, 0, 0]},
+    "guard":         {"chest": [-8, 0, 0], "upper_arm_l": [80, 0, 30], "upper_arm_r": [80, 0, -30], "forearm_l": [90, 0, 0], "forearm_r": [90, 0, 0], "thigh_l": [18, 0, 0], "shin_l": [-20, 0, 0]},
+    "kneel":         {"spine": [-20, 0, 0], "chest": [-15, 0, 0], "head": [-20, 0, 0], "upper_arm_l": [25, 0, -10], "upper_arm_r": [25, 0, 10], "forearm_l": [20, 0, 0], "forearm_r": [20, 0, 0],
+                      "thigh_r": [85, 0, 0], "shin_r": [-85, 0, 0], "thigh_l": [0, 0, 0], "shin_l": [-92, 0, 0], "root_y": -0.45},
+    "recoil":        {"chest": [22, 0, 0], "head": [16, 0, 0], "upper_arm_l": [-20, 0, -42], "upper_arm_r": [-20, 0, 42], "thigh_l": [-20, 0, 0], "thigh_r": [20, 0, 0], "shin_r": [-20, 0, 0]},
+    "hover":         {"thigh_l": [15, 0, -5], "thigh_r": [5, 0, 5], "shin_l": [-35, 0, 0], "shin_r": [-25, 0, 0], "upper_arm_l": [20, 0, -35], "upper_arm_r": [20, 0, 35], "forearm_l": [30, 0, 0], "forearm_r": [30, 0, 0]},
+    "taunt":         {"chest": [8, 0, 0], "head": [10, 0, 0], "upper_arm_r": [140, 0, 30], "forearm_r": [10, 0, 0], "upper_arm_l": [5, 0, -15]},
+    "death":         {"spine": [-40, 0, 0], "chest": [-30, 0, 0], "head": [-40, 0, 0], "upper_arm_l": [0, 0, -5], "upper_arm_r": [0, 0, 5],
+                      "thigh_r": [90, 0, 0], "shin_r": [-90, 0, 0], "shin_l": [-95, 0, 0], "root_y": -0.55}
+  }
+}

@@ -1,0 +1,60 @@
+; Engine configuration file.
+; Godot 4.5 — "Anti-Magic: Limit Breaker" (Black Clover fan game, personal use only)
+
+config_version=5
+
+[application]
+
+config/name="Anti-Magic: Limit Breaker"
+config/description="First-person soulslike boss-rush RPG starring Asta. Personal, non-commercial fan project."
+run/main_scene="res://scenes/main.tscn"
+config/features=PackedStringArray("4.5", "Forward Plus")
+run/max_fps=240
+boot_splash/bg_color=Color(0.02, 0.02, 0.025, 1)
+
+[autoload]
+
+Settings="*res://scripts/core/settings.gd"
+Roster="*res://scripts/core/roster.gd"
+Backend="*res://scripts/core/backend_client.gd"
+GameState="*res://scripts/core/game_state.gd"
+Sfx="*res://scripts/core/sfx.gd"
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/vsync/vsync_mode=0
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=false
+
+[physics]
+
+common/physics_ticks_per_second=240
+common/max_physics_steps_per_frame=8
+3d/physics_engine="Jolt Physics"
+
+[rendering]
+
+renderer/rendering_method="forward_plus"
+anti_aliasing/quality/msaa_3d=0
+anti_aliasing/quality/screen_space_aa=1
+anti_aliasing/quality/use_taa=false
+environment/defaults/default_clear_color=Color(0.02, 0.02, 0.03, 1)
+lights_and_shadows/directional_shadow/size=4096
+lights_and_shadows/directional_shadow/soft_shadow_filter_quality=3
+textures/default_filters/anisotropic_filtering_level=4
+
+[debug]
+
+gdscript/warnings/inference_on_variant=0
+gdscript/warnings/untyped_declaration=0
+gdscript/warnings/unsafe_method_access=0
+gdscript/warnings/unsafe_property_access=0
+gdscript/warnings/unsafe_call_argument=0
+gdscript/warnings/integer_division=0
+gdscript/warnings/narrowing_conversion=0
