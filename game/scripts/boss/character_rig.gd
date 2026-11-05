@@ -285,10 +285,21 @@ func _build_wings(chest: Node3D, kind: String, app: Dictionary) -> void:
 		w.name = "wing_%s" % ("l" if side < 0 else "r")
 		_wings.add_child(w)
 		w.rotation_degrees = Vector3(0, -20 * side, 12 * side)
-		for i in 4:
-			var len := 0.9 - i * 0.12
-			_part(w, _box(Vector3(len, 0.05 + i * 0.01, 0.025)), mat,
-				Vector3(side * (0.18 + len * 0.5), 0.35 - i * 0.18, 0.05), Vector3(0, 0, side * (30 - i * 22)))
+		if kind == "devil":
+			# Bat-like: arm bone along the top, finger bones fanning down, membranes between.
+			var membrane := _toon(Color(0.12, 0.05, 0.1), 0.8)
+			membrane.cull_mode = BaseMaterial3D.CULL_DISABLED
+			_part(w, _box(Vector3(1.0, 0.06, 0.05)), mat, Vector3(side * 0.5, 0.42, 0.05), Vector3(0, 0, side * 18))
+			for i in 3:
+				var ang: float = side * (-35.0 - i * 28.0)
+				var tip: Vector3 = Vector3(side * (0.95 - i * 0.12), 0.58 - i * 0.05, 0.05)
+				_part(w, _box(Vector3(0.04, 1.1 - i * 0.15, 0.04)), mat, tip + Vector3(sin(deg_to_rad(-ang)) * -0.5, -0.5, 0), Vector3(0, 0, ang))
+				_part(w, _box(Vector3(0.42, 0.95 - i * 0.12, 0.012)), membrane, tip + Vector3(-side * 0.22, -0.48, 0.04), Vector3(0, 0, ang * 0.6))
+		else:
+			for i in 4:
+				var len := 0.9 - i * 0.12
+				_part(w, _box(Vector3(len, 0.05 + i * 0.01, 0.025)), mat,
+					Vector3(side * (0.18 + len * 0.5), 0.35 - i * 0.18, 0.05), Vector3(0, 0, side * (30 - i * 22)))
 
 
 # ---------------------------------------------------------------- animation

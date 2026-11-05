@@ -25,7 +25,7 @@ func _ready() -> void:
 	var first: Button
 	for b in Roster.bosses:
 		var rec := GameState.record_for(b["id"])
-		var mark := "  ✦" if int(rec["wins"]) > 0 else ""
+		var mark := "   (defeated)" if int(rec["wins"]) > 0 else ""
 		var btn := UIKit.button("%s%s" % [b["name"], mark], _select.bind(b["id"]), 22, 380)
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.focus_entered.connect(_select.bind(b["id"]))

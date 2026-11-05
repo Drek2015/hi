@@ -30,9 +30,9 @@ const THEMES := {
 		"label": "Gate of the Underworld",
 		"sky": {"top": "#12030a", "horizon": "#7a1a10", "bottom": "#0a0202", "cloud": "#a03018", "cloud_shadow": "#200606", "cover": 0.7,
 				"moon": "#ff3010", "moon_dir": [0.0, 0.35, -1.0], "moon_size": 0.13, "crescent": 0.0, "stars": 0.0},
-		"sun": {"color": "#ff7a50", "energy": 1.1, "pitch": -28.0, "yaw": 0.0},
-		"ambient": 0.4, "fog": "#3a0a06", "fog_density": 0.0035, "vfog": "#ff6040", "vfog_density": 0.009,
-		"floor": {"a": "#3a3030", "b": "#221a1a", "grout": "#080404", "moss": "#1a0a08", "moss_amount": 0.2, "emblem": "#ff3020", "emblem_energy": 1.5, "fissure": "#ff4a10", "fissure_energy": 2.6},
+		"sun": {"color": "#ffc0a0", "energy": 1.0, "pitch": -32.0, "yaw": 150.0},
+		"ambient": 0.3, "fog": "#3a0a06", "fog_density": 0.0035, "vfog": "#ff6040", "vfog_density": 0.009,
+		"floor": {"a": "#34302e", "b": "#1c1818", "grout": "#060404", "moss": "#1a0a08", "moss_amount": 0.2, "emblem": "#ff3020", "emblem_energy": 1.2, "fissure": "#ff4a10", "fissure_energy": 1.6},
 		"props": ["gate", "obelisks", "rocks", "spires"], "rock": "#2a2020", "pillar": "#302626",
 		"motes": "#ff7040", "ground": "#140808",
 	},
@@ -413,8 +413,8 @@ static func _gate(root: Node3D, c: Color) -> void:
 	_mesh(root, portal, m, Vector3(0, 30, -95.5), Vector3(90, 0, 0))
 	var l := OmniLight3D.new()
 	l.light_color = c
-	l.light_energy = 6.0
-	l.omni_range = 90.0
+	l.light_energy = 2.0
+	l.omni_range = 70.0
 	l.position = Vector3(0, 28, -80)
 	root.add_child(l)
 

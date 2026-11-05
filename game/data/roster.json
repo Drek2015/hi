@@ -193,7 +193,7 @@
       "id": "vanica", "name": "Vanica Zogratis", "title": "Dark Triad — Crimson Curse",
       "affiliation": "Dark Triad / Spade Kingdom", "magic": "Blood Magic + Curse Magic (Megicula)",
       "description": "She fights purely for the thrill of it. Blood spears and a crimson dragon, then Megicula's curse-warding seals carpet the ground while blood moons hunt you down.",
-      "arena": "hell_gate", "element": "blood", "xp": 1500,
+      "arena": "spade_citadel", "element": "blood", "xp": 1500,
       "stats": {"hp": 4800, "poise": 320, "damage": 1.2, "speed": 5.4, "preferred_range": 8.0},
       "appearance": {
         "height": 0.98, "skin": "#f0d8cf", "hair_color": "#e6d2dc", "hair_style": "long_straight", "eye_color": "#ff3355",
