@@ -47,6 +47,7 @@ var _last_attack := ""
 var _aura: GPUParticles3D
 var _hover_override := -1.0
 var _intro_time := 2.2
+var _key_light: OmniLight3D  # element-tinted rim so the boss always reads against the arena
 
 
 func setup(p_def: Dictionary, p_arena: Node) -> Boss:
@@ -80,6 +81,12 @@ func _ready() -> void:
 	shape.shape = cap
 	shape.position.y = 0.95 * height_scale
 	add_child(shape)
+	_key_light = OmniLight3D.new()
+	_key_light.omni_range = 7.0 * height_scale
+	_key_light.light_energy = 1.4
+	_key_light.shadow_enabled = false
+	_key_light.position = Vector3(0, 1.6 * height_scale, -1.2 * height_scale)
+	add_child(_key_light)
 	_set_aura(phase()["aura"] if phase().has("aura") else def["appearance"].get("aura_color", "#ffffff"))
 
 
@@ -117,6 +124,8 @@ func _set_aura(hex: String) -> void:
 	_aura.position.y = 1.0 * height_scale
 	if rig:
 		rig.set_eye_glow(col.lightened(0.3), 4.0)
+	if _key_light:
+		_key_light.light_color = col.lightened(0.4)
 
 
 # ---------------------------------------------------------------- main loop
@@ -669,6 +678,8 @@ func _die() -> void:
 	rig.set_pose("death", 3.0)
 	if _aura:
 		_aura.emitting = false
+	if _key_light:
+		_key_light.create_tween().tween_property(_key_light, "light_energy", 0.0, 2.0)
 	collision_layer = 0
 	VFX.shockwave(arena, aim_point(), element, 6.0, 1.2)
 	VFX.burst(arena, aim_point(), VFX.element(element)["rim"], 80, 8.0, 0.25, 1.4)
