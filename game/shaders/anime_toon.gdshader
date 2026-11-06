@@ -1,7 +1,7 @@
 // Cel-shaded material for VRoid/VRM anime characters: keeps the painted texture, can recolour a
 // part (hair, outfit) by luminance, alpha-cutout for hair cards/eyelashes, rim light, hit flash.
 shader_type spatial;
-render_mode diffuse_toon, specular_toon, cull_disabled, depth_draw_opaque;
+render_mode diffuse_toon, specular_disabled, cull_disabled, depth_draw_opaque;
 
 uniform sampler2D albedo_tex : source_color, filter_linear_mipmap, repeat_enable;
 uniform vec4 tint : source_color = vec4(1.0);
@@ -21,7 +21,6 @@ void fragment() {
 	vec3 recol = tint.rgb * clamp(0.3 + l * 0.95, 0.0, 1.5);
 	ALBEDO = mix(t.rgb * mix(vec3(1.0), tint.rgb, 1.0 - recolor), recol, recolor);
 	ROUGHNESS = roughness;
-	SPECULAR = 0.3;
 	RIM = rim_amount;
 	RIM_TINT = 0.6;
 	float fres = pow(1.0 - clamp(dot(NORMAL, VIEW), 0.0, 1.0), 3.0);

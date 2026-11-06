@@ -26,7 +26,7 @@ volumetric fog, SSAO and full frame rate.*
 | **3 forms, switched live** (`1` `2` `3`) | **Base**: steady and heavy. **Black Form**: faster, double-jump, Black Meteorite dashes; drains the anti-magic gauge. **Devil Union**: dual swords (Demon-Slasher + Demon-Destroyer), hyper armor, air dash; needs a full gauge. |
 | **6 abilities** (`Q` `E` per form) | Demon-Dweller Slash, Bull Thrust, Black Divider, Black Hurricane, Demon-Destroyer Rush, Black Clover Slash. |
 | **Soulslike combat** | Stamina, i-frame dodges, block, an 0.18 s **perfect parry** that reflects spells, poise/stagger with critical hits, input buffering, 4 heal charges. **Anti-magic**: your sword cuts any spell it touches. |
-| **8 bosses, 19 phases** | Yuno, Noelle, Yami, Nacht, Zenon, Vanica, Dante, Lucifero. Each has canon magic and move names, phase transitions and readable telegraphs. |
+| **8 anime bosses, 19 phases** | Yuno, Noelle, Yami, Nacht, Zenon, Vanica, Dante, Lucifero. Each has canon magic and move names, phase transitions and readable telegraphs. Bodies are VRoid anime models (CC0), recoloured per character and animated by retargeted Quaternius sword, spell and staff animations (CC0). |
 | **RPG progression** | XP, levels, and four stats (Vigor, Endurance, Strength, Anti-Magic) in the Grimoire. 3 difficulties. |
 | **4 arenas** | Clover Forest ruins, Spade Citadel rooftops, the Underworld Gate, Black Bull training canyon. |
 | **Front end + back end** | Godot client; Python + SQLite local backend for saves, fight history, leaderboards and stats. Falls back to local saves when the backend is offline. |

@@ -7,6 +7,8 @@ Verified from this cloud session on 2026-11-06. ✅ = fetched automatically; �
 | Source | What we use | Licence | How |
 |---|---|---|---|
 | [Poly Haven](https://polyhaven.com) | 2 HDRI skies, 7 scanned PBR texture sets, 4 scanned models (boulder, moon rock, dead tree, grass) | CC0 | ✅ `tools/assets/fetch_assets.py` (public API) |
+| [VRoid sample models](https://opengameart.org/content/vroid-studio-cc0-models) (OpenGameArt) | 4 anime bodies (Base Male/Female, HairSample Male, AvatarSample E): the bodies for all 8 bosses, recoloured per character | CC0 | ✅ direct zip download |
+| [Quaternius RPG Characters](https://opengameart.org/content/lowpoly-rpg-characters) (OpenGameArt) | Animation source: sword attacks, spell cast, staff slam, punches, hit, death, locomotion; retargeted live onto the VRoid bodies | CC0 | ✅ direct zip download |
 
 Poly Haven tree scans are 60–480 MB each, which is too heavy for gameplay, so we skip them. Two HDRIs were rejected in review: *the_sky_is_on_fire* shows apartment blocks, and *qwantani_night* looks washed out.
 
@@ -36,7 +38,7 @@ Rejected: "Five leaf Grimoire" (NoDerivs licence), Roblox/Minecraft conversions 
 | [VRoid Studio](https://vroid.com/en/studio) + [CC0 VRoid samples](https://opengameart.org/content/vroid-studio-cc0-models) | Anime-style bodies and hair; export VRM and import with the MIT [Godot VRM addon](https://godotengine.org/asset-library/asset/edit/23034) | 🖐 Free desktop app: the best route to faithful anime-style Asta, Yuno and Noelle |
 | [Mixamo](https://www.mixamo.com) | Thousands of mocap clips | 🔑 free Adobe account |
 
-Drop downloaded zips into `game/assets/inbox/`. The rigger-retargeter agent unpacks them, maps bones to `SkeletonProfileHumanoid` and builds a shared AnimationLibrary.
+The itch.io-only packs (Universal Animation Library 1/2, Universal Base Characters) can't be fetched by script: itch.io gates downloads behind a browser check, and the studio won't bypass it. The OpenGameArt mirrors above cover the essentials. For the UAL2 combos, download them by hand and drop the zips into `game/assets/inbox/`. The rigger-retargeter agent unpacks them, maps bones to `SkeletonProfileHumanoid` and builds a shared AnimationLibrary.
 
 ## AI generation (free / open)
 | Tool | Purpose | Notes |
