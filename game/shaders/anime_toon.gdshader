@@ -12,6 +12,7 @@ uniform float emission_energy = 0.0;
 uniform float flash = 0.0;
 uniform float rim_amount = 0.4;
 uniform float roughness = 0.75;
+uniform vec4 rim_glow : source_color = vec4(0.0, 0.0, 0.0, 1.0);  // element-tinted silhouette for dark arenas
 
 void fragment() {
 	vec4 t = texture(albedo_tex, UV);
@@ -23,5 +24,6 @@ void fragment() {
 	SPECULAR = 0.3;
 	RIM = rim_amount;
 	RIM_TINT = 0.6;
-	EMISSION = emission_color.rgb * emission_energy * t.rgb + vec3(flash);
+	float fres = pow(1.0 - clamp(dot(NORMAL, VIEW), 0.0, 1.0), 3.0);
+	EMISSION = emission_color.rgb * emission_energy * t.rgb + vec3(flash) + rim_glow.rgb * fres * 0.9;
 }

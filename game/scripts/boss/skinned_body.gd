@@ -100,6 +100,7 @@ func _restyle(app: Dictionary) -> void:
 	var accent := Color.from_string(str(app.get("accent", "#c9a24a")), Color.GOLD)
 	var eyes := Color.from_string(str(app.get("eye_color", "#ffd060")), Color.GOLD)
 	var skin := Color.from_string(str(app.get("skin", "#f0d0b8")), Color.WHITE)
+	var rim := Color.from_string(str(app.get("aura_color", "#ffffff")), Color.WHITE) * 0.55
 	var outline := StandardMaterial3D.new()
 	outline.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	outline.albedo_color = Color(0.03, 0.02, 0.03)
@@ -118,6 +119,8 @@ func _restyle(app: Dictionary) -> void:
 			if src is BaseMaterial3D and (src as BaseMaterial3D).albedo_texture:
 				mat.set_shader_parameter("albedo_tex", (src as BaseMaterial3D).albedo_texture)
 			var lined := false
+			if not name.contains("EYE") and not name.contains("FACE"):
+				mat.set_shader_parameter("rim_glow", rim)
 			if name.contains("HAIR"):
 				mat.set_shader_parameter("tint", hair)
 				mat.set_shader_parameter("recolor", 1.0)
