@@ -33,9 +33,19 @@ var difficulty: String = "normal"
 var intro_cutscenes: bool = false  # off until hero character models land (see studio hub)
 
 
+func is_mobile_web() -> bool:
+	return OS.has_feature("web") or OS.has_feature("mobile")
+
+
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	register_input()
+	if is_mobile_web():
+		# Phones/browsers: Compatibility renderer, no exclusive fullscreen, lighter defaults.
+		fullscreen = false
+		quality = "low"
+		fov = 80.0
+		max_fps = 0
 	load_settings()
 	apply()
 
@@ -65,7 +75,7 @@ func save_settings() -> void:
 
 func apply() -> void:
 	Engine.max_fps = max_fps
-	if not is_headless():
+	if not is_headless() and not OS.has_feature("web"):
 		DisplayServer.window_set_vsync_mode(
 			DisplayServer.VSYNC_ADAPTIVE if vsync else DisplayServer.VSYNC_DISABLED)
 		var want := DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN if fullscreen else DisplayServer.WINDOW_MODE_WINDOWED

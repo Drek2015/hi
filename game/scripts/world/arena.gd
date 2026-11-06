@@ -49,10 +49,15 @@ func _ready() -> void:
 	_pause_menu.connect("restart", func(): _leave(); get_parent().call("start_fight", boss_id))
 	_pause_menu.connect("quit", func(): _leave(); quit_requested.emit())
 	Sfx.play("transform", null, -8.0)
+	if load("res://scripts/ui/touch_controls.gd").wanted():
+		touch = load("res://scripts/ui/touch_controls.gd").new()
+		add_child(touch)
+		touch.call("bind", player)
 	_maybe_play_intro()
 
 
 var in_cutscene := false
+var touch: CanvasLayer
 
 
 func _maybe_play_intro() -> void:
@@ -66,7 +71,11 @@ func _maybe_play_intro() -> void:
 	player.frozen = true
 	boss.set("_intro_time", 1e9)
 	hud.visible = false
+	if touch:
+		touch.visible = false
 	cs.finished.connect(func():
+		if touch:
+			touch.visible = true
 		in_cutscene = false
 		player.frozen = false
 		hud.visible = true

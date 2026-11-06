@@ -142,6 +142,16 @@ func _unhandled_input(event: InputEvent) -> void:
 		_look_delta += rel
 
 
+## Touch-screen look (TouchControls): rel is in screen pixels, already sensitivity-scaled.
+func touch_look(rel: Vector2) -> void:
+	if frozen or state == "dead":
+		return
+	var k := 0.35 if lock_target else 1.0
+	_yaw -= deg_to_rad(rel.x) * k
+	_pitch = clampf(_pitch - deg_to_rad(rel.y) * k * (-1.0 if Settings.invert_y else 1.0), deg_to_rad(-85), deg_to_rad(85))
+	_look_delta += rel * 4.0
+
+
 # ---------------------------------------------------------------- frame update (camera)
 
 func _process(delta: float) -> void:
