@@ -3,9 +3,11 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bv5lgg7r7yem0"
-path="res://.godot/imported/hairsample_male_M00_001_01_Shoes_01.png-a8b767c696fe690c8fb73fa4c40d3c96.ctex"
+path.s3tc="res://.godot/imported/hairsample_male_M00_001_01_Shoes_01.png-a8b767c696fe690c8fb73fa4c40d3c96.s3tc.ctex"
+path.etc2="res://.godot/imported/hairsample_male_M00_001_01_Shoes_01.png-a8b767c696fe690c8fb73fa4c40d3c96.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 generator_parameters={
 "md5": "69632c207c5a8ab0b4699ca1fab2526d"
@@ -14,11 +16,11 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/characters/vroid/hairsample_male_M00_001_01_Shoes_01.png"
-dest_files=["res://.godot/imported/hairsample_male_M00_001_01_Shoes_01.png-a8b767c696fe690c8fb73fa4c40d3c96.ctex"]
+dest_files=["res://.godot/imported/hairsample_male_M00_001_01_Shoes_01.png-a8b767c696fe690c8fb73fa4c40d3c96.s3tc.ctex", "res://.godot/imported/hairsample_male_M00_001_01_Shoes_01.png-a8b767c696fe690c8fb73fa4c40d3c96.etc2.ctex"]
 
 [params]
 
-compress/mode=4
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -39,5 +41,5 @@ process/premult_alpha=false
 process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
-process/size_limit=0
+process/size_limit=1024
 detect_3d/compress_to=0

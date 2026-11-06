@@ -3,9 +3,11 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cm17l45jq6pjx"
-path="res://.godot/imported/base_male_M00_001_01_Tops_01.png-fb78d23de1e89d7f5b2b9f30ab9e1aef.ctex"
+path.s3tc="res://.godot/imported/base_male_M00_001_01_Tops_01.png-fb78d23de1e89d7f5b2b9f30ab9e1aef.s3tc.ctex"
+path.etc2="res://.godot/imported/base_male_M00_001_01_Tops_01.png-fb78d23de1e89d7f5b2b9f30ab9e1aef.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 generator_parameters={
 "md5": "1be59be07546967a55bca8125aec2106"
@@ -14,11 +16,11 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/characters/vroid/base_male_M00_001_01_Tops_01.png"
-dest_files=["res://.godot/imported/base_male_M00_001_01_Tops_01.png-fb78d23de1e89d7f5b2b9f30ab9e1aef.ctex"]
+dest_files=["res://.godot/imported/base_male_M00_001_01_Tops_01.png-fb78d23de1e89d7f5b2b9f30ab9e1aef.s3tc.ctex", "res://.godot/imported/base_male_M00_001_01_Tops_01.png-fb78d23de1e89d7f5b2b9f30ab9e1aef.etc2.ctex"]
 
 [params]
 
-compress/mode=4
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -39,5 +41,5 @@ process/premult_alpha=false
 process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
-process/size_limit=0
+process/size_limit=1024
 detect_3d/compress_to=0

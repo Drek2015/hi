@@ -19,7 +19,7 @@ def split(src: Path, out: Path) -> list[str]:
     data = src.read_bytes()
     names = []
     for i in range(0, len(data), CHUNK):
-        name = f"{src.name}.part{i // CHUNK:02d}"
+        name = f"{src.stem}.{src.suffix[1:]}{i // CHUNK:02d}.wasm"  # .wasm: a type artifact hosting serves
         (out / name).write_bytes(data[i:i + CHUNK])
         names.append(name)
     return names
@@ -57,6 +57,7 @@ PAGE = r"""<title>Anti-Magic Mobile</title>
 :root { --bg: #07080a; --ink: #ece8df; --muted: #9d968a; --gold: #d9b45a; --red: #b3211f; color-scheme: dark;
   --display: "Cinzel", "Trajan Pro", Georgia, serif; --body: "Atkinson Hyperlegible", system-ui, sans-serif; }
 html, body { height: 100%; }
+[hidden] { display: none !important; }
 body { background: var(--bg); color: var(--ink); font: 16px/1.5 var(--body); overflow: hidden; touch-action: none; }
 #canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; background: var(--bg); outline: none; }
 #start { position: fixed; inset: 0; display: grid; place-items: center; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 24px;
@@ -96,6 +97,12 @@ const TOTAL = __TOTAL__;
 const statusEl = document.getElementById("status");
 const fill = document.getElementById("fill");
 let loaded = 0;
+let assembled = 0;
+const reveal = () => {
+  document.getElementById("start").hidden = true;
+  document.body.classList.add("playing");
+  document.getElementById("canvas").focus();
+};
 const show = (t) => { statusEl.textContent = t; };
 const progress = () => { fill.style.width = Math.min(100, 100 * loaded / TOTAL).toFixed(1) + "%"; show(`Downloading ${(loaded / 1e6).toFixed(0)} / ${(TOTAL / 1e6).toFixed(0)} MB`); };
 
@@ -115,6 +122,8 @@ window.fetch = async (input, init) => {
     }
     const type = name.endsWith(".wasm") ? "application/wasm" : "application/octet-stream";
     const blob = new Blob(parts, { type });
+    // Godot's own "started" promise can lag far behind the first frame; show the canvas once both files are in.
+    if (++assembled === Object.keys(CHUNKS).length) { show("Starting…"); setTimeout(reveal, 2500); }
     return new Response(blob, { status: 200, headers: { "Content-Type": type, "Content-Length": String(blob.size) } });
   }
   return realFetch(input, init);
@@ -128,12 +137,11 @@ document.getElementById("play").addEventListener("click", async (e) => {
   try { await screen.orientation?.lock?.("landscape"); } catch (_) {}
   try { await navigator.wakeLock?.request?.("screen"); } catch (_) {}
   progress();
+  // Deep link: #boss-yuno jumps straight into that fight.
+  const m = location.hash.match(/^#boss-([a-z]+)$/);
+  if (m) GODOT_CONFIG.args = ["--", "--boss=" + m[1], "--touch"];
   const engine = new Engine(GODOT_CONFIG);
-  engine.startGame({ onProgress: () => {} }).then(() => {
-    document.getElementById("start").hidden = true;
-    document.body.classList.add("playing");
-    document.getElementById("canvas").focus();
-  }, (err) => {
+  engine.startGame({ onProgress: () => {} }).then(reveal, (err) => {
     btn.disabled = false; btn.textContent = "Try again";
     show("Couldn't start: " + (err && err.message ? err.message : err));
   });

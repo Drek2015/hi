@@ -3,9 +3,11 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cxfdl7q4vb30g"
-path="res://.godot/imported/hairsample_male_M00_000_00_Face_00.png-1725e6140d51d33af7bf7781c65aa35b.ctex"
+path.s3tc="res://.godot/imported/hairsample_male_M00_000_00_Face_00.png-1725e6140d51d33af7bf7781c65aa35b.s3tc.ctex"
+path.etc2="res://.godot/imported/hairsample_male_M00_000_00_Face_00.png-1725e6140d51d33af7bf7781c65aa35b.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 generator_parameters={
 "md5": "7be6c31eb577661dfff51b607c822990"
@@ -14,11 +16,11 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/characters/vroid/hairsample_male_M00_000_00_Face_00.png"
-dest_files=["res://.godot/imported/hairsample_male_M00_000_00_Face_00.png-1725e6140d51d33af7bf7781c65aa35b.ctex"]
+dest_files=["res://.godot/imported/hairsample_male_M00_000_00_Face_00.png-1725e6140d51d33af7bf7781c65aa35b.s3tc.ctex", "res://.godot/imported/hairsample_male_M00_000_00_Face_00.png-1725e6140d51d33af7bf7781c65aa35b.etc2.ctex"]
 
 [params]
 
-compress/mode=4
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -39,5 +41,5 @@ process/premult_alpha=false
 process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
-process/size_limit=0
+process/size_limit=1024
 detect_3d/compress_to=0

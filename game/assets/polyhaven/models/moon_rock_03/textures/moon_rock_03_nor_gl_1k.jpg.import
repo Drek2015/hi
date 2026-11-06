@@ -3,19 +3,21 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dtb4oock37d8p"
-path="res://.godot/imported/moon_rock_03_nor_gl_1k.jpg-dd9371d37581affd93cab52ef095f5ef.ctex"
+path.s3tc="res://.godot/imported/moon_rock_03_nor_gl_1k.jpg-dd9371d37581affd93cab52ef095f5ef.s3tc.ctex"
+path.etc2="res://.godot/imported/moon_rock_03_nor_gl_1k.jpg-dd9371d37581affd93cab52ef095f5ef.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/polyhaven/models/moon_rock_03/textures/moon_rock_03_nor_gl_1k.jpg"
-dest_files=["res://.godot/imported/moon_rock_03_nor_gl_1k.jpg-dd9371d37581affd93cab52ef095f5ef.ctex"]
+dest_files=["res://.godot/imported/moon_rock_03_nor_gl_1k.jpg-dd9371d37581affd93cab52ef095f5ef.s3tc.ctex", "res://.godot/imported/moon_rock_03_nor_gl_1k.jpg-dd9371d37581affd93cab52ef095f5ef.etc2.ctex"]
 
 [params]
 
-compress/mode=4
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -36,5 +38,5 @@ process/premult_alpha=false
 process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
-process/size_limit=0
+process/size_limit=1024
 detect_3d/compress_to=0
