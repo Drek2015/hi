@@ -119,7 +119,7 @@ func _set_aura(hex: String) -> void:
 	if _aura:
 		_aura.queue_free()
 	var col := Color.from_string(hex, Color.WHITE)
-	_aura = VFX.aura(col, int(40 * height_scale), 0.45 * height_scale, 0.16 * height_scale, 2.0)
+	_aura = VFX.aura(col, int(26 * height_scale), 0.4 * height_scale, 0.07 * height_scale, 1.6)
 	add_child(_aura)
 	_aura.position.y = 1.0 * height_scale
 	if rig:

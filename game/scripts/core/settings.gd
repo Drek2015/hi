@@ -30,7 +30,7 @@ var show_fps: bool = true
 var master_volume: float = 0.8
 var backend_url: String = "http://127.0.0.1:8765"
 var difficulty: String = "normal"
-var intro_cutscenes: bool = true
+var intro_cutscenes: bool = false  # off until hero character models land (see studio hub)
 
 
 func _ready() -> void:

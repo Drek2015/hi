@@ -149,7 +149,7 @@ func build(app: Dictionary) -> void:
 func _build_extras(app: Dictionary) -> void:
 	var accent := _toon(_c(app, "accent", "#c9a24a"), 0.4)
 	_eye_mat = _glow(_c(app, "eye_color", "#ffd060"), 3.0)
-	if app.get("cape", true) and joints.has("chest"):
+	if app.get("cape_on_model", false) and joints.has("chest"):
 		_cape = Node3D.new()
 		joints["chest"].add_child(_cape)
 		_cape.position = Vector3(0, 0.14, 0.13) * s
@@ -166,15 +166,37 @@ func _build_extras(app: Dictionary) -> void:
 			"spear": _weapon(joints["hand_r"], Vector3(0.03, 2.0, 0.03), _glow(_c(app, "aura_color", "#66ccff"), 1.5), _toon(Color(0.8, 0.8, 0.85)))
 			"sword": _weapon(joints["hand_r"], Vector3(0.06, 1.0, 0.015), _toon(Color(0.8, 0.82, 0.88), 0.6, 0.9), _toon(Color(0.7, 0.55, 0.2)))
 	if app.get("grimoire", true):
-		_grimoire = Node3D.new()
-		add_child(_grimoire)
-		_grimoire.position = Vector3(-0.55, 1.3, -0.12) * s
-		_grimoire_mat = _glow(_c(app, "grimoire_glow", "#ffd27a"), 1.2)
-		_part(_grimoire, _box(Vector3(0.2, 0.27, 0.06)), _toon(_c(app, "grimoire_color", "#5a3a1a")), Vector3.ZERO)
-		_part(_grimoire, _box(Vector3(0.08, 0.08, 0.065)), _grimoire_mat, Vector3(0, 0.02, 0))
+		_build_book(app)
 	if app.get("wings", "none") != "none" and joints.has("chest"):
 		_build_wings(joints["chest"], app.get("wings"), app)
 		_wings.position = Vector3(0, 0.05, 0.14) * s
+
+
+## Floating grimoire: half-open book with cover, page block and a glowing clover emblem.
+func _build_book(app: Dictionary) -> void:
+	_grimoire = Node3D.new()
+	add_child(_grimoire)
+	_grimoire.position = Vector3(-0.55, 1.3, -0.12) * s
+	_grimoire_mat = _glow(_c(app, "grimoire_glow", "#ffd27a"), 1.2)
+	var cover := _toon(_c(app, "grimoire_color", "#5a3a1a"), 0.5)
+	var pages := _toon(Color(0.93, 0.88, 0.76), 0.2)
+	var book := Node3D.new()
+	book.scale = Vector3.ONE * 0.8
+	book.rotation_degrees = Vector3(-15, 25, 0)
+	_grimoire.add_child(book)
+	for side in [-1.0, 1.0]:
+		var half := Node3D.new()
+		half.rotation_degrees = Vector3(0, 18 * side, 0)
+		book.add_child(half)
+		_part(half, _box(Vector3(0.16, 0.24, 0.012)), cover, Vector3(0.08 * side, 0, 0))
+		_part(half, _box(Vector3(0.145, 0.22, 0.02)), pages, Vector3(0.078 * side, 0, -0.014))
+	_part(book, _box(Vector3(0.02, 0.24, 0.03)), cover, Vector3(0, 0, 0.004))
+	for i in 4:
+		var leaf := SphereMesh.new()
+		leaf.radius = 0.018
+		leaf.height = 0.036
+		var a := TAU * i / 4.0 + PI / 4.0
+		_part(book, leaf, _grimoire_mat, Vector3(0.07 + cos(a) * 0.02, sin(a) * 0.02, 0.012))
 
 
 func _c(app: Dictionary, key: String, fallback: String) -> Color:

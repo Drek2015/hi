@@ -13,6 +13,8 @@ func _ready() -> void:
 		_args[kv[0]] = kv[1] if kv.size() > 1 else "true"
 	if _args.has("quality"):
 		Settings.quality = _args["quality"]
+	if _args.has("cutscenes"):
+		Settings.intro_cutscenes = true
 	if _args.has("boss"):
 		start_fight(_args["boss"])
 	else:
