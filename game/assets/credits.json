@@ -1,4 +1,53 @@
 {
+  "animations/quaternius_rpg/Monk.fbx": {
+    "author": "Quaternius",
+    "license": "CC0",
+    "source": "OpenGameArt",
+    "title": "RPG Characters (Monk animations)",
+    "url": "https://opengameart.org/content/lowpoly-rpg-characters"
+  },
+  "animations/quaternius_rpg/Warrior.fbx": {
+    "author": "Quaternius",
+    "license": "CC0",
+    "source": "OpenGameArt",
+    "title": "RPG Characters (Warrior animations)",
+    "url": "https://opengameart.org/content/lowpoly-rpg-characters"
+  },
+  "animations/quaternius_rpg/Wizard.fbx": {
+    "author": "Quaternius",
+    "license": "CC0",
+    "source": "OpenGameArt",
+    "title": "RPG Characters (Wizard animations)",
+    "url": "https://opengameart.org/content/lowpoly-rpg-characters"
+  },
+  "characters/vroid/avatarsample_e.glb": {
+    "author": "pixiv / VRoid Project",
+    "license": "CC0",
+    "source": "OpenGameArt",
+    "title": "VRoid AvatarSample E",
+    "url": "https://opengameart.org/content/vroid-studio-cc0-models"
+  },
+  "characters/vroid/base_female.glb": {
+    "author": "pixiv / VRoid Project",
+    "license": "CC0",
+    "source": "OpenGameArt",
+    "title": "VRoid Base Female",
+    "url": "https://opengameart.org/content/vroid-studio-cc0-models"
+  },
+  "characters/vroid/base_male.glb": {
+    "author": "pixiv / VRoid Project",
+    "license": "CC0",
+    "source": "OpenGameArt",
+    "title": "VRoid Base Male",
+    "url": "https://opengameart.org/content/vroid-studio-cc0-models"
+  },
+  "characters/vroid/hairsample_male.glb": {
+    "author": "pixiv / VRoid Project",
+    "license": "CC0",
+    "source": "OpenGameArt",
+    "title": "VRoid HairSample Male",
+    "url": "https://opengameart.org/content/vroid-studio-cc0-models"
+  },
   "polyhaven/hdris/belfast_sunset_puresky": {
     "author": "Greg Zaal, Dimitrios Savva, Jarod Guest",
     "license": "CC0",

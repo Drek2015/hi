@@ -30,6 +30,7 @@ var _grimoire_mat: StandardMaterial3D
 var _wings: Node3D
 var _eye_mat: StandardMaterial3D
 var appearance: Dictionary = {}
+var _skinned: SkinnedBody
 
 
 static func poses() -> Dictionary:
@@ -42,6 +43,16 @@ static func poses() -> Dictionary:
 func build(app: Dictionary) -> void:
 	appearance = app
 	s = float(app.get("height", 1.0))
+	if SkinnedBody.available(app):
+		_skinned = SkinnedBody.new()
+		add_child(_skinned)
+		if _skinned.build(app, s):
+			joints = _skinned.joints
+			_build_extras(app)
+			return
+		_skinned.queue_free()
+		_skinned = null
+		joints = {}
 	var skin := _toon(_c(app, "skin", "#e8c4a8"))
 	var top := _toon(_c(app, "outfit_primary", "#222222"))
 	var bottom := _toon(_c(app, "outfit_secondary", "#333333"))
@@ -132,6 +143,38 @@ func build(app: Dictionary) -> void:
 		_build_wings(chest, wings, app)
 	for j in JOINTS:
 		_cur[j] = Vector3.ZERO
+
+
+## Cape, horns, weapon, grimoire and wings on a skinned body (attachment holders are in rig units).
+func _build_extras(app: Dictionary) -> void:
+	var accent := _toon(_c(app, "accent", "#c9a24a"), 0.4)
+	_eye_mat = _glow(_c(app, "eye_color", "#ffd060"), 3.0)
+	if app.get("cape", true) and joints.has("chest"):
+		_cape = Node3D.new()
+		joints["chest"].add_child(_cape)
+		_cape.position = Vector3(0, 0.14, 0.13) * s
+		_part(_cape, _box(Vector3(0.5, 1.1, 0.025)), _toon(_c(app, "cape_color", "#151515")), Vector3(0, -0.55, 0))
+		_part(_cape, _box(Vector3(0.52, 0.04, 0.03)), accent, Vector3(0, -1.08, 0))
+	if app.get("horns", false) and joints.has("head"):
+		var hm := _toon(_c(app, "horn_color", "#1a1a1a"), 0.2)
+		for side in [-1.0, 1.0]:
+			_part(joints["head"], _cone(0.035, 0.24), hm, Vector3(0.08 * side, 0.2, 0.0), Vector3(-20, 0, -28 * side))
+	if joints.has("hand_r"):
+		match app.get("weapon", "none"):
+			"katana": _weapon(joints["hand_r"], Vector3(0.025, 1.05, 0.012), _toon(Color(0.75, 0.77, 0.8), 0.6, 0.9), _toon(Color(0.08, 0.08, 0.1)))
+			"bone_blade": _weapon(joints["hand_r"], Vector3(0.07, 1.0, 0.03), _toon(Color(0.93, 0.9, 0.82)), _toon(Color(0.4, 0.35, 0.3)))
+			"spear": _weapon(joints["hand_r"], Vector3(0.03, 2.0, 0.03), _glow(_c(app, "aura_color", "#66ccff"), 1.5), _toon(Color(0.8, 0.8, 0.85)))
+			"sword": _weapon(joints["hand_r"], Vector3(0.06, 1.0, 0.015), _toon(Color(0.8, 0.82, 0.88), 0.6, 0.9), _toon(Color(0.7, 0.55, 0.2)))
+	if app.get("grimoire", true):
+		_grimoire = Node3D.new()
+		add_child(_grimoire)
+		_grimoire.position = Vector3(-0.55, 1.3, -0.12) * s
+		_grimoire_mat = _glow(_c(app, "grimoire_glow", "#ffd27a"), 1.2)
+		_part(_grimoire, _box(Vector3(0.2, 0.27, 0.06)), _toon(_c(app, "grimoire_color", "#5a3a1a")), Vector3.ZERO)
+		_part(_grimoire, _box(Vector3(0.08, 0.08, 0.065)), _grimoire_mat, Vector3(0, 0.02, 0))
+	if app.get("wings", "none") != "none" and joints.has("chest"):
+		_build_wings(joints["chest"], app.get("wings"), app)
+		_wings.position = Vector3(0, 0.05, 0.14) * s
 
 
 func _c(app: Dictionary, key: String, fallback: String) -> Color:
@@ -305,15 +348,23 @@ func _build_wings(chest: Node3D, kind: String, app: Dictionary) -> void:
 # ---------------------------------------------------------------- animation
 
 func set_pose(name: String, blend: float = 10.0) -> void:
+	if _skinned and name != _target_pose:
+		_skinned.play_pose(name)
 	_target_pose = name
 	_blend = blend
 
 
 func flash_hit(amount: float = 0.9) -> void:
 	_flash = amount
+	if _skinned:
+		_skinned.flash(amount)
 
 
 func set_eye_glow(col: Color, energy: float) -> void:
+	if _skinned:
+		_skinned.set_eye_glow(col, energy)
+	if _eye_mat == null:
+		return
 	_eye_mat.emission = col
 	_eye_mat.albedo_color = col
 	_eye_mat.emission_energy_multiplier = energy
@@ -330,6 +381,9 @@ func hand_position(side: String = "r") -> Vector3:
 
 
 func _process(delta: float) -> void:
+	if _skinned:
+		_process_skinned(delta)
+		return
 	var pose: Dictionary = poses().get(_target_pose, {})
 	var k := 1.0 - exp(-_blend * delta)
 	_phase += delta * (7.5 * locomotion_rate) * maxf(locomotion, 0.15)
@@ -362,6 +416,25 @@ func _process(delta: float) -> void:
 	joints["hips"].position.y = _hip_base + _root_y + bob
 	if _cape:
 		_cape.rotation.x = lerpf(_cape.rotation.x, 0.15 + walk * 0.5 + sin(t * 2.3) * 0.05, 1.0 - exp(-4.0 * delta))
+	if _grimoire:
+		_grimoire.position.y = (1.3 + sin(t * 2.0) * 0.05) * s
+		_grimoire.rotation.y = sin(t * 0.8) * 0.4
+	if _wings:
+		for w in _wings.get_children():
+			var side := -1.0 if w.name.ends_with("l") else 1.0
+			w.rotation.y = deg_to_rad(-20 * side) + sin(t * (5.0 if hovering else 1.5)) * 0.25 * side
+	if _flash > 0.0:
+		_flash = maxf(_flash - delta * 7.0, 0.0)
+	for m in _mats:
+		m.emission_energy_multiplier = _flash * 1.5
+
+
+func _process_skinned(delta: float) -> void:
+	_skinned.update(delta, locomotion)
+	var t := Time.get_ticks_msec() * 0.001
+	_skinned.position.y = sin(t * 2.2) * 0.08 * s if hovering else 0.0
+	if _cape:
+		_cape.rotation.x = lerpf(_cape.rotation.x, 0.15 + locomotion * 0.5 + sin(t * 2.3) * 0.05, 1.0 - exp(-4.0 * delta))
 	if _grimoire:
 		_grimoire.position.y = (1.3 + sin(t * 2.0) * 0.05) * s
 		_grimoire.rotation.y = sin(t * 0.8) * 0.4

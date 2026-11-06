@@ -30,5 +30,63 @@
     "asta_grimoire": "0ffb07be77c04bca9441885fde56fd49",
     "yuno_spirit_of_zephyr": "3086ee0b2d4643dc84669cf93f883744",
     "gimodelo": "e0fb3421344b4872a094b5551c024400"
+  },
+  "direct": {
+    "characters/vroid/base_male.glb": {
+      "url": "https://opengameart.org/sites/default/files/base_male.zip",
+      "member": "Base_Male.vrm",
+      "title": "VRoid Base Male",
+      "author": "pixiv / VRoid Project",
+      "license": "CC0",
+      "page": "https://opengameart.org/content/vroid-studio-cc0-models"
+    },
+    "characters/vroid/base_female.glb": {
+      "url": "https://opengameart.org/sites/default/files/base_female.zip",
+      "member": "Base_Female.vrm",
+      "title": "VRoid Base Female",
+      "author": "pixiv / VRoid Project",
+      "license": "CC0",
+      "page": "https://opengameart.org/content/vroid-studio-cc0-models"
+    },
+    "characters/vroid/avatarsample_e.glb": {
+      "url": "https://opengameart.org/sites/default/files/avatarsample_e.zip",
+      "member": "AvatarSample_E.vrm",
+      "title": "VRoid AvatarSample E",
+      "author": "pixiv / VRoid Project",
+      "license": "CC0",
+      "page": "https://opengameart.org/content/vroid-studio-cc0-models"
+    },
+    "characters/vroid/hairsample_male.glb": {
+      "url": "https://opengameart.org/sites/default/files/hairsample_male.zip",
+      "member": "HairSample_Male.vrm",
+      "title": "VRoid HairSample Male",
+      "author": "pixiv / VRoid Project",
+      "license": "CC0",
+      "page": "https://opengameart.org/content/vroid-studio-cc0-models"
+    },
+    "animations/quaternius_rpg/Warrior.fbx": {
+      "url": "https://opengameart.org/sites/default/files/rpg_characters_-_nov_2020.zip",
+      "member": "RPG Characters - Nov 2020/FBX/Warrior.fbx",
+      "title": "RPG Characters (Warrior animations)",
+      "author": "Quaternius",
+      "license": "CC0",
+      "page": "https://opengameart.org/content/lowpoly-rpg-characters"
+    },
+    "animations/quaternius_rpg/Wizard.fbx": {
+      "url": "https://opengameart.org/sites/default/files/rpg_characters_-_nov_2020.zip",
+      "member": "RPG Characters - Nov 2020/FBX/Wizard.fbx",
+      "title": "RPG Characters (Wizard animations)",
+      "author": "Quaternius",
+      "license": "CC0",
+      "page": "https://opengameart.org/content/lowpoly-rpg-characters"
+    },
+    "animations/quaternius_rpg/Monk.fbx": {
+      "url": "https://opengameart.org/sites/default/files/rpg_characters_-_nov_2020.zip",
+      "member": "RPG Characters - Nov 2020/FBX/Monk.fbx",
+      "title": "RPG Characters (Monk animations)",
+      "author": "Quaternius",
+      "license": "CC0",
+      "page": "https://opengameart.org/content/lowpoly-rpg-characters"
+    }
   }
 }
