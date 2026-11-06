@@ -1,0 +1,43 @@
+{
+  "_doc": "Yuno boss intro. Original dialogue (not taken from the manga/anime). 'boss' space: metres relative to the boss, -Z points at Asta. 'pov' = Asta's first-person camera. Authored by the cinematics team; see .claude/agents/cinematics-director.md.",
+  "shots": [
+    {"duration": 4.0, "space": "boss", "ease": "inout", "fov": [42, 38], "focus": 2.6,
+     "from": {"pos": [1.0, 1.9, 2.6], "look": [0.0, 1.4, -20.0]},
+     "to":   {"pos": [0.7, 1.8, 1.9], "look": [0.0, 1.5, -20.0]},
+     "events": [
+       {"at": 0.0, "pose": "idle"},
+       {"at": 0.3, "vfx": "burst", "element": "wind"},
+       {"at": 0.3, "sfx": "cast", "volume": -6},
+       {"at": 0.8, "line": {"speaker": "Yuno", "text": "So you finally caught up, Asta."}}
+     ]},
+    {"duration": 3.4, "space": "boss", "ease": "out", "fov": [30, 26],
+     "from": {"pos": [0.55, 1.62, -2.3], "look": [0.0, 1.6, 0.0]},
+     "to":   {"pos": [0.3, 1.65, -1.6], "look": [0.0, 1.62, 0.0]},
+     "events": [
+       {"at": 0.1, "pose": "combat"},
+       {"at": 0.3, "line": {"speaker": "Yuno", "text": "But the one who becomes Wizard King... is me."}},
+       {"at": 1.8, "vfx": "eyes", "element": "wind"}
+     ]},
+    {"duration": 2.9, "space": "pov",
+     "events": [
+       {"at": 0.05, "viewmodel": "transform"},
+       {"at": 0.15, "line": {"speaker": "Asta", "text": "Like I'd ever lose to you! I'm surpassing my limits, right here, right now!"}},
+       {"at": 0.9, "shake": 0.3},
+       {"at": 0.9, "sfx": "swing_heavy", "volume": -4}
+     ]},
+    {"duration": 3.6, "space": "boss", "ease": "out", "fov": [46, 40],
+     "from": {"pos": [-2.4, 0.45, -3.2], "look": [0.0, 1.5, 0.0]},
+     "to":   {"pos": [-1.5, 0.7, -2.6], "look": [0.0, 1.75, 0.0]},
+     "events": [
+       {"at": 0.05, "clear_line": true},
+       {"at": 0.1, "pose": "cast_overhead"},
+       {"at": 0.5, "line": {"speaker": "Yuno", "text": "Then show me. Bell, let's go."}},
+       {"at": 1.6, "vfx": "shockwave", "element": "wind", "radius": 9},
+       {"at": 1.6, "vfx": "flash", "element": "wind"},
+       {"at": 1.6, "shake": 0.7},
+       {"at": 1.6, "sfx": "transform", "volume": 0},
+       {"at": 2.0, "clear_line": true},
+       {"at": 2.0, "title": true}
+     ]}
+  ]
+}

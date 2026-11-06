@@ -5,7 +5,7 @@
       "id": "yuno", "name": "Yuno", "title": "Golden Dawn Captain — Spirit of Zephyr",
       "affiliation": "Golden Dawn / Spade bloodline", "magic": "Wind Magic + Star Magic",
       "description": "Your rival since the church in Hage. He rides the wind spirit Bell and, unleashed, calls down the star magic of his Spade heritage. Fast, airborne, relentless at range — close the gap.",
-      "arena": "clover_ruins", "element": "wind", "xp": 900,
+      "arena": "clover_ruins", "element": "wind", "xp": 900, "intro_cutscene": "yuno_intro",
       "stats": {"hp": 3600, "poise": 280, "damage": 1.0, "speed": 5.6, "preferred_range": 9.0},
       "appearance": {
         "model": "vroid/hairsample_male",

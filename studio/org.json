@@ -102,6 +102,20 @@
         "qa-tester",
         "playtest-analyst"
       ]
+    },
+    {
+      "id": "cinematics",
+      "name": "Cinematics",
+      "lead": "cinematics-director",
+      "mission": "Original in-engine cutscenes: boss intros, phase transitions and story beats.",
+      "color": "#8a5a2b",
+      "order": 7,
+      "members": [
+        "cinematics-director",
+        "narrative-writer",
+        "storyboard-artist",
+        "cutscene-engineer"
+      ]
     }
   ],
   "agents": [
@@ -598,6 +612,69 @@
       ],
       "web": false,
       "file": ".claude/agents/playtest-analyst.md"
+    },
+    {
+      "id": "cinematics-director",
+      "team": "cinematics",
+      "lead": true,
+      "description": "Leads the Cinematics team. Owns every in-engine cutscene (boss intros, phase transitions, victories, story beats): pacing, shot language, tone, and the quality bar. Use for any new cutscene or story scene; delegates to narrative-writer, storyboard-artist and cutscene-engineer.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Agent",
+        "Write"
+      ],
+      "web": false,
+      "file": ".claude/agents/cinematics-director.md"
+    },
+    {
+      "id": "narrative-writer",
+      "team": "cinematics",
+      "lead": false,
+      "description": "Writes original dialogue, story beats and bark lines in each Black Clover character's voice (Asta's loud resolve, Yuno's quiet confidence, Yami's bluntness, the Dark Triad's menace) for cutscenes, phase transitions and victory/defeat screens.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Write",
+        "WebSearch",
+        "WebFetch"
+      ],
+      "web": true,
+      "file": ".claude/agents/narrative-writer.md"
+    },
+    {
+      "id": "storyboard-artist",
+      "team": "cinematics",
+      "lead": false,
+      "description": "Turns a scene's beats into a shot list \u2014 camera positions, lenses (fov), moves, focus, timing and events \u2014 written directly as cutscene JSON, then iterates from rendered frames. Use after narrative-writer delivers a beat sheet.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Write"
+      ],
+      "web": false,
+      "file": ".claude/agents/storyboard-artist.md"
+    },
+    {
+      "id": "cutscene-engineer",
+      "team": "cinematics",
+      "lead": false,
+      "description": "Builds and extends the cutscene runtime (scripts/world/cutscene.gd) \u2014 new event types (camera shake, VFX, boss poses, viewmodel clips, title cards, fades, audio), skip handling, letterbox, subtitles \u2014 and keeps cutscenes testable headless.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Edit",
+        "Write"
+      ],
+      "web": false,
+      "file": ".claude/agents/cutscene-engineer.md"
     }
   ]
 }

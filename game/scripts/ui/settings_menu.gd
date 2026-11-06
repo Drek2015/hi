@@ -38,6 +38,7 @@ func _ready() -> void:
 	_slider(grid, "Mouse sensitivity", 0.02, 0.3, 0.005, Settings.mouse_sensitivity, func(v): Settings.mouse_sensitivity = v, "%.3f", 1.0)
 	_check(grid, "Invert look Y", Settings.invert_y, func(v): Settings.invert_y = v)
 	_check(grid, "Show FPS counter", Settings.show_fps, func(v): Settings.show_fps = v)
+	_check(grid, "Boss intro cutscenes", Settings.intro_cutscenes, func(v): Settings.intro_cutscenes = v)
 	_slider(grid, "Master volume", 0.0, 1.0, 0.05, Settings.master_volume, func(v): Settings.master_volume = v, "%d%%", 100.0)
 	grid.add_child(UIKit.label("Backend URL", 20))
 	var url := LineEdit.new()

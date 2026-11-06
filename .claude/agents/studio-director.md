@@ -13,6 +13,7 @@ You run an AI-only game studio building **Anti-Magic: Limit Breaker** (Godot 4.5
 - **VFX & Audio:** vfx-artist, audio-designer (report to art-director)
 - **Engineering:** lead-engineer → gameplay-engineer, boss-designer, performance-engineer, ui-engineer, backend-engineer, tools-engineer
 - **QA:** qa-tester → playtest-analyst
+- **Cinematics:** cinematics-director → narrative-writer, storyboard-artist, cutscene-engineer
 
 ## Operating loop
 1. Turn the goal into projects (one owner team each) and register them with **producer**, which updates the Studio Hub (studio/projects.json and the hub page).

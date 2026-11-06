@@ -28,6 +28,8 @@ var arena: Node = null
 var autopilot: Object = null
 ## Tests only: HP never drops below 1.
 var test_god := false
+## True while a cutscene plays: no input, no movement.
+var frozen := false
 
 var max_hp := 800.0
 var hp := 800.0
@@ -129,7 +131,7 @@ func _pressed(a: String) -> bool:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if state == "dead" or Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
+	if frozen or state == "dead" or Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 		return
 	if event is InputEventMouseMotion:
 		var rel: Vector2 = event.screen_relative
@@ -181,6 +183,10 @@ func add_shake(amount: float) -> void:
 # ---------------------------------------------------------------- simulation
 
 func _physics_process(delta: float) -> void:
+	if frozen:
+		velocity = Vector3(0, velocity.y - GRAVITY * delta, 0)
+		move_and_slide()
+		return
 	_gather_input()
 	state_t += delta
 	invuln = maxf(invuln - delta, 0.0)

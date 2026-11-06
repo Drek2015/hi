@@ -49,6 +49,30 @@ func _ready() -> void:
 	_pause_menu.connect("restart", func(): _leave(); get_parent().call("start_fight", boss_id))
 	_pause_menu.connect("quit", func(): _leave(); quit_requested.emit())
 	Sfx.play("transform", null, -8.0)
+	_maybe_play_intro()
+
+
+var in_cutscene := false
+
+
+func _maybe_play_intro() -> void:
+	var id: String = def.get("intro_cutscene", "")
+	if id == "" or not Settings.intro_cutscenes or not FileAccess.file_exists(Cutscene.path_for(id)):
+		return
+	var cs := Cutscene.new()
+	if not cs.setup(self, id):
+		return
+	in_cutscene = true
+	player.frozen = true
+	boss.set("_intro_time", 1e9)
+	hud.visible = false
+	cs.finished.connect(func():
+		in_cutscene = false
+		player.frozen = false
+		hud.visible = true
+		if is_instance_valid(boss):
+			boss.set("_intro_time", boss.state_t + 0.6))
+	add_child(cs)
 
 
 func _leave() -> void:
@@ -65,7 +89,7 @@ func _on_settings_changed() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("pause") and not _over:
+	if event.is_action_pressed("pause") and not _over and not in_cutscene:
 		_toggle_pause()
 		get_viewport().set_input_as_handled()
 
@@ -85,7 +109,7 @@ func _on_resume() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if not _over:
+	if not _over and not in_cutscene:
 		fight_time += delta
 	for body in [player, boss]:
 		if body and is_instance_valid(body):

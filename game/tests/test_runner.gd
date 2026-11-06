@@ -17,6 +17,7 @@ func check(cond: bool, msg: String) -> void:
 
 func _ready() -> void:
 	Engine.max_fps = 0
+	Settings.intro_cutscenes = false
 	await get_tree().process_frame
 	_test_data()
 	_test_progression()
@@ -24,6 +25,8 @@ func _ready() -> void:
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("--boss="):
 			only = a.trim_prefix("--boss=")
+	if only == "" or only == "yuno":
+		await _test_cutscene("yuno")
 	for b in Roster.bosses:
 		if only == "" or b["id"] == only:
 			await _simulate(b["id"])
@@ -67,6 +70,33 @@ func _test_progression() -> void:
 	check(lv == 2 and int(GameState.profile["level"]) == 3, "XP levels up twice")
 	check(int(GameState.profile["unspent"]) == 4, "2 points per level")
 	GameState.profile = saved
+
+
+func _test_cutscene(id: String) -> void:
+	print("== cutscene ", id)
+	for f in DirAccess.get_files_at("res://data/cutscenes"):
+		if f.ends_with(".json"):
+			var d: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://data/cutscenes/" + f))
+			check(d is Dictionary and not d.get("shots", []).is_empty(), "cutscene %s parses" % f)
+			for shot in d.get("shots", []):
+				for ev in shot.get("events", []):
+					if ev.has("pose"):
+						check(CharacterRig.poses().has(ev["pose"]), "cutscene %s pose %s exists" % [f, ev["pose"]])
+					if ev.has("viewmodel"):
+						check(ViewModel.clip_info(ev["viewmodel"]).size() > 0, "cutscene %s clip %s exists" % [f, ev["viewmodel"]])
+	Settings.intro_cutscenes = true
+	var arena := Arena.new().setup(id)
+	add_child(arena)
+	check(arena.in_cutscene, "%s intro cutscene starts" % id)
+	check(arena.player.frozen, "player frozen during cutscene")
+	await _run(20.0)
+	check(not arena.in_cutscene, "%s intro cutscene finishes" % id)
+	check(not arena.player.frozen, "player unfrozen after cutscene")
+	check(arena.fight_time < 8.0, "fight timer paused during cutscene")
+	Settings.intro_cutscenes = false
+	arena.queue_free()
+	await get_tree().process_frame
+	GameState.reset_time()
 
 
 func _simulate(id: String) -> void:

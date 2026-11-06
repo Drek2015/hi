@@ -8,7 +8,7 @@ signal changed
 const PATH := "user://settings.cfg"
 const SAVED_KEYS := [
 	"max_fps", "vsync", "fullscreen", "fov", "mouse_sensitivity", "invert_y",
-	"quality", "render_scale", "show_fps", "master_volume", "backend_url", "difficulty",
+	"quality", "render_scale", "show_fps", "master_volume", "backend_url", "difficulty", "intro_cutscenes",
 ]
 const FPS_OPTIONS := [60, 120, 144, 165, 240, 360, 0]
 const QUALITY_OPTIONS := ["low", "medium", "high", "ultra"]
@@ -30,6 +30,7 @@ var show_fps: bool = true
 var master_volume: float = 0.8
 var backend_url: String = "http://127.0.0.1:8765"
 var difficulty: String = "normal"
+var intro_cutscenes: bool = true
 
 
 func _ready() -> void:

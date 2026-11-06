@@ -101,12 +101,7 @@ func _restyle(app: Dictionary) -> void:
 	var eyes := Color.from_string(str(app.get("eye_color", "#ffd060")), Color.GOLD)
 	var skin := Color.from_string(str(app.get("skin", "#f0d0b8")), Color.WHITE)
 	var rim := Color.from_string(str(app.get("aura_color", "#ffffff")), Color.WHITE) * 0.55
-	var outline := StandardMaterial3D.new()
-	outline.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	outline.albedo_color = Color(0.03, 0.02, 0.03)
-	outline.cull_mode = BaseMaterial3D.CULL_FRONT
-	outline.grow = true
-	outline.grow_amount = 0.006
+	var outline_shader: Shader = load("res://shaders/anime_outline.gdshader")
 	for mi in _model.find_children("*", "MeshInstance3D", true, false):
 		var m := mi as MeshInstance3D
 		m.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
@@ -156,8 +151,20 @@ func _restyle(app: Dictionary) -> void:
 				lined = true
 			elif name.contains("SKIN"):
 				mat.set_shader_parameter("tint", Color.WHITE.lerp(skin, 0.35))
-			if lined:
-				mat.next_pass = outline
+			if name.contains("FACE") or (name.contains("SKIN") and not name.contains("BODY")):
+				mat.set_shader_parameter("face_soften", 1.0)
+				mat.set_shader_parameter("shadow_tint", Color(0.86, 0.68, 0.66))
+			elif name.contains("SKIN"):
+				mat.set_shader_parameter("shadow_tint", Color(0.82, 0.6, 0.6))
+			if name.contains("HAIR"):
+				mat.set_shader_parameter("hair_spec", 1.0)
+				mat.set_shader_parameter("shadow_tint", hair.lightened(0.35) * Color(0.55, 0.5, 0.65))
+			if lined or name.contains("HAIR"):
+				var ol := ShaderMaterial.new()
+				ol.shader = outline_shader
+				var base: Color = mat.get_shader_parameter("tint") if mat.get_shader_parameter("recolor") else Color(0.35, 0.25, 0.25)
+				ol.set_shader_parameter("line_color", base.darkened(0.82))
+				mat.next_pass = ol
 			m.set_surface_override_material(i, mat)
 			_mats.append(mat)
 
