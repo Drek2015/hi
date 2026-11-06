@@ -12,6 +12,9 @@ with a target of 240 FPS.
 |---|---|
 | ![Zenon in the Spade Citadel](docs/screenshots/zenon.jpg) | ![First-person Asta vs Yuno](docs/screenshots/yuno.jpg) |
 
+![Anime boss bodies: Dante and Yuno](docs/screenshots/anime_bosses_1.jpg)
+![Vanica and Zenon](docs/screenshots/anime_bosses_2.jpg)
+
 ![Mid-fight vs Yuno: lock-on, Gale Blade Shower volley, attack callouts](docs/screenshots/combat.jpg)
 ![Dark Triad + Lucifero](docs/screenshots/dark_triad.jpg)
 
