@@ -1,0 +1,394 @@
+{
+  "projects": [
+    {
+      "id": "env-scan",
+      "title": "Scanned environments",
+      "team": "art",
+      "owner": "environment-artist",
+      "status": "review",
+      "priority": "high",
+      "summary": "Replace procedural arenas with CC0 photoscanned skies, PBR floors and scanned props from Poly Haven.",
+      "tasks": [
+        {
+          "title": "Asset fetch tool with automatic credits",
+          "done": true,
+          "agent": "tools-engineer"
+        },
+        {
+          "title": "HDRI skies for Clover ruins and Bulls canyon",
+          "done": true,
+          "agent": "environment-artist"
+        },
+        {
+          "title": "PBR floor shader with anti-tiling + emblem/lava overlays",
+          "done": true,
+          "agent": "texture-artist"
+        },
+        {
+          "title": "Scatter scanned boulders, moon rocks, dead trees, grass",
+          "done": true,
+          "agent": "environment-artist"
+        },
+        {
+          "title": "Night/hellscape HDRIs without modern buildings",
+          "done": false,
+          "agent": "asset-scout"
+        },
+        {
+          "title": "Gothic castle kit for the Spade Citadel",
+          "done": false,
+          "agent": "asset-scout"
+        }
+      ],
+      "files": [
+        "game/scripts/world/arena_builder.gd",
+        "game/shaders/floor_pbr.gdshader",
+        "game/assets/manifest.json",
+        "game/assets/CREDITS.md"
+      ],
+      "updates": [
+        {
+          "date": "2026-11-06",
+          "agent": "environment-artist",
+          "text": "Clover ruins, Spade Citadel, Underworld Gate and Bulls canyon now use scanned PBR floors. Two HDRIs were dropped: one showed apartment blocks, the other washed the night sky grey."
+        }
+      ],
+      "shots": [
+        {
+          "id": "eae114b3d8322dc51693ed9279c38227",
+          "alt": "Scanned PBR floors in four arenas"
+        }
+      ]
+    },
+    {
+      "id": "asta-swords",
+      "title": "Asta's swords from fan models",
+      "team": "art",
+      "owner": "weapon-artist",
+      "status": "blocked",
+      "priority": "high",
+      "summary": "Import CC-BY fan-made models of the Demon-Slayer, Demon-Dweller, Demon-Destroyer and Black Divider into the first-person viewmodel.",
+      "tasks": [
+        {
+          "title": "Find downloadable CC-BY sword models on Sketchfab",
+          "done": true,
+          "agent": "asset-scout"
+        },
+        {
+          "title": "Licence check (CC-BY, credit authors)",
+          "done": true,
+          "agent": "license-auditor"
+        },
+        {
+          "title": "Download via Sketchfab API",
+          "done": false,
+          "agent": "tools-engineer"
+        },
+        {
+          "title": "Import, scale to grip, swap to viewmodel shader",
+          "done": false,
+          "agent": "technical-artist"
+        }
+      ],
+      "files": [
+        "game/assets/manifest.json",
+        "tools/assets/fetch_assets.py",
+        "game/scripts/player/viewmodel.gd"
+      ],
+      "updates": [
+        {
+          "date": "2026-11-06",
+          "agent": "tools-engineer",
+          "text": "Blocked: Sketchfab answers 'Invalid API token'. Needs a valid token from sketchfab.com/settings/password (API Token), saved again in the environment's network secrets."
+        }
+      ],
+      "shots": []
+    },
+    {
+      "id": "rigged-bosses",
+      "title": "Rigged characters for every boss",
+      "team": "art",
+      "owner": "character-artist",
+      "status": "blocked",
+      "priority": "high",
+      "summary": "Replace primitive boss rigs with skinned humanoid meshes (Quaternius base characters or VRoid anime bodies) dressed per character.",
+      "tasks": [
+        {
+          "title": "Research free rigged humanoids (Quaternius, VRoid CC0, Sketchfab fan models)",
+          "done": true,
+          "agent": "asset-scout"
+        },
+        {
+          "title": "Download Quaternius Universal Base Characters",
+          "done": false,
+          "agent": "tools-engineer"
+        },
+        {
+          "title": "Yuno: import Sketchfab 'Yuno Spirit of Zephyr' (CC-BY, 143k faces \u2192 decimate)",
+          "done": false,
+          "agent": "technical-artist"
+        },
+        {
+          "title": "Hook appearance.model into CharacterRig with bone map",
+          "done": false,
+          "agent": "rigger-retargeter"
+        }
+      ],
+      "files": [
+        "game/scripts/boss/character_rig.gd",
+        "game/data/roster.json"
+      ],
+      "updates": [
+        {
+          "date": "2026-11-06",
+          "agent": "tools-engineer",
+          "text": "Blocked: itch.io refuses scripted downloads. One click each from a browser: Universal Base Characters and Universal Animation Library 2 (Standard, free) \u2014 drop the zips into game/assets/inbox/."
+        }
+      ],
+      "shots": [
+        {
+          "id": "dea2de1348e9fe78c2456cfef96f7eba",
+          "alt": "Current primitive rigs to replace"
+        }
+      ]
+    },
+    {
+      "id": "sword-anims",
+      "title": "Mocap-quality sword combos",
+      "team": "animation",
+      "owner": "animation-director",
+      "status": "blocked",
+      "priority": "high",
+      "summary": "Retarget CC0 Quaternius Universal Animation Library 1+2 (3\u20134 hit sword combos) onto all humanoid bosses; map attack ids to clips.",
+      "tasks": [
+        {
+          "title": "Pick clips per boss attack (move-list docs)",
+          "done": false,
+          "agent": "animation-director"
+        },
+        {
+          "title": "Godot humanoid retarget + shared AnimationLibrary",
+          "done": false,
+          "agent": "rigger-retargeter"
+        },
+        {
+          "title": "Generate signature moves with HY-Motion (Spirit Dive, Black Meteorite)",
+          "done": false,
+          "agent": "motion-generation-specialist"
+        }
+      ],
+      "files": [
+        "game/data/rig_poses.json",
+        "docs/research/ASSET_SOURCES.md"
+      ],
+      "updates": [
+        {
+          "date": "2026-11-06",
+          "agent": "animation-director",
+          "text": "Waiting on the Quaternius downloads (same blocker as rigged-bosses)."
+        }
+      ],
+      "shots": []
+    },
+    {
+      "id": "research-index",
+      "title": "Free asset & AI tool index",
+      "team": "research",
+      "owner": "research-lead",
+      "status": "done",
+      "priority": "medium",
+      "summary": "Ranked list of free/cheap sources for characters, weapons, environments, animation and AI generation, with licences and fetch recipes.",
+      "tasks": [
+        {
+          "title": "CC0 sources: Poly Haven, ambientCG, Quaternius, VRoid samples",
+          "done": true,
+          "agent": "asset-scout"
+        },
+        {
+          "title": "Black Clover fan models on Sketchfab (CC-BY)",
+          "done": true,
+          "agent": "asset-scout"
+        },
+        {
+          "title": "AI tools: TRELLIS, Hunyuan3D, HY-Motion, Pollinations",
+          "done": true,
+          "agent": "tech-scout"
+        }
+      ],
+      "files": [
+        "docs/research/ASSET_SOURCES.md"
+      ],
+      "updates": [
+        {
+          "date": "2026-11-06",
+          "agent": "research-lead",
+          "text": "Index published. 20 downloadable CC-BY Black Clover fan models found, including 6 Asta sword variants."
+        }
+      ],
+      "shots": []
+    },
+    {
+      "id": "ai-gen-pipeline",
+      "title": "Concept \u2192 3D generation pipeline",
+      "team": "art",
+      "owner": "generative-3d-specialist",
+      "status": "in_progress",
+      "priority": "medium",
+      "summary": "Free image generation for concept sheets, then image-to-3D (TRELLIS / Hunyuan3D) for assets no one has made yet.",
+      "tasks": [
+        {
+          "title": "Concept generation via Pollinations (no key)",
+          "done": true,
+          "agent": "concept-artist"
+        },
+        {
+          "title": "Image-to-3D via Hugging Face Space or local GPU",
+          "done": false,
+          "agent": "generative-3d-specialist"
+        },
+        {
+          "title": "Blender headless cleanup + decimation script",
+          "done": false,
+          "agent": "technical-artist"
+        }
+      ],
+      "files": [
+        "art/concepts/",
+        "docs/research/ASSET_SOURCES.md"
+      ],
+      "updates": [
+        {
+          "date": "2026-11-06",
+          "agent": "concept-artist",
+          "text": "Pollinations works without a key but quality is moodboard-level only (watermark, blobby shapes). Proper concept art needs a free Hugging Face token (FLUX) or a local GPU."
+        }
+      ],
+      "shots": [
+        {
+          "id": "3b8bdd9ad4d9d2d93570495f387da651",
+          "alt": "Free Pollinations concept sheet (moodboard quality)"
+        }
+      ]
+    },
+    {
+      "id": "studio-hub",
+      "title": "Studio Hub",
+      "team": "engineering",
+      "owner": "tools-engineer",
+      "status": "done",
+      "priority": "medium",
+      "summary": "Mobile-first hub to browse teams, agents and projects; tick tasks and post updates from a phone.",
+      "tasks": [
+        {
+          "title": "Org chart + project data (studio/*.json)",
+          "done": true,
+          "agent": "producer"
+        },
+        {
+          "title": "Hub page with live shared data",
+          "done": true,
+          "agent": "tools-engineer"
+        }
+      ],
+      "files": [
+        "studio/hub.html",
+        "studio/org.json",
+        "studio/projects.json"
+      ],
+      "updates": [
+        {
+          "date": "2026-11-06",
+          "agent": "producer",
+          "text": "Hub live. Agents post progress here through the producer."
+        }
+      ],
+      "shots": []
+    },
+    {
+      "id": "combat-core",
+      "title": "Combat core & 8 bosses",
+      "team": "engineering",
+      "owner": "lead-engineer",
+      "status": "done",
+      "priority": "high",
+      "summary": "First-person Asta (3 forms, 6 abilities, parry, dodge), data-driven boss AI, 8 Spade-arc bosses, RPG progression, local backend.",
+      "tasks": [
+        {
+          "title": "Player controller + forms",
+          "done": true,
+          "agent": "gameplay-engineer"
+        },
+        {
+          "title": "Boss framework + roster",
+          "done": true,
+          "agent": "boss-designer"
+        },
+        {
+          "title": "Backend saves + leaderboards",
+          "done": true,
+          "agent": "backend-engineer"
+        }
+      ],
+      "files": [
+        "game/scripts/player/player.gd",
+        "game/scripts/boss/boss.gd",
+        "game/data/roster.json",
+        "backend/server.py"
+      ],
+      "updates": [
+        {
+          "date": "2026-11-06",
+          "agent": "qa-tester",
+          "text": "566 headless checks pass; bot fights every boss and every attack fires."
+        }
+      ],
+      "shots": [
+        {
+          "id": "21a82b8d18b0b2d7be46b10007de27db",
+          "alt": "Mid-fight vs Yuno"
+        },
+        {
+          "id": "dea2de1348e9fe78c2456cfef96f7eba",
+          "alt": "Dark Triad and Lucifero"
+        },
+        {
+          "id": "27dc978b44db0e0e5d5f926411df483c",
+          "alt": "Zenon in the Spade Citadel"
+        }
+      ]
+    },
+    {
+      "id": "perf-240",
+      "title": "240 Hz on real hardware",
+      "team": "engineering",
+      "owner": "performance-engineer",
+      "status": "blocked",
+      "priority": "medium",
+      "summary": "Measure frame times on the user's PC at 1080p High with the new scanned assets; tune presets to hold 240 FPS.",
+      "tasks": [
+        {
+          "title": "Quality presets (Low \u2192 Ultra)",
+          "done": true,
+          "agent": "performance-engineer"
+        },
+        {
+          "title": "Profile on the user's GPU",
+          "done": false,
+          "agent": "performance-engineer"
+        }
+      ],
+      "files": [
+        "game/project.godot",
+        "game/scripts/core/settings.gd"
+      ],
+      "updates": [
+        {
+          "date": "2026-11-06",
+          "agent": "performance-engineer",
+          "text": "Blocked: CI only has a software renderer (1\u20133 FPS). Needs a run on the user's PC with the FPS counter on."
+        }
+      ],
+      "shots": []
+    }
+  ]
+}

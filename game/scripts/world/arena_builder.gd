@@ -13,8 +13,10 @@ const THEMES := {
 		"sun": {"color": "#ffd2a0", "energy": 1.7, "pitch": -18.0, "yaw": 210.0},
 		"ambient": 0.55, "fog": "#e8c8a8", "fog_density": 0.0012, "vfog": "#ffe8d0", "vfog_density": 0.0035,
 		"floor": {"a": "#8a8274", "b": "#5f584e", "grout": "#2a261f", "moss": "#3a5a20", "moss_amount": 0.45, "emblem": "#e0b050", "emblem_energy": 0.25, "fissure": "#000000", "fissure_energy": 0.0},
-		"props": ["pillars", "trees", "grass", "rocks"], "rock": "#6e675c", "pillar": "#a39a88",
+		"props": ["pillars"], "rock": "#6e675c", "pillar": "#a39a88",
 		"motes": "#d8f0a0", "ground": "#3e4a24",
+		"hdri": "belfast_sunset_puresky", "hdri_energy": 0.75, "floor_tex": "stone_tiles_02", "floor_scale": 0.22, "floor_tint": "#7d776e",
+		"ground_tex": "forest_ground_04", "scatter": {"boulder_01": 26, "dead_tree_trunk": 10, "grass_medium_01": 900},
 	},
 	"spade_citadel": {
 		"label": "Spade Kingdom — Citadel Rooftops",
@@ -23,8 +25,10 @@ const THEMES := {
 		"sun": {"color": "#c0a8ff", "energy": 1.0, "pitch": -35.0, "yaw": 30.0},
 		"ambient": 0.75, "fog": "#2a1438", "fog_density": 0.004, "vfog": "#7a4a9a", "vfog_density": 0.012,
 		"floor": {"a": "#3a3644", "b": "#1e1b26", "grout": "#0a080c", "moss": "#3a1a5a", "moss_amount": 0.12, "emblem": "#a050ff", "emblem_energy": 1.2, "fissure": "#a050ff", "fissure_energy": 0.4},
-		"props": ["pillars", "crystals", "spires", "rocks"], "rock": "#2a2632", "pillar": "#3c3848",
+		"props": ["pillars", "crystals", "spires"], "rock": "#2a2632", "pillar": "#3c3848",
 		"motes": "#b080ff", "ground": "#120e18",
+		"hdri": "", "hdri_energy": 1.6, "floor_tex": "castle_wall_slates", "floor_scale": 0.2, "floor_tint": "#8a80a6",
+		"ground_tex": "rock_face", "scatter": {"moon_rock_03": 30},
 	},
 	"hell_gate": {
 		"label": "Gate of the Underworld",
@@ -33,8 +37,10 @@ const THEMES := {
 		"sun": {"color": "#ffc0a0", "energy": 1.0, "pitch": -32.0, "yaw": 150.0},
 		"ambient": 0.3, "fog": "#3a0a06", "fog_density": 0.0035, "vfog": "#ff6040", "vfog_density": 0.009,
 		"floor": {"a": "#34302e", "b": "#1c1818", "grout": "#060404", "moss": "#1a0a08", "moss_amount": 0.2, "emblem": "#ff3020", "emblem_energy": 1.2, "fissure": "#ff4a10", "fissure_energy": 1.6},
-		"props": ["gate", "obelisks", "rocks", "spires"], "rock": "#2a2020", "pillar": "#302626",
+		"props": ["gate", "obelisks", "spires"], "rock": "#2a2020", "pillar": "#302626",
 		"motes": "#ff7040", "ground": "#140808",
+		"hdri": "", "hdri_energy": 0.8, "floor_tex": "burned_ground_01", "floor_scale": 0.15, "floor_tint": "#a89890",
+		"ground_tex": "rock_face", "scatter": {"moon_rock_03": 24, "dead_tree_trunk": 14},
 	},
 	"bulls_training": {
 		"label": "Black Bull Training Canyon",
@@ -43,14 +49,63 @@ const THEMES := {
 		"sun": {"color": "#ffb080", "energy": 1.5, "pitch": -13.0, "yaw": 160.0},
 		"ambient": 0.55, "fog": "#c09080", "fog_density": 0.0015, "vfog": "#ffe0c8", "vfog_density": 0.003,
 		"floor": {"a": "#9a8468", "b": "#6e5c48", "grout": "#3a2e22", "moss": "#6a6a30", "moss_amount": 0.15, "emblem": "#e8e8e8", "emblem_energy": 0.15, "fissure": "#000000", "fissure_energy": 0.0},
-		"props": ["canyon", "posts", "banners", "rocks"], "rock": "#8a6a50", "pillar": "#6a4a30",
+		"props": ["canyon", "posts", "banners"], "rock": "#8a6a50", "pillar": "#6a4a30",
 		"motes": "#ffe0b0", "ground": "#6a5038",
+		"hdri": "goegap", "hdri_energy": 0.9, "floor_tex": "dry_ground_rocks", "floor_scale": 0.18, "floor_tint": "#a89a88",
+		"ground_tex": "dry_ground_rocks", "scatter": {"boulder_01": 34, "dead_tree_trunk": 6},
 	},
 }
 
 
 static func col(hex: String) -> Color:
 	return Color.from_string(hex, Color.MAGENTA)
+
+
+const PH := "res://assets/polyhaven/"
+
+
+static func _hdri_path(t: Dictionary) -> String:
+	var name: String = t.get("hdri", "")
+	var path := PH + "hdris/%s/%s_2k.hdr" % [name, name]
+	return path if name != "" and ResourceLoader.exists(path) else ""
+
+
+## Scanned PBR texture set (Poly Haven) or null when it hasn't been fetched.
+static func pbr_set(name: String) -> Dictionary:
+	var dir := PH + "textures/" + name + "/"
+	for res in ["2k", "1k"]:
+		var d := dir + "%s_diff_%s.jpg" % [name, res]
+		if ResourceLoader.exists(d):
+			var out := {"albedo": load(d)}
+			for k in [["normal", "nor_gl"], ["rough", "rough"], ["ao", "ao"]]:
+				var f: String = dir + "%s_%s_%s.jpg" % [name, k[1], res]
+				if ResourceLoader.exists(f):
+					out[k[0]] = load(f)
+			return out
+	return {}
+
+
+static func pbr_material(name: String, fallback: Color, scale: float = 0.35, tint: Color = Color.WHITE) -> StandardMaterial3D:
+	var tex_set := pbr_set(name)
+	if tex_set.is_empty():
+		return _rock_material(fallback)
+	var m := StandardMaterial3D.new()
+	m.albedo_texture = tex_set["albedo"]
+	m.albedo_color = tint
+	if tex_set.has("normal"):
+		m.normal_enabled = true
+		m.normal_texture = tex_set["normal"]
+	if tex_set.has("rough"):
+		m.roughness_texture = tex_set["rough"]
+		m.roughness_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_RED
+	if tex_set.has("ao"):
+		m.ao_enabled = true
+		m.ao_texture = tex_set["ao"]
+	m.uv1_triplanar = true
+	m.uv1_world_triplanar = true
+	m.uv1_scale = Vector3.ONE * scale
+	m.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
+	return m
 
 
 static func build(root: Node3D, theme_id: String, quality: String) -> Dictionary:
@@ -63,8 +118,8 @@ static func build(root: Node3D, theme_id: String, quality: String) -> Dictionary
 	var sun := _sun(t, quality)
 	root.add_child(sun)
 	_floor(root, t)
-	var rock_mat := _rock_material(col(t["rock"]))
-	var pillar_mat := _rock_material(col(t["pillar"]), 0.6)
+	var rock_mat := pbr_material("rock_face", col(t["rock"]), 0.25, col(t["rock"]).lightened(0.35))
+	var pillar_mat := pbr_material("castle_brick_07", col(t["pillar"]), 0.4, col(t["pillar"]).lightened(0.3))
 	var dens := {"low": 0.35, "medium": 0.6, "high": 1.0, "ultra": 1.4}.get(quality, 1.0)
 	for p in t["props"]:
 		match p:
@@ -79,6 +134,7 @@ static func build(root: Node3D, theme_id: String, quality: String) -> Dictionary
 			"canyon": _canyon(root, rng, rock_mat)
 			"posts": _posts(root, rng)
 			"banners": _banners(root, rng)
+	_scatter(root, rng, t.get("scatter", {}), dens)
 	_boundary(root, col(t["motes"]))
 	_motes(root, col(t["motes"]), dens)
 	return {"label": t["label"], "env": env_node.environment, "sun": sun}
@@ -102,6 +158,12 @@ static func _environment(t: Dictionary, quality: String) -> Environment:
 	sky_mat.set_shader_parameter("star_amount", s["stars"])
 	var sky := Sky.new()
 	sky.sky_material = sky_mat
+	var hdri := _hdri_path(t)
+	if hdri != "":
+		var pano := PanoramaSkyMaterial.new()
+		pano.panorama = load(hdri)
+		pano.energy_multiplier = t.get("hdri_energy", 1.0)
+		sky.sky_material = pano
 	sky.radiance_size = Sky.RADIANCE_SIZE_256
 	sky.process_mode = Sky.PROCESS_MODE_QUALITY
 	env.background_mode = Environment.BG_SKY
@@ -110,7 +172,7 @@ static func _environment(t: Dictionary, quality: String) -> Environment:
 	env.ambient_light_energy = t["ambient"]
 	env.reflected_light_source = Environment.REFLECTION_SOURCE_SKY
 	env.tonemap_mode = Environment.TONE_MAPPER_AGX
-	env.tonemap_exposure = 0.95
+	env.tonemap_exposure = 0.85 if hdri != "" else 0.95
 	env.glow_enabled = true
 	env.glow_intensity = 0.55
 	env.glow_strength = 1.1
@@ -214,13 +276,23 @@ static func _mesh(root: Node3D, mesh: Mesh, mat: Material, pos: Vector3, rot_deg
 
 static func _floor(root: Node3D, t: Dictionary) -> void:
 	var f: Dictionary = t["floor"]
+	var tex_set := pbr_set(t.get("floor_tex", ""))
 	var m := ShaderMaterial.new()
-	m.shader = VFX.shader("res://shaders/floor.gdshader")
-	m.set_shader_parameter("stone_a", col(f["a"]))
-	m.set_shader_parameter("stone_b", col(f["b"]))
-	m.set_shader_parameter("grout", col(f["grout"]))
-	m.set_shader_parameter("overgrowth", col(f["moss"]))
-	m.set_shader_parameter("overgrowth_amount", f["moss_amount"])
+	if tex_set.has("normal") and tex_set.has("rough") and tex_set.has("ao"):
+		m.shader = VFX.shader("res://shaders/floor_pbr.gdshader")
+		m.set_shader_parameter("albedo_tex", tex_set["albedo"])
+		m.set_shader_parameter("normal_tex", tex_set["normal"])
+		m.set_shader_parameter("rough_tex", tex_set["rough"])
+		m.set_shader_parameter("ao_tex", tex_set["ao"])
+		m.set_shader_parameter("uv_scale", t.get("floor_scale", 0.2))
+		m.set_shader_parameter("tint", col(t.get("floor_tint", "#ffffff")))
+	else:
+		m.shader = VFX.shader("res://shaders/floor.gdshader")
+		m.set_shader_parameter("stone_a", col(f["a"]))
+		m.set_shader_parameter("stone_b", col(f["b"]))
+		m.set_shader_parameter("grout", col(f["grout"]))
+		m.set_shader_parameter("overgrowth", col(f["moss"]))
+		m.set_shader_parameter("overgrowth_amount", f["moss_amount"])
 	m.set_shader_parameter("emblem_color", col(f["emblem"]))
 	m.set_shader_parameter("emblem_energy", f["emblem_energy"])
 	m.set_shader_parameter("fissure_color", col(f["fissure"]))
@@ -234,8 +306,7 @@ static func _floor(root: Node3D, t: Dictionary) -> void:
 	# Outer ground plane.
 	var g := PlaneMesh.new()
 	g.size = Vector2(600, 600)
-	var gm := _rock_material(col(t["ground"]), 1.0)
-	gm.uv1_scale = Vector3(0.08, 0.08, 0.08)
+	var gm := pbr_material(t.get("ground_tex", ""), col(t["ground"]), 0.08, col(t["ground"]).lightened(0.5))
 	_mesh(root, g, gm, Vector3(0, -0.35, 0))
 	var body := StaticBody3D.new()
 	var shape := CollisionShape3D.new()
@@ -483,6 +554,44 @@ static func _banners(root: Node3D, rng: RandomNumberGenerator) -> void:
 		mark.radius = 0.45
 		mark.height = 0.9
 		_mesh(root, mark, emblem, base + Vector3(0, 7.0, 0) - base.normalized() * 1.15, Vector3(0, -ang * 57.3 + 90, 0), Vector3(1, 1, 0.08))
+
+
+## Places scanned Poly Haven models around the arena rim. Grass uses a MultiMesh.
+static func _scatter(root: Node3D, rng: RandomNumberGenerator, spec: Dictionary, dens: float) -> void:
+	for name in spec:
+		var path := PH + "models/%s/%s_1k.gltf" % [name, name]
+		if not ResourceLoader.exists(path):
+			continue
+		var scene: PackedScene = load(path)
+		var count := int(int(spec[name]) * dens)
+		if str(name).begins_with("grass"):
+			var mi := scene.instantiate().find_children("*", "MeshInstance3D", true, false)
+			if mi.is_empty():
+				continue
+			var mm := MultiMesh.new()
+			mm.transform_format = MultiMesh.TRANSFORM_3D
+			mm.mesh = (mi[0] as MeshInstance3D).mesh
+			mm.instance_count = count
+			for i in count:
+				var ang := rng.randf() * TAU
+				var r := RADIUS + rng.randf_range(-6.0, 40.0)
+				var b := Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * rng.randf_range(0.8, 1.6))
+				mm.set_instance_transform(i, Transform3D(b, Vector3(cos(ang) * r, 0.0 if r < RADIUS + 4.0 else -0.3, sin(ang) * r)))
+			var mmi := MultiMeshInstance3D.new()
+			mmi.multimesh = mm
+			mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			root.add_child(mmi)
+			continue
+		var tree: bool = str(name).contains("tree")
+		for i in count:
+			var n: Node3D = scene.instantiate()
+			var ang := rng.randf() * TAU
+			var r := rng.randf_range(RADIUS + 1.5, RADIUS + (40.0 if tree else 28.0))
+			var s: float = rng.randf_range(2.0, 6.0) * (1.0 + (r - RADIUS) / 25.0) if not tree else rng.randf_range(1.5, 2.6)
+			n.position = Vector3(cos(ang) * r, -0.2, sin(ang) * r)
+			n.rotation = Vector3(0, rng.randf() * TAU, 0) if tree else Vector3(rng.randf_range(-0.3, 0.3), rng.randf() * TAU, rng.randf_range(-0.3, 0.3))
+			n.scale = Vector3.ONE * s
+			root.add_child(n)
 
 
 static func _boundary(root: Node3D, c: Color) -> void:

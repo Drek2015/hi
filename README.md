@@ -30,7 +30,8 @@ volumetric fog, SSAO and full frame rate.*
 | **RPG progression** | XP, levels, and four stats (Vigor, Endurance, Strength, Anti-Magic) in the Grimoire. 3 difficulties. |
 | **4 arenas** | Clover Forest ruins, Spade Citadel rooftops, the Underworld Gate, Black Bull training canyon. |
 | **Front end + back end** | Godot client; Python + SQLite local backend for saves, fight history, leaderboards and stats. Falls back to local saves when the backend is offline. |
-| **Agent team** | 14 Claude Code subagents for assets (art, characters, weapons, animation, VFX, environments, audio) and code (gameplay, bosses, performance, UI, backend, QA). See [`.claude/agents`](.claude/agents). |
+| **AI studio** | 30 Claude Code subagents in 7 teams: Leadership, Research (internet access), Art & Image Design, Animation, VFX & Audio, Engineering, QA. See [`.claude/agents`](.claude/agents) and the mobile **[Studio Hub](https://claude.ai/artifact/DG8n5NbEiTmMVcK5oS4qTd)** ([studio/](studio/)). |
+| **Real assets** | CC0 Poly Haven HDRI skies, scanned PBR floors and scanned props, fetched with `tools/assets/fetch_assets.py`, which also writes [credits](game/assets/CREDITS.md). Researched sources for swords, characters and animation: [docs/research/ASSET_SOURCES.md](docs/research/ASSET_SOURCES.md). |
 
 ## Run it on your PC (Windows)
 

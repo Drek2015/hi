@@ -1,0 +1,34 @@
+{
+  "_doc": "Every third-party asset the game uses. tools/assets/fetch_assets.py downloads them and regenerates assets/CREDITS.md. Only CC0 / CC-BY sources. Fan-made Black Clover models (Sketchfab, CC-BY) are for this personal, non-commercial fan project only. Keep models under ~10 MB each (Poly Haven trees are 60-480 MB scans: excluded).",
+  "polyhaven": {
+    "hdris": {
+      "belfast_sunset_puresky": "2k",
+      "goegap": "2k"
+    },
+    "textures": {
+      "stone_tiles_02": "2k",
+      "castle_wall_slates": "2k",
+      "burned_ground_01": "2k",
+      "dry_ground_rocks": "2k",
+      "rock_face": "1k",
+      "castle_brick_07": "1k",
+      "forest_ground_04": "1k"
+    },
+    "models": {
+      "boulder_01": "1k",
+      "moon_rock_03": "1k",
+      "dead_tree_trunk": "1k",
+      "grass_medium_01": "1k"
+    }
+  },
+  "sketchfab": {
+    "asta_demon_slayer": "dd428a167e11417482ec00fac9bb4b6f",
+    "asta_swords_set": "67255daf660d4c669857986b5db37c30",
+    "demon_dweller": "b7ed730bac5d4237b08203282065e160",
+    "demon_destroyer": "c1b534c8af42459d936805d43d6865fa",
+    "black_divider": "c48274c0419e46cbbe766a73c0937544",
+    "asta_grimoire": "0ffb07be77c04bca9441885fde56fd49",
+    "yuno_spirit_of_zephyr": "3086ee0b2d4643dc84669cf93f883744",
+    "gimodelo": "e0fb3421344b4872a094b5551c024400"
+  }
+}

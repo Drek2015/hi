@@ -1,0 +1,603 @@
+{
+  "studio": "Anti-Magic Studio",
+  "repo": "drek2015/hi",
+  "branch": "ccr-5da6ffc4-3hh6xm",
+  "teams": [
+    {
+      "id": "leadership",
+      "name": "Studio Leadership",
+      "lead": "studio-director",
+      "mission": "Sets goals, staffs teams, signs off releases.",
+      "color": "#c9a24a",
+      "order": 0,
+      "members": [
+        "studio-director",
+        "producer",
+        "game-director"
+      ]
+    },
+    {
+      "id": "research",
+      "name": "Research",
+      "lead": "research-lead",
+      "mission": "Finds assets, AI models and code on the internet and clears their licences.",
+      "color": "#3f8f86",
+      "order": 1,
+      "members": [
+        "research-lead",
+        "asset-scout",
+        "tech-scout",
+        "license-auditor"
+      ]
+    },
+    {
+      "id": "art",
+      "name": "Art & Image Design",
+      "lead": "art-director",
+      "mission": "Concepts, characters, weapons, environments, textures and 3D generation.",
+      "color": "#b0413e",
+      "order": 2,
+      "members": [
+        "art-director",
+        "concept-artist",
+        "character-artist",
+        "weapon-artist",
+        "environment-artist",
+        "texture-artist",
+        "technical-artist",
+        "generative-3d-specialist"
+      ]
+    },
+    {
+      "id": "animation",
+      "name": "Animation",
+      "lead": "animation-director",
+      "mission": "Move lists, retargeting, generated motion and attack timing.",
+      "color": "#7a5cc2",
+      "order": 3,
+      "members": [
+        "animation-director",
+        "animator",
+        "rigger-retargeter",
+        "motion-generation-specialist"
+      ]
+    },
+    {
+      "id": "vfx-audio",
+      "name": "VFX & Audio",
+      "lead": "vfx-artist",
+      "mission": "Spell effects, impacts, telegraphs and sound.",
+      "color": "#d0702c",
+      "order": 4,
+      "members": [
+        "vfx-artist",
+        "audio-designer"
+      ]
+    },
+    {
+      "id": "engineering",
+      "name": "Engineering",
+      "lead": "lead-engineer",
+      "mission": "Gameplay, boss AI, performance, UI, backend and tools.",
+      "color": "#3d6fb0",
+      "order": 5,
+      "members": [
+        "lead-engineer",
+        "gameplay-engineer",
+        "boss-designer",
+        "performance-engineer",
+        "ui-engineer",
+        "backend-engineer",
+        "tools-engineer"
+      ]
+    },
+    {
+      "id": "qa",
+      "name": "QA",
+      "lead": "qa-tester",
+      "mission": "Automated tests, bot playtests, screenshots and balance data.",
+      "color": "#4f8a3a",
+      "order": 6,
+      "members": [
+        "qa-tester",
+        "playtest-analyst"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "id": "studio-director",
+      "team": "leadership",
+      "lead": true,
+      "description": "Head of the AI game studio. Use for any large or multi-team goal (\"make the bosses look 2026-AAA\", \"ship the Spade arc update\"). Sets objectives, assigns them to team leads (research-lead, art-director, animation-director, lead-engineer, qa-tester, producer), and accepts or rejects the results.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Agent",
+        "TaskCreate",
+        "TaskUpdate",
+        "TaskList",
+        "WebSearch",
+        "WebFetch"
+      ],
+      "web": true,
+      "file": ".claude/agents/studio-director.md"
+    },
+    {
+      "id": "producer",
+      "team": "leadership",
+      "lead": false,
+      "description": "Studio producer. Tracks every project, task, owner and status; keeps the Studio Hub (studio/projects.json and the published hub page) up to date; writes status reports. Use whenever work starts, changes status, or the human asks \"what is the team working on?\".",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Edit",
+        "Write",
+        "TaskCreate",
+        "TaskUpdate",
+        "TaskList"
+      ],
+      "web": false,
+      "file": ".claude/agents/producer.md"
+    },
+    {
+      "id": "game-director",
+      "team": "leadership",
+      "lead": false,
+      "description": "Creative + technical lead for Anti-Magic: Limit Breaker. Use first for any new feature, boss, or quality push \u2014 it breaks the work down and delegates to the asset and code agents, then reviews results against the quality bar.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Agent",
+        "TaskCreate",
+        "TaskUpdate",
+        "TaskList"
+      ],
+      "web": false,
+      "file": ".claude/agents/game-director.md"
+    },
+    {
+      "id": "research-lead",
+      "team": "research",
+      "lead": true,
+      "description": "Leads the research team. Use when the studio needs to find assets, tools, AI models, code or references on the internet. Splits research across asset-scout, tech-scout and license-auditor and returns a ranked, licence-checked shortlist with download instructions.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Agent",
+        "WebSearch",
+        "WebFetch",
+        "Write"
+      ],
+      "web": true,
+      "file": ".claude/agents/research-lead.md"
+    },
+    {
+      "id": "asset-scout",
+      "team": "research",
+      "lead": false,
+      "description": "Searches the internet for free or cheap game assets \u2014 characters, weapons, environments, textures, HDRIs, animations, sounds \u2014 matching a brief (e.g. \"Asta's Demon-Dweller sword\", \"dark gothic castle kit\"). Returns shortlisted candidates with licence, size and fetch method.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "WebSearch",
+        "WebFetch",
+        "Write"
+      ],
+      "web": true,
+      "file": ".claude/agents/asset-scout.md"
+    },
+    {
+      "id": "tech-scout",
+      "team": "research",
+      "lead": false,
+      "description": "Researches free/open-source code and AI models the studio can use \u2014 image-to-3D (TRELLIS, Hunyuan3D, TripoSR), text-to-motion (HY-Motion, MDM), texture/concept generators, Godot addons (VRM importer, retargeting, IK), shaders. Verifies they run in our setup and documents how.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "WebSearch",
+        "WebFetch",
+        "Write"
+      ],
+      "web": true,
+      "file": ".claude/agents/tech-scout.md"
+    },
+    {
+      "id": "license-auditor",
+      "team": "research",
+      "lead": false,
+      "description": "Verifies the licence and provenance of every third-party asset or code before it enters the game, and maintains game/assets/manifest.json + CREDITS.md. Use before adding any download.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "WebFetch",
+        "Edit",
+        "Write"
+      ],
+      "web": true,
+      "file": ".claude/agents/license-auditor.md"
+    },
+    {
+      "id": "art-director",
+      "team": "art",
+      "lead": true,
+      "description": "Owns the visual style guide and reviews all art output (characters, weapons, VFX, arenas) from rendered screenshots. Use after any visual change, or to define the look of a new boss/arena before artists start.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Edit",
+        "Write"
+      ],
+      "web": false,
+      "file": ".claude/agents/art-director.md"
+    },
+    {
+      "id": "concept-artist",
+      "team": "art",
+      "lead": false,
+      "description": "Creates concept art, character turnaround sheets, colour keys and moodboards using free AI image generation, as references for 3D artists and as inputs to image-to-3D. Use at the start of any new character, weapon or environment.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Write",
+        "WebFetch"
+      ],
+      "web": true,
+      "file": ".claude/agents/concept-artist.md"
+    },
+    {
+      "id": "character-artist",
+      "team": "art",
+      "lead": false,
+      "description": "Builds and refines character models \u2014 the procedural cel-shaded boss rigs (CharacterRig) and roster appearance specs \u2014 and handles importing hand-made .glb characters. Use when adding a boss, changing a look, or upgrading a character to a real mesh.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Edit",
+        "Write"
+      ],
+      "web": false,
+      "file": ".claude/agents/character-artist.md"
+    },
+    {
+      "id": "weapon-artist",
+      "team": "art",
+      "lead": false,
+      "description": "Designs and builds weapons and held props \u2014 Asta's anti-magic swords (Demon-Slayer, Demon-Dweller, Demon-Destroyer, Demon-Slasher), boss weapons and floating grimoires. Use for any weapon look, material or new weapon.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Edit",
+        "Write"
+      ],
+      "web": false,
+      "file": ".claude/agents/weapon-artist.md"
+    },
+    {
+      "id": "environment-artist",
+      "team": "art",
+      "lead": false,
+      "description": "Builds boss arenas \u2014 sky, lighting, fog, floor, set dressing \u2014 and the graphics quality presets. Use for new arenas, mood changes, or when a scene looks washed-out, too dark or too busy.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Edit",
+        "Write"
+      ],
+      "web": false,
+      "file": ".claude/agents/environment-artist.md"
+    },
+    {
+      "id": "texture-artist",
+      "team": "art",
+      "lead": false,
+      "description": "Sources and authors PBR materials \u2014 scanned sets from Poly Haven/ambientCG, tileable stylised textures, trims and decals \u2014 and tunes them in Godot (tint, scale, anti-tiling). Use when surfaces look flat, plastic or repetitive.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Edit",
+        "Write",
+        "WebFetch"
+      ],
+      "web": true,
+      "file": ".claude/agents/texture-artist.md"
+    },
+    {
+      "id": "technical-artist",
+      "team": "art",
+      "lead": false,
+      "description": "Bridges art and engine \u2014 imports downloaded/generated models into Godot (scale, orientation, materials, LODs, collisions), converts materials to the cel/PBR look, sets up import presets, and keeps assets within the 240 FPS budget.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Edit",
+        "Write"
+      ],
+      "web": false,
+      "file": ".claude/agents/technical-artist.md"
+    },
+    {
+      "id": "generative-3d-specialist",
+      "team": "art",
+      "lead": false,
+      "description": "Turns concept images into 3D models with free/open AI (TRELLIS, Hunyuan3D, TripoSR via Hugging Face Spaces or a local GPU), then cleans them (decimate, retopo-lite, UV/texture bake) for the game. Use when no suitable free asset exists.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Write",
+        "WebFetch"
+      ],
+      "web": true,
+      "file": ".claude/agents/generative-3d-specialist.md"
+    },
+    {
+      "id": "animation-director",
+      "team": "animation",
+      "lead": true,
+      "description": "Leads the animation team. Owns the animation style (weighty anime action), the move list per character, timing standards (anticipation/strike/recovery), and assigns work to animator, rigger-retargeter and motion-generation-specialist.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Agent",
+        "Write"
+      ],
+      "web": false,
+      "file": ".claude/agents/animation-director.md"
+    },
+    {
+      "id": "animator",
+      "team": "animation",
+      "lead": false,
+      "description": "Authors all animation \u2014 Asta's first-person attack clips (viewmodel_anims.json) and the boss pose library (rig_poses.json) \u2014 and tunes attack timing, anticipation and hit frames. Use for new moves, combo feel, or any \"it looks stiff/floaty\" feedback.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Edit",
+        "Write"
+      ],
+      "web": false,
+      "file": ".claude/agents/animator.md"
+    },
+    {
+      "id": "rigger-retargeter",
+      "team": "animation",
+      "lead": false,
+      "description": "Rigs and skins characters and retargets animation libraries (Quaternius UAL, Mixamo, VRoid/VRM, generated motion) onto them in Godot using SkeletonProfileHumanoid bone maps. Use when a new character mesh or animation pack arrives.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Edit",
+        "Write"
+      ],
+      "web": false,
+      "file": ".claude/agents/rigger-retargeter.md"
+    },
+    {
+      "id": "motion-generation-specialist",
+      "team": "animation",
+      "lead": false,
+      "description": "Generates new animations from text or video with open-source AI (HY-Motion 1.0, MDM, video-to-motion) when no library clip fits \u2014 e.g. \"Yuno's Spirit Dive\", \"Asta's Black Meteorite dash\" \u2014 and converts them to glTF/FBX for retargeting.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Write",
+        "WebFetch",
+        "WebSearch"
+      ],
+      "web": true,
+      "file": ".claude/agents/motion-generation-specialist.md"
+    },
+    {
+      "id": "vfx-artist",
+      "team": "vfx-audio",
+      "lead": true,
+      "description": "Creates spell and impact effects \u2014 shaders, particles, slashes, beams, telegraphs, auras \u2014 for every magic element. Use when an attack lacks impact, an element needs a new look, or telegraphs are hard to read.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Edit",
+        "Write"
+      ],
+      "web": false,
+      "file": ".claude/agents/vfx-artist.md"
+    },
+    {
+      "id": "audio-designer",
+      "team": "vfx-audio",
+      "lead": false,
+      "description": "Owns sound \u2014 the procedural SFX synthesiser and any recorded/licensed replacements. Use when hits feel weak, a new attack needs a sound, or to swap synth sounds for real audio.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Edit",
+        "Write"
+      ],
+      "web": false,
+      "file": ".claude/agents/audio-designer.md"
+    },
+    {
+      "id": "lead-engineer",
+      "team": "engineering",
+      "lead": true,
+      "description": "Engineering lead. Owns architecture, code review and technical decisions; splits engineering work across gameplay-engineer, boss-designer, performance-engineer, ui-engineer, backend-engineer and tools-engineer; merges only green builds.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Edit",
+        "Write",
+        "Agent"
+      ],
+      "web": false,
+      "file": ".claude/agents/lead-engineer.md"
+    },
+    {
+      "id": "gameplay-engineer",
+      "team": "engineering",
+      "lead": false,
+      "description": "Implements and tunes Asta's first-person controller and combat \u2014 movement, dodge, block/parry, combos, input buffering, the three forms (Base / Black Form / Devil Union) and their abilities. Use for any player-side mechanic or \"combat feel\" change.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Edit",
+        "Write"
+      ],
+      "web": false,
+      "file": ".claude/agents/gameplay-engineer.md"
+    },
+    {
+      "id": "boss-designer",
+      "team": "engineering",
+      "lead": false,
+      "description": "Designs boss fights as data \u2014 movesets, phases, attack parameters, difficulty and balance \u2014 in roster.json. Use to add a new Black Clover character, rework a fight, or rebalance damage/timing.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Edit",
+        "Write"
+      ],
+      "web": false,
+      "file": ".claude/agents/boss-designer.md"
+    },
+    {
+      "id": "performance-engineer",
+      "team": "engineering",
+      "lead": false,
+      "description": "Keeps the game at 240 FPS \u2014 frame budgets, physics tick, rendering presets, allocations, particle/light counts \u2014 and owns project/render settings. Use when FPS drops, before adding heavy effects, or to tune quality presets.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Edit",
+        "Write"
+      ],
+      "web": false,
+      "file": ".claude/agents/performance-engineer.md"
+    },
+    {
+      "id": "ui-engineer",
+      "team": "engineering",
+      "lead": false,
+      "description": "Builds HUD and menus \u2014 vitals, gauge, boss bar, lock-on, callouts, title, opponent select, settings, grimoire (level-up), pause and results. Use for any on-screen UI or controller/keyboard navigation work.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Edit",
+        "Write"
+      ],
+      "web": false,
+      "file": ".claude/agents/ui-engineer.md"
+    },
+    {
+      "id": "backend-engineer",
+      "team": "engineering",
+      "lead": false,
+      "description": "Owns the local backend service (Python stdlib + SQLite) and the game's Backend client \u2014 profiles/saves, fight history, leaderboards, stats. Use for API changes, persistence, or save-data issues.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Edit",
+        "Write"
+      ],
+      "web": false,
+      "file": ".claude/agents/backend-engineer.md"
+    },
+    {
+      "id": "tools-engineer",
+      "team": "engineering",
+      "lead": false,
+      "description": "Builds studio tooling \u2014 asset fetch/import pipelines (tools/assets), capture and test scripts, Blender headless scripts, CI, and the Studio Hub web page (studio/). Use when a workflow is manual, slow or error-prone.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Edit",
+        "Write"
+      ],
+      "web": false,
+      "file": ".claude/agents/tools-engineer.md"
+    },
+    {
+      "id": "qa-tester",
+      "team": "qa",
+      "lead": true,
+      "description": "Verifies builds \u2014 runs the headless test suite and bot fights, renders screenshots, and files precise bug reports. Use after any change and before every commit.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash"
+      ],
+      "web": false,
+      "file": ".claude/agents/qa-tester.md"
+    },
+    {
+      "id": "playtest-analyst",
+      "team": "qa",
+      "lead": false,
+      "description": "Runs automated bot playtests at scale and turns them into balance data \u2014 win rates, time-to-kill, damage taken per attack, parry rates \u2014 per boss and difficulty. Use after combat or roster changes.",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Write"
+      ],
+      "web": false,
+      "file": ".claude/agents/playtest-analyst.md"
+    }
+  ]
+}

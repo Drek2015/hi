@@ -1,0 +1,334 @@
+<title>Anti-Magic Studio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus+SC&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: mobile-first single column with a thumb-reach bottom tab bar; on wide screens the tabs move to the header and lists become a 2–3 column grid. */
+:root {
+  --bg: #eef1ec; --surface: #ffffff; --raised: #f7f9f6; --ink: #17201b; --muted: #5b6860; --line: #d4dcd5;
+  --accent: #1f6f4f; --accent-ink: #ffffff; --gold: #9a7216;
+  --s-progress: #2f6db5; --s-review: #6b4fb3; --s-blocked: #b3362f; --s-done: #2f7d3a; --s-backlog: #737d77;
+  --display: "Marcellus SC", "Palatino Linotype", Palatino, Georgia, serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0d1310; --surface: #151d19; --raised: #1b2520; --ink: #e5ece7; --muted: #9aa89f; --line: #27332c;
+  --accent: #3fb27f; --accent-ink: #06130c; --gold: #d8ae4b;
+  --s-progress: #6aa3ea; --s-review: #a68cf0; --s-blocked: #f07a6f; --s-done: #6fc77b; --s-backlog: #9aa39e; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0d1310; --surface: #151d19; --raised: #1b2520; --ink: #e5ece7; --muted: #9aa89f; --line: #27332c;
+  --accent: #3fb27f; --accent-ink: #06130c; --gold: #d8ae4b;
+  --s-progress: #6aa3ea; --s-review: #a68cf0; --s-blocked: #f07a6f; --s-done: #6fc77b; --s-backlog: #9aa39e; color-scheme: dark }
+
+* { box-sizing: border-box }
+html, body { min-height: 100% }
+body { background: var(--bg); color: var(--ink); font: 16px/1.5 var(--body); -webkit-text-size-adjust: 100% }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg) }
+a { color: var(--accent) }
+button, select, textarea, input { font: inherit; color: inherit }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+.wrap { max-width: 1120px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
+
+header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line) }
+header.top .wrap { display: flex; align-items: center; gap: 12px; padding-block: 12px }
+.brand { display: flex; flex-direction: column; min-width: 0; flex: 1 }
+.brand h1 { margin: 0; font: 400 1.35rem/1.1 var(--display); letter-spacing: .02em; text-wrap: balance }
+.brand span { color: var(--muted); font-size: .8rem; letter-spacing: .04em }
+.live { display: inline-flex; align-items: center; gap: 6px; font-size: .75rem; color: var(--muted); white-space: nowrap }
+.live i { width: 8px; height: 8px; border-radius: 50%; background: var(--s-backlog) }
+.live.on i { background: var(--s-done) }
+nav.tabs { display: flex; gap: 4px }
+nav.tabs a { text-decoration: none; color: var(--muted); padding: 8px 12px; border-radius: 999px; font-weight: 700; font-size: .9rem }
+nav.tabs a[aria-current="page"] { background: var(--ink); color: var(--bg) }
+header nav.tabs { display: none }
+nav.bottom { position: fixed; inset: auto 0 0; z-index: 6; background: var(--surface); border-top: 1px solid var(--line);
+  padding: 6px max(16px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); justify-content: space-around }
+nav.bottom a { flex: 1; text-align: center; padding: 10px 6px; min-height: 48px }
+main { padding-block: 16px calc(96px + env(safe-area-inset-bottom, 0px)) }
+@media (min-width: 760px) {
+  header nav.tabs { display: flex }
+  nav.bottom { display: none }
+  main { padding-bottom: 40px }
+}
+
+.stats { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 16px; scrollbar-width: none }
+.stat { flex: 0 0 auto; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 8px 12px; min-width: 92px }
+.stat b { display: block; font: 700 1.3rem/1.1 var(--body); font-variant-numeric: tabular-nums }
+.stat small { color: var(--muted); font-size: .72rem; letter-spacing: .06em; text-transform: uppercase }
+
+.chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 12px; scrollbar-width: none }
+.chip { flex: 0 0 auto; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 7px 12px; font-size: .85rem; cursor: pointer; min-height: 36px }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink) }
+h2.sec { font: 400 1.15rem/1.2 var(--display); letter-spacing: .03em; margin: 22px 0 10px }
+
+.grid { display: grid; gap: 10px }
+@media (min-width: 760px) { .grid.cols { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
+@media (min-width: 1040px) { .grid.cols { grid-template-columns: repeat(3, minmax(0, 1fr)) } }
+.card { display: block; text-decoration: none; color: inherit; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; min-width: 0 }
+a.card:hover { border-color: var(--muted) }
+.card h3 { margin: 6px 0 4px; font-size: 1.02rem; line-height: 1.3; text-wrap: balance }
+.card p { margin: 0; color: var(--muted); font-size: .9rem }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: .8rem; color: var(--muted) }
+.code { font: 600 .72rem/1 var(--mono); color: var(--muted); letter-spacing: .02em }
+.pill { display: inline-flex; align-items: center; gap: 5px; font-size: .74rem; font-weight: 700; padding: 3px 8px; border-radius: 999px; border: 1px solid currentColor; text-transform: uppercase; letter-spacing: .05em }
+.pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor }
+.st-in_progress { color: var(--s-progress) } .st-review { color: var(--s-review) } .st-blocked { color: var(--s-blocked) }
+.st-done { color: var(--s-done) } .st-backlog { color: var(--s-backlog) }
+.team-dot { width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex: 0 0 auto }
+.bar { height: 6px; border-radius: 3px; background: var(--raised); border: 1px solid var(--line); overflow: hidden; margin-top: 10px }
+.bar i { display: block; height: 100% ; background: var(--accent) }
+.blocker { margin-top: 10px; font-size: .85rem; color: var(--s-blocked); border-top: 1px dashed var(--line); padding-top: 8px }
+
+.back { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; font-weight: 700; min-height: 44px }
+.detail h2 { font: 400 1.5rem/1.2 var(--display); margin: 4px 0 8px; text-wrap: balance }
+.detail .lede { color: var(--muted); max-width: 65ch }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; margin-top: 14px; min-width: 0 }
+.panel > h3 { margin: 0 0 10px; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted) }
+.task { display: flex; gap: 12px; align-items: flex-start; padding: 8px 0; border-top: 1px solid var(--line) }
+.task:first-of-type { border-top: 0 }
+.task input { width: 22px; height: 22px; margin-top: 2px; accent-color: var(--accent); flex: 0 0 auto }
+.task label { flex: 1; min-width: 0 }
+.task.done label > span { color: var(--muted); text-decoration: line-through }
+.task small { display: block; color: var(--muted); font-size: .78rem }
+.files { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px }
+.files a { font: .82rem/1.4 var(--mono); word-break: break-all }
+.shots { display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) }
+.shots img { width: 100%; border-radius: 8px; border: 1px solid var(--line); display: block }
+.timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px }
+.timeline li { border-left: 2px solid var(--line); padding-left: 12px }
+.timeline .who { font-weight: 700; font-size: .85rem }
+.timeline .when { color: var(--muted); font: .75rem var(--mono); margin-left: 6px }
+.timeline p { margin: 2px 0 0; max-width: 65ch }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center }
+select, textarea { background: var(--raised); border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; min-height: 44px; max-width: 100% }
+textarea { width: 100%; min-height: 84px; resize: vertical }
+.btn { background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 8px; padding: 10px 16px; font-weight: 700; cursor: pointer; min-height: 44px }
+.btn[disabled] { opacity: .5; cursor: default }
+.note { color: var(--muted); font-size: .85rem }
+.badge { font-size: .7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 2px 7px; border-radius: 4px; background: var(--raised); border: 1px solid var(--line); color: var(--muted) }
+.badge.lead { color: var(--gold); border-color: var(--gold) }
+.member { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); text-decoration: none; color: inherit; min-height: 48px }
+.member:first-child { border-top: 0 }
+.member b { font-family: var(--mono); font-size: .86rem; font-weight: 600 }
+.member p { margin: 0; color: var(--muted); font-size: .82rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden }
+.member div { min-width: 0; flex: 1 }
+.empty { text-align: center; color: var(--muted); padding: 40px 16px; border: 1px dashed var(--line); border-radius: var(--r) }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(84px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 999px; font-size: .9rem; z-index: 9 }
+@media (prefers-reduced-motion: no-preference) { .card, .chip { transition: border-color .15s, background .15s } }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><h1>Anti-Magic Studio</h1><span>AI game studio · first-person Black Clover RPG</span></div>
+    <nav class="tabs" aria-label="Sections"></nav>
+    <span class="live" id="live"><i></i><span>Connecting</span></span>
+  </div>
+</header>
+<main class="wrap" id="app"><div class="empty">Loading the studio board…</div></main>
+<nav class="tabs bottom" aria-label="Sections"></nav>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const REPO = "https://github.com/drek2015/hi/blob/ccr-5da6ffc4-3hh6xm/";
+const STATUSES = [["in_progress","In progress"],["review","Review"],["blocked","Blocked"],["backlog","Backlog"],["done","Done"]];
+const S = Object.fromEntries(STATUSES);
+const TABS = [["projects","Projects"],["teams","Teams"],["activity","Activity"]];
+const state = { teams: [], agents: [], projects: [], loaded: { teams: false, agents: false, projects: false },
+  canWrite: null, db: null, filter: "all", teamFilter: "all", error: "" };
+try { state.filter = localStorage.getItem("hub.filter") || "all"; } catch (e) {}
+
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const team = id => state.teams.find(t => t.id === id) || { name: id, color: "var(--muted)" };
+const pct = p => { const t = p.tasks || []; return t.length ? Math.round(100 * t.filter(x => x.done).length / t.length) : (p.status === "done" ? 100 : 0); };
+const toast = msg => { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => t.hidden = true, 2200); };
+const today = () => new Date().toISOString().slice(0, 10);
+
+function renderTabs(route) {
+  const base = route.startsWith("p-") || route === "projects" ? "projects" : route.startsWith("a-") || route.startsWith("t-") || route === "teams" ? "teams" : route;
+  const html = TABS.map(([id, label]) => `<a href="#${id}" ${base === id ? 'aria-current="page"' : ""}>${label}</a>`).join("");
+  document.querySelectorAll("nav.tabs").forEach(n => n.innerHTML = html);
+}
+
+function statusPill(s) { return `<span class="pill st-${esc(s)}">${esc(S[s] || s)}</span>`; }
+
+function projectCard(p) {
+  const t = team(p.team);
+  const blocker = p.status === "blocked" && (p.updates || []).length ? (p.updates[p.updates.length - 1].text || "") : "";
+  return `<a class="card" href="#p-${esc(p.id)}">
+    <div class="meta">${statusPill(p.status)}<span class="code">${esc(p.id)}</span>${p.priority === "high" ? '<span class="badge lead">High</span>' : ""}</div>
+    <h3>${esc(p.title)}</h3>
+    <p>${esc(p.summary)}</p>
+    <div class="meta" style="margin-top:10px"><span class="team-dot" style="background:${esc(t.color)}"></span>${esc(t.name)} · ${esc(p.owner)}<span style="margin-left:auto;font-variant-numeric:tabular-nums">${pct(p)}%</span></div>
+    <div class="bar" aria-hidden="true"><i style="width:${pct(p)}%"></i></div>
+    ${blocker ? `<div class="blocker">${esc(blocker)}</div>` : ""}
+  </a>`;
+}
+
+function viewProjects() {
+  const ps = state.projects;
+  const count = s => ps.filter(p => p.status === s).length;
+  const stats = [["Agents", state.agents.length], ["Teams", state.teams.length], ["In progress", count("in_progress")], ["Blocked", count("blocked")], ["Done", count("done")]];
+  const chips = [["all", "All"], ...STATUSES].map(([id, l]) => `<button class="chip" data-f="${id}" aria-pressed="${state.filter === id}">${l}${id === "all" ? "" : " · " + count(id)}</button>`).join("");
+  const teamOpts = [`<option value="all">All teams</option>`, ...state.teams.map(t => `<option value="${esc(t.id)}" ${state.teamFilter === t.id ? "selected" : ""}>${esc(t.name)}</option>`)].join("");
+  const order = { blocked: 0, in_progress: 1, review: 2, backlog: 3, done: 4 };
+  const list = ps.filter(p => (state.filter === "all" || p.status === state.filter) && (state.teamFilter === "all" || p.team === state.teamFilter))
+    .sort((a, b) => (order[a.status] ?? 9) - (order[b.status] ?? 9) || (a.priority === "high" ? -1 : 1));
+  return `<div class="stats">${stats.map(([l, v]) => `<div class="stat"><b>${v}</b><small>${l}</small></div>`).join("")}</div>
+    <div class="chips" role="group" aria-label="Filter by status">${chips}</div>
+    <div class="row" style="margin-bottom:12px"><label class="note" for="teamFilter">Team</label><select id="teamFilter">${teamOpts}</select></div>
+    ${!state.loaded.projects ? `<div class="empty">Loading projects…</div>` : list.length ? `<div class="grid cols">${list.map(projectCard).join("")}</div>`
+      : `<div class="empty">${ps.length ? "No projects match this filter." : "No projects yet. Agents add them through the producer agent."}</div>`}`;
+}
+
+function viewProject(id) {
+  const p = state.projects.find(x => x.id === id);
+  if (!p) return `<a class="back" href="#projects">← Projects</a><div class="empty">${state.loaded.projects ? "This project no longer exists." : "Loading…"}</div>`;
+  const t = team(p.team);
+  const w = state.canWrite !== false;
+  const tasks = (p.tasks || []).map((k, i) => `<div class="task ${k.done ? "done" : ""}"><input type="checkbox" id="task-${i}" data-task="${i}" ${k.done ? "checked" : ""} ${w ? "" : "disabled"}><label for="task-${i}"><span>${esc(k.title)}</span><small>${esc(k.agent || "")}</small></label></div>`).join("");
+  const files = (p.files || []).map(f => `<li><a href="${REPO}${esc(f)}" target="_blank" rel="noopener">${esc(f)}</a></li>`).join("");
+  const shots = (p.shots || []).map(s => `<img src="/_blob/${esc(s.id)}" alt="${esc(s.alt || p.title)}" loading="lazy">`).join("");
+  const ups = [...(p.updates || [])].reverse().map(u => `<li><span class="who">${esc(u.agent)}</span><span class="when">${esc(u.date)}</span><p>${esc(u.text)}</p></li>`).join("");
+  const agentOpts = state.agents.map(a => `<option value="${esc(a.id)}" ${a.id === p.owner ? "selected" : ""}>${esc(a.id)}</option>`).join("");
+  return `<a class="back" href="#projects">← Projects</a>
+  <article class="detail">
+    <div class="meta">${statusPill(p.status)}<span class="code">${esc(p.id)}</span></div>
+    <h2>${esc(p.title)}</h2>
+    <div class="meta" style="margin-bottom:8px"><span class="team-dot" style="background:${esc(t.color)}"></span><a href="#t-${esc(p.team)}">${esc(t.name)}</a> · owner <a href="#a-${esc(p.owner)}">${esc(p.owner)}</a> · ${pct(p)}% done</div>
+    <p class="lede">${esc(p.summary)}</p>
+    ${w ? `<div class="row"><label class="note" for="status">Status</label><select id="status">${STATUSES.map(([s, l]) => `<option value="${s}" ${s === p.status ? "selected" : ""}>${l}</option>`).join("")}</select></div>` : ""}
+    <section class="panel"><h3>Tasks</h3>${tasks || '<p class="note">No tasks yet.</p>'}</section>
+    ${shots ? `<section class="panel"><h3>Screenshots</h3><div class="shots">${shots}</div></section>` : ""}
+    <section class="panel"><h3>Updates</h3>
+      ${w ? `<form id="upd" class="grid" style="margin-bottom:14px"><label class="note" for="updAgent">Posted as</label><select id="updAgent">${agentOpts}<option value="you">you (human)</option></select>
+        <label class="note" for="updText">Update</label><textarea id="updText" placeholder="What changed, or what is blocking this?" maxlength="1200"></textarea>
+        <div><button class="btn" type="submit">Post update</button></div></form>` : ""}
+      ${ups ? `<ul class="timeline">${ups}</ul>` : '<p class="note">No updates yet.</p>'}</section>
+    ${files ? `<section class="panel"><h3>Files</h3><ul class="files">${files}</ul></section>` : ""}
+  </article>`;
+}
+
+function viewTeams() {
+  if (!state.loaded.teams) return `<div class="empty">Loading teams…</div>`;
+  if (!state.teams.length) return `<div class="empty">No teams yet.</div>`;
+  return `<p class="note" style="max-width:65ch">${state.agents.length} agents in ${state.teams.length} teams. Each agent is a Claude Code subagent defined in <span class="code">.claude/agents/</span>; ask for one by name in a Claude Code session.</p>
+  <div class="grid cols">${[...state.teams].sort((a, b) => a.order - b.order).map(t => {
+    const members = state.agents.filter(a => a.team === t.id);
+    const active = state.projects.filter(p => p.team === t.id && p.status !== "done").length;
+    return `<a class="card" href="#t-${esc(t.id)}"><div class="meta"><span class="team-dot" style="background:${esc(t.color)}"></span>${members.length} agents · ${active} open projects</div>
+      <h3>${esc(t.name)}</h3><p>${esc(t.mission)}</p><div class="meta" style="margin-top:10px">Lead <span class="code">${esc(t.lead)}</span></div></a>`;
+  }).join("")}</div>`;
+}
+
+function memberRow(a) {
+  return `<a class="member" href="#a-${esc(a.id)}"><div><b>${esc(a.id)}</b> ${a.lead ? '<span class="badge lead">Lead</span>' : ""} ${a.web ? '<span class="badge">Web</span>' : ""}<p>${esc(a.description)}</p></div><span aria-hidden="true">›</span></a>`;
+}
+
+function viewTeam(id) {
+  const t = state.teams.find(x => x.id === id);
+  if (!t) return `<a class="back" href="#teams">← Teams</a><div class="empty">Loading…</div>`;
+  const members = state.agents.filter(a => a.team === id).sort((a, b) => (b.lead - a.lead) || a.id.localeCompare(b.id));
+  const ps = state.projects.filter(p => p.team === id);
+  return `<a class="back" href="#teams">← Teams</a><article class="detail">
+    <div class="meta"><span class="team-dot" style="background:${esc(t.color)}"></span>Team</div><h2>${esc(t.name)}</h2><p class="lede">${esc(t.mission)}</p>
+    <section class="panel"><h3>Agents</h3>${members.map(memberRow).join("")}</section>
+    ${ps.length ? `<h2 class="sec">Projects</h2><div class="grid cols">${ps.map(projectCard).join("")}</div>` : ""}</article>`;
+}
+
+function viewAgent(id) {
+  const a = state.agents.find(x => x.id === id);
+  if (!a) return `<a class="back" href="#teams">← Teams</a><div class="empty">Loading…</div>`;
+  const t = team(a.team);
+  const ps = state.projects.filter(p => p.owner === id || (p.tasks || []).some(k => k.agent === id));
+  return `<a class="back" href="#t-${esc(a.team)}">← ${esc(t.name)}</a><article class="detail">
+    <div class="meta"><span class="team-dot" style="background:${esc(t.color)}"></span>${esc(t.name)} ${a.lead ? '<span class="badge lead">Team lead</span>' : ""} ${a.web ? '<span class="badge">Internet access</span>' : ""}</div>
+    <h2 style="font-family:var(--mono);font-size:1.2rem">${esc(a.id)}</h2><p class="lede">${esc(a.description)}</p>
+    <section class="panel"><h3>Tools</h3><div class="row">${(a.tools || []).map(x => `<span class="badge">${esc(x)}</span>`).join("")}</div></section>
+    <section class="panel"><h3>Definition</h3><ul class="files"><li><a href="${REPO}${esc(a.file)}" target="_blank" rel="noopener">${esc(a.file)}</a></li></ul>
+      <p class="note">Use it in Claude Code: “use the ${esc(a.id)} agent to …”</p></section>
+    ${ps.length ? `<h2 class="sec">Working on</h2><div class="grid cols">${ps.map(projectCard).join("")}</div>` : ""}</article>`;
+}
+
+function viewActivity() {
+  const items = [];
+  state.projects.forEach(p => (p.updates || []).forEach((u, i) => items.push({ ...u, p, i })));
+  items.sort((a, b) => (b.date || "").localeCompare(a.date || "") || b.i - a.i);
+  if (!state.loaded.projects) return `<div class="empty">Loading activity…</div>`;
+  return items.length ? `<ul class="timeline">${items.slice(0, 80).map(u => `<li><span class="who">${esc(u.agent)}</span><span class="when">${esc(u.date)}</span> · <a href="#p-${esc(u.p.id)}">${esc(u.p.title)}</a><p>${esc(u.text)}</p></li>`).join("")}</ul>`
+    : `<div class="empty">No activity yet.</div>`;
+}
+
+function route() { return (location.hash || "#projects").slice(1) || "projects"; }
+function render() {
+  const r = route();
+  renderTabs(r);
+  const app = $("#app");
+  let html;
+  if (r.startsWith("p-")) html = viewProject(r.slice(2));
+  else if (r.startsWith("a-")) html = viewAgent(r.slice(2));
+  else if (r.startsWith("t-")) html = viewTeam(r.slice(2));
+  else if (r === "teams") html = viewTeams();
+  else if (r === "activity") html = viewActivity();
+  else html = viewProjects();
+  if (state.error) html = `<p class="note" role="status" style="color:var(--s-blocked)">${esc(state.error)}</p>` + html;
+  const draft = $("#updText")?.value;  // keep a half-typed update when live data re-renders the page
+  app.innerHTML = html;
+  if (draft && $("#updText")) $("#updText").value = draft;
+}
+
+async function writeProject(id, patch, ok) {
+  if (!state.db) { toast("Saving isn't available in this view"); return; }
+  try { await state.db.collection("projects").doc(id).update(patch); if (ok) toast(ok); }
+  catch (e) { if (e && e.code === "invalid_argument") { state.canWrite = false; render(); toast("You can view this board but not change it"); } else toast("Couldn't save. Try again."); }
+}
+
+document.addEventListener("click", e => {
+  const f = e.target.closest("[data-f]");
+  if (f) { state.filter = f.dataset.f; try { localStorage.setItem("hub.filter", state.filter); } catch (_) {} render(); }
+});
+document.addEventListener("change", e => {
+  const r = route();
+  if (e.target.id === "teamFilter") { state.teamFilter = e.target.value; render(); return; }
+  if (!r.startsWith("p-")) return;
+  const p = state.projects.find(x => x.id === r.slice(2)); if (!p) return;
+  if (e.target.id === "status") writeProject(p.id, { status: e.target.value, updates: [...(p.updates || []), { date: today(), agent: "you", text: `Status → ${S[e.target.value]}` }] }, "Status saved");
+  if (e.target.dataset.task !== undefined) {
+    const tasks = (p.tasks || []).map((k, i) => i === +e.target.dataset.task ? { ...k, done: e.target.checked } : { ...k });
+    writeProject(p.id, { tasks }, e.target.checked ? "Task done" : "Task reopened");
+  }
+});
+document.addEventListener("submit", e => {
+  if (e.target.id !== "upd") return;
+  e.preventDefault();
+  const p = state.projects.find(x => x.id === route().slice(2)); const text = $("#updText").value.trim();
+  if (!p || !text) { toast("Write an update first"); return; }
+  const btn = e.target.querySelector("button"); btn.disabled = true;
+  writeProject(p.id, { updates: [...(p.updates || []), { date: today(), agent: $("#updAgent").value, text }] }, "Update posted").finally(() => btn.disabled = false);
+});
+window.addEventListener("hashchange", () => { render(); window.scrollTo(0, 0); });
+
+function setLive(on, text) { const l = $("#live"); l.classList.toggle("on", on); l.lastElementChild.textContent = text; }
+
+async function start() {
+  render();
+  const db = await (window.claude?.use?.("db") ?? Promise.resolve(null));
+  if (!db) { setLive(false, "Offline"); state.error = "Live studio data isn't available in this view. Open the hub on claude.ai while signed in."; Object.keys(state.loaded).forEach(k => state.loaded[k] = true); render(); return; }
+  state.db = db;
+  const user = await claude.use("user");
+  const can = user ? await user.can("data.write") : null;
+  state.canWrite = can === null ? null : !!can;
+  const timer = setTimeout(() => { setLive(false, "Waiting"); if (!state.loaded.projects) { state.error = "The studio data can't be reached yet. It will appear as soon as it loads."; render(); } }, 10000);
+  for (const name of ["teams", "agents", "projects"]) {
+    db.collection(name).onSnapshot(snap => {
+      state[name] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      state.loaded[name] = true;
+      if (!snap.metadata.fromCache) { clearTimeout(timer); state.error = ""; setLive(true, "Live"); }
+      render();
+    }, err => { clearTimeout(timer); state.loaded[name] = true; setLive(false, "Offline"); state.error = "Live updates stopped. Reload the page to reconnect."; render(); });
+  }
+}
+start();
+</script>

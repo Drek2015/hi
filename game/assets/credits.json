@@ -1,0 +1,93 @@
+{
+  "polyhaven/hdris/belfast_sunset_puresky": {
+    "author": "Greg Zaal, Dimitrios Savva, Jarod Guest",
+    "license": "CC0",
+    "source": "Poly Haven",
+    "title": "Belfast Sunset (Pure Sky)",
+    "url": "https://polyhaven.com/a/belfast_sunset_puresky"
+  },
+  "polyhaven/hdris/goegap": {
+    "author": "Greg Zaal",
+    "license": "CC0",
+    "source": "Poly Haven",
+    "title": "Goegap",
+    "url": "https://polyhaven.com/a/goegap"
+  },
+  "polyhaven/models/boulder_01": {
+    "author": "Rico Cilliers",
+    "license": "CC0",
+    "source": "Poly Haven",
+    "title": "Boulder 01",
+    "url": "https://polyhaven.com/a/boulder_01"
+  },
+  "polyhaven/models/dead_tree_trunk": {
+    "author": "Rob Tuytel",
+    "license": "CC0",
+    "source": "Poly Haven",
+    "title": "Dead Tree Trunk",
+    "url": "https://polyhaven.com/a/dead_tree_trunk"
+  },
+  "polyhaven/models/grass_medium_01": {
+    "author": "Rob Tuytel, Rico Cilliers",
+    "license": "CC0",
+    "source": "Poly Haven",
+    "title": "Grass Medium 01",
+    "url": "https://polyhaven.com/a/grass_medium_01"
+  },
+  "polyhaven/models/moon_rock_03": {
+    "author": "Greg Zaal, Rico Cilliers, Jenelle van Heerden",
+    "license": "CC0",
+    "source": "Poly Haven",
+    "title": "Moon Rock 03",
+    "url": "https://polyhaven.com/a/moon_rock_03"
+  },
+  "polyhaven/textures/burned_ground_01": {
+    "author": "Rob Tuytel",
+    "license": "CC0",
+    "source": "Poly Haven",
+    "title": "Burned Ground 01",
+    "url": "https://polyhaven.com/a/burned_ground_01"
+  },
+  "polyhaven/textures/castle_brick_07": {
+    "author": "Rob Tuytel",
+    "license": "CC0",
+    "source": "Poly Haven",
+    "title": "Castle Brick 07",
+    "url": "https://polyhaven.com/a/castle_brick_07"
+  },
+  "polyhaven/textures/castle_wall_slates": {
+    "author": "Rob Tuytel",
+    "license": "CC0",
+    "source": "Poly Haven",
+    "title": "Castle Wall Slates",
+    "url": "https://polyhaven.com/a/castle_wall_slates"
+  },
+  "polyhaven/textures/dry_ground_rocks": {
+    "author": "Rob Tuytel",
+    "license": "CC0",
+    "source": "Poly Haven",
+    "title": "Dry Ground Rocks",
+    "url": "https://polyhaven.com/a/dry_ground_rocks"
+  },
+  "polyhaven/textures/forest_ground_04": {
+    "author": "Rob Tuytel, Rico Cilliers",
+    "license": "CC0",
+    "source": "Poly Haven",
+    "title": "Forest Ground 04",
+    "url": "https://polyhaven.com/a/forest_ground_04"
+  },
+  "polyhaven/textures/rock_face": {
+    "author": "Greg Zaal, Dario Barresi",
+    "license": "CC0",
+    "source": "Poly Haven",
+    "title": "Rock Face",
+    "url": "https://polyhaven.com/a/rock_face"
+  },
+  "polyhaven/textures/stone_tiles_02": {
+    "author": "Charlotte Baglioni",
+    "license": "CC0",
+    "source": "Poly Haven",
+    "title": "Stone Tiles 02",
+    "url": "https://polyhaven.com/a/stone_tiles_02"
+  }
+}
