@@ -134,23 +134,23 @@ func _restyle(app: Dictionary) -> void:
 				mat.set_shader_parameter("alpha_cut", 0.95)
 			elif name.contains("TOPS"):
 				mat.set_shader_parameter("tint", top)
-				mat.set_shader_parameter("recolor", 0.9)
+				mat.set_shader_parameter("recolor", 1.0)
 				lined = true
 			elif name.contains("ONEPICE"):
 				mat.set_shader_parameter("tint", dress if app.get("outfit", "") == "dress" else top)
-				mat.set_shader_parameter("recolor", 0.9)
+				mat.set_shader_parameter("recolor", 1.0)
 				lined = true
 			elif name.contains("BOTTOMS"):
 				mat.set_shader_parameter("tint", bottom)
-				mat.set_shader_parameter("recolor", 0.9)
+				mat.set_shader_parameter("recolor", 1.0)
 				lined = true
 			elif name.contains("SHOES"):
 				mat.set_shader_parameter("tint", boots)
-				mat.set_shader_parameter("recolor", 0.85)
+				mat.set_shader_parameter("recolor", 1.0)
 				lined = true
 			elif name.contains("ACCESSORY"):
 				mat.set_shader_parameter("tint", accent)
-				mat.set_shader_parameter("recolor", 0.9)
+				mat.set_shader_parameter("recolor", 1.0)
 			elif name.contains("BODY") and name.contains("SKIN"):
 				mat.set_shader_parameter("tint", Color.WHITE.lerp(skin, 0.35))
 				lined = true

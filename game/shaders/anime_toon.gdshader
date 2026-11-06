@@ -18,7 +18,8 @@ void fragment() {
 	vec4 t = texture(albedo_tex, UV);
 	if (t.a < alpha_cut) { discard; }
 	float l = dot(t.rgb, vec3(0.299, 0.587, 0.114));
-	vec3 recol = tint.rgb * clamp(0.3 + l * 0.95, 0.0, 1.5);
+	// Recolour keeps the texture's shading detail but is anchored to the tint, so black cloth stays black.
+	vec3 recol = tint.rgb * clamp(0.55 + l * 0.6, 0.0, 1.3);
 	ALBEDO = mix(t.rgb * mix(vec3(1.0), tint.rgb, 1.0 - recolor), recol, recolor);
 	ROUGHNESS = roughness;
 	RIM = rim_amount;
