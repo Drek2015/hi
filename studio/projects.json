@@ -431,6 +431,64 @@
           "text": "Blocked: CI only has a software renderer (1\u20133 FPS). Needs a run on the user's PC with the FPS counter on."
         }
       ]
+    },
+    {
+      "id": "cutscenes",
+      "title": "Boss intro cutscenes",
+      "team": "cinematics",
+      "owner": "cinematics-director",
+      "status": "review",
+      "priority": "medium",
+      "summary": "In-engine, data-driven cutscenes with original dialogue: letterbox, depth-of-field camera shots, Asta POV, title card. First scene: Yuno's intro. Off by default until hero character models land.",
+      "tasks": [
+        {
+          "title": "Cutscene runtime (camera shots, DOF, poses, VFX, subtitles, skip)",
+          "done": true,
+          "agent": "cutscene-engineer"
+        },
+        {
+          "title": "Yuno intro: beat sheet + original lines",
+          "done": true,
+          "agent": "narrative-writer"
+        },
+        {
+          "title": "Yuno intro: shot list",
+          "done": true,
+          "agent": "storyboard-artist"
+        },
+        {
+          "title": "Quality pass: remove cube grimoire, cape boards, oversized particles",
+          "done": true,
+          "agent": "cinematics-director"
+        },
+        {
+          "title": "Enable by default once Yuno has a hero model",
+          "done": false,
+          "agent": "cinematics-director"
+        },
+        {
+          "title": "Intros for the other 7 bosses",
+          "done": false,
+          "agent": "storyboard-artist"
+        }
+      ],
+      "files": [
+        "game/scripts/world/cutscene.gd",
+        "game/data/cutscenes/yuno_intro.json"
+      ],
+      "shots": [
+        {
+          "id": "b1bb230885a7b409e411f31e46fc66e7",
+          "alt": "Yuno intro: over-shoulder, close-up, power reveal"
+        }
+      ],
+      "updates": [
+        {
+          "date": "2026-11-06",
+          "agent": "cinematics-director",
+          "text": "System works and the shots frame well after a clutter pass, but the generic VRoid body holds it back. Kept off by default (Settings \u2192 Boss intro cutscenes) per the 'no scrappy' rule. Turns on when hero models arrive."
+        }
+      ]
     }
   ]
 }
